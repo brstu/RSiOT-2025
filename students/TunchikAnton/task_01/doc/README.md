@@ -1,4 +1,3 @@
-```markdown
 # РСиОТ Лабораторная работа №1
 
 ## Описание
@@ -41,12 +40,12 @@ docker compose up --build
 ## Endpoints
 
 - `GET /` - основная информация о приложении и студенте
-- `GET /health` - проверка работоспособности Redis  
+- `GET /health` - проверка работоспособности Redis
 - `GET /hit` - увеличение счетчика посещений в Redis
 
 ## Graceful Shutdown
 
-Сервер поддерживает graceful shutdown при получении SIGTERM или SIGINT сигналов. 
+Сервер поддерживает graceful shutdown при получении SIGTERM или SIGINT сигналов.
 При завершении работы сервер корректно закрывает HTTP-соединения и Redis-клиент в течение 10 секунд.
 
 ## Особенности реализации
@@ -67,4 +66,5 @@ docker compose up --build
 - **Variant №:** 21
 - **Operating System:** Windows 11 23H2
 - **Docker Version:** Docker Desktop 4.47.0
+
 ```
