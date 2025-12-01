@@ -59,34 +59,34 @@
 
 Описание компонентов:
 
-1. StatefulSet (redis):
+#### 1.1 StatefulSet (redis):
 
 - Управляет одним экземпляром Redis
 - Использует volumeClaimTemplate для автоматического создания PVC
 - Хранит данные в /data с включенной опцией appendonly
 
-2. Headless Service (redis):
+#### 1.2 Headless Service (redis):
 
 - clusterIP: None для прямого доступа к pod'ам
 - DNS запись: redis-0.redis.state24.svc.cluster.local
 
-3. Secret (redis-secret):
+#### 1.3 Secret (redis-secret):
 
 - Безопасное хранение пароля Redis
 - Используется как StatefulSet'ом, так и CronJob'ом
 
-4. CronJob (redis-backup):
+#### 1.4 CronJob (redis-backup):
 
 - Запускается каждые 8 часов в 5 минут часа
 - Выполняет команду SAVE для создания дампа Redis
 - Копирует дамп в PVC для бэкапов
 
-5. PersistentVolumeClaim:
+#### 1.5 PersistentVolumeClaim:
 
 - data-redis-0: для хранения данных Redis (2 Gi)
 - redis-backup-pvc: для хранения бэкапов (2 Gi)
 
-6. StorageClass (premium):
+#### 1.6 StorageClass (premium):
 
 - Использует hostpath provisioner для локальной разработки
 - reclaimPolicy: Delete для автоматической очистки
@@ -96,55 +96,55 @@
 
 ### 2 Пошаговое выполнение
 
-1. Создание Namespace
+#### 2.1 Создание Namespace
 
 ```bash
 kubectl apply -f namespace.yaml
 ```
 
-2. Создание StorageClass
+#### 2.2 Создание StorageClass
 
 ```bash
 kubectl apply -f storageclass-premium.yaml
 ```
 
-3. Создание Secret с паролем Redis
+#### 2.3 Создание Secret с паролем Redis
 
 ```bash
 kubectl apply -f redis-secret.yaml
 ```
 
-4. Создание PVC для основной базы данных Redis
+#### 2.4 Создание PVC для основной базы данных Redis
 
 ```bash
 kubectl apply -f pvc-redis.yaml
 ```
 
-5. Создание Headless Service
+#### 2.5 Создание Headless Service
 
 ```bash
 kubectl apply -f service-headless.yaml
 ```
 
-6. Создание StatefulSet Redis
+#### 2.6 Создание StatefulSet Redis
 
 ```bash
 kubectl apply -f statefulset.yaml
 ```
 
-7. Создание PVC для бэкапов
+#### 2.7 Создание PVC для бэкапов
 
 ```bash
 kubectl apply -f redis-backup-pvc.yaml
 ```
 
-8. Настройка автоматического бэкапа
+#### 2.8 Настройка автоматического бэкапа
 
 ```bash
 kubectl apply -f cronjob-backup.yaml
 ```
 
-9. Проверка развертывания
+#### 2.9 Проверка развертывания
 
 * Проверить все ресурсы
 
@@ -158,7 +158,7 @@ kubectl get all -n state24
 kubectl get pvc -n state24
 ```
 
-10. Тестирование бэкапа (ручной запуск)
+#### 2.10 Тестирование бэкапа (ручной запуск)
 
 * Запустить бэкап вручную
 
@@ -172,7 +172,7 @@ kubectl create job --from=cronjob/redis-backup manual-backup -n state24
 kubectl logs -n state24 -l job-name=manual-backup
 ```
 
-11. Восстановление данных из бэкапа
+#### 2.11 Восстановление данных из бэкапа
 
 Запустить временный Pod для восстановления
 
@@ -210,7 +210,7 @@ kubectl scale statefulset redis -n state24 --replicas=1
 kubectl delete pod temp-redis-restore -n state24
 ```
 
-12. Проверка восстановления
+#### 2.12 Проверка восстановления
 
 * Проверить наличие данных в Redis
 
@@ -224,7 +224,7 @@ kubectl exec -it redis-0 -n state24 -- redis-cli -a mysecurepassword DBSIZE
 kubectl exec -it redis-0 -n state24 -- redis-cli -a mysecurepassword KEYS "*"
 ```
 
-13.  Создание отчета
+#### 2.13 Создание отчета
 
 * Собрать информацию о развертывании
 
@@ -238,7 +238,7 @@ kubectl get all,pvc,secret -n state24 -o wide > deployment-report.txt
 kubectl logs -n state24 -l job-name=redis-backup-<ID> >> deployment-report.txt
 ```
 
-14. Валидация работы системы
+#### 2.14 Валидация работы системы
 
 * Проверить, что Redis работает
 
@@ -252,7 +252,7 @@ kubectl exec -it redis-0 -n state24 -- redis-cli -a mysecurepassword PING
 kubectl describe cronjob redis-backup -n state24 | grep Schedule
 ```
 
-Должно быть: Schedule: 5 */8 * * *
+Должно быть: (Schedule: 5 */8 * * *)
 
 * Проверить наличие бэкапов
 
@@ -276,7 +276,7 @@ kubectl delete pod temp-redis-restore -n state24
 - Все ресурсы созданы:
 ![All_resources_have_been_created](img/all.png)
 
-- Redis работает и отвечает: 
+- Redis работает и отвечает:
 ![Redis_is_running_and_responding](img/pong.png)
 
 - CronJob настроен:
@@ -308,7 +308,7 @@ kubectl delete pod temp-redis-restore -n state24
 
 ## Ссылка на публикацию
 
-👉 Вставьте ссылку на GitHub Pages: 
+👉 Вставьте ссылку на GitHub Pages: https://yarmolov.github.io/RSOT-LAB3/
 
 ## Вывод
 
