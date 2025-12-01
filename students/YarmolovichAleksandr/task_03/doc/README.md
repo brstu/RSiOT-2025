@@ -59,34 +59,34 @@
 
 Описание компонентов:
 
-#### 1.1 StatefulSet (redis):
+#### 1.1 StatefulSet (redis)
 
 - Управляет одним экземпляром Redis
 - Использует volumeClaimTemplate для автоматического создания PVC
 - Хранит данные в /data с включенной опцией appendonly
 
-#### 1.2 Headless Service (redis):
+#### 1.2 Headless Service (redis)
 
 - clusterIP: None для прямого доступа к pod'ам
 - DNS запись: redis-0.redis.state24.svc.cluster.local
 
-#### 1.3 Secret (redis-secret):
+#### 1.3 Secret (redis-secret)
 
 - Безопасное хранение пароля Redis
 - Используется как StatefulSet'ом, так и CronJob'ом
 
-#### 1.4 CronJob (redis-backup):
+#### 1.4 CronJob (redis-backup)
 
 - Запускается каждые 8 часов в 5 минут часа
 - Выполняет команду SAVE для создания дампа Redis
 - Копирует дамп в PVC для бэкапов
 
-#### 1.5 PersistentVolumeClaim:
+#### 1.5 PersistentVolumeClaim
 
 - data-redis-0: для хранения данных Redis (2 Gi)
 - redis-backup-pvc: для хранения бэкапов (2 Gi)
 
-#### 1.6 StorageClass (premium):
+#### 1.6 StorageClass (premium)
 
 - Использует hostpath provisioner для локальной разработки
 - reclaimPolicy: Delete для автоматической очистки
@@ -252,7 +252,11 @@ kubectl exec -it redis-0 -n state24 -- redis-cli -a mysecurepassword PING
 kubectl describe cronjob redis-backup -n state24 | grep Schedule
 ```
 
-Должно быть: (Schedule: 5 */8 * * *)
+Должно быть:
+
+```bash
+(Schedule: 5 */8 * * *)
+```
 
 * Проверить наличие бэкапов
 
