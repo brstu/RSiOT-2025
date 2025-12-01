@@ -1,0 +1,7 @@
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: state-as63
+  labels:
+    org.bstu.student.slug: 1nsirius
