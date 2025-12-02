@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-as64-220050-v37
+  namespace: app37
+  labels:
+    app: web37
+    org.bstu.student.fullname: "Немирович Дмитрий Александрович"
+    org.bstu.student.id: "220050"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "37"
+    org.bstu.course: "RSiOT"
+    org.bstu.owner: "goryachiy-ugolek"
+    org.bstu.student.slug: "as64-220050-v37"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web37
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: web37
+    spec:
+      containers:
+        - name: web37
+          image: web37:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8001
+          envFrom:
+            - configMapRef:
+                name: app-as64-220050-v37-config
+          resources:
+            requests:
+              cpu: 150m
+              memory: 128Mi
+            limits:
+              cpu: 150m
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 3
+            periodSeconds: 5
