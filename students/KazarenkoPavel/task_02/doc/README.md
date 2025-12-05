@@ -27,11 +27,11 @@ docker run -d -p 8091:8091 --name web05-test web05:stu-220008-v05
 curl http://localhost:8091/health
 docker stop web05-test
 ```
+
 ## 2. Kubernetes манифесты
-Структура каталога k8s/:
 
 ```text
-k8s/
+Структура каталога k8s/:
 ├── 01-namespace.yaml      # Создание namespace app05
 ├── 02-configmap.yaml      # Конфигурация приложения
 ├── 03-secret.yaml         # Секреты (если нужны)
@@ -42,7 +42,8 @@ k8s/
 ```
 
 ## 3. Установка и настройка Minikube
-Установка (Windows)
+### Установка (Windows)
+
 ```bash
 # Установка через Chocolatey
 choco install minikube kubernetes-cli
@@ -50,7 +51,9 @@ choco install minikube kubernetes-cli
 # Или скачать с официального сайта:
 # https://minikube.sigs.k8s.io/docs/start/
 ```
-Запуск кластера
+
+### Запуск кластера
+
 ```bash
 # Запуск Minikube с Docker драйвером
 minikube start --driver=docker --cpus=2 --memory=4096
@@ -63,7 +66,9 @@ minikube image load web05:stu-220008-v05
 ```
 
 ## 4. Деплой приложения
+
 ### Применение манифестов
+
 ```bash
 # Все манифесты разом
 kubectl apply -f k8s/
@@ -73,7 +78,9 @@ kubectl apply -f k8s/01-namespace.yaml
 kubectl apply -f k8s/02-configmap.yaml
 # ... и так далее
 ```
+
 ### Проверка деплоя
+
 ```bash
 # Проверка всех ресурсов в namespace
 kubectl get all -n app05
@@ -84,8 +91,11 @@ kubectl get pods -n app05 -w
 # Проверка логов
 kubectl logs -n app05 deployment/web05 -f
 ```
+
 ## 5. Тестирование
+
 ### Проверка endpoints
+
 ```bash
 # Port forwarding
 kubectl port-forward -n app05 service/web05-service 8080:8091
@@ -98,7 +108,9 @@ curl http://localhost:8080/visit
 # Или через minikube service
 minikube service -n app05 web05-service
 ```
+
 ### Проверка readiness/liveness probes
+
 ```bash
 # Проверка состояния подов
 kubectl describe pod -n app05 -l app=web05 | grep -A10 "Readiness"
@@ -110,7 +122,9 @@ kubectl exec -n app05 -it <pod-name> -- kill 1
 ```
 
 ## 6. Rolling update
+
 ### Обновление образа
+
 ```bash
 # Обновление версии
 docker build -t web05:stu-220008-v05-v2 .
@@ -126,6 +140,7 @@ kubectl rollout status deployment/web05 -n app05
 ```
 
 ## 7. Очистка
+
 ```bash
 # Удаление приложения
 kubectl delete -f k8s/
@@ -141,7 +156,9 @@ minikube delete
 ```
 
 ## 8. Скрипты автоматизации
+
 ### deploy.sh
+
 ```bash
 #!/bin/bash
 echo "Building and deploying..."
@@ -150,7 +167,9 @@ minikube image load web05:stu-220008-v05
 kubectl apply -f k8s/
 kubectl rollout status deployment/web05 -n app05
 ```
+
 ### test.sh
+
 ```bash
 #!/bin/bash
 echo "Testing endpoints..."
