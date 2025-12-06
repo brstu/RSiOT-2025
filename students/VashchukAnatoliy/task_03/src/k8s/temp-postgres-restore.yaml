@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: temp-postgres-restore
+  namespace: state01
+spec:
+  restartPolicy: Never
+  containers:
+    - name: restore
+      image: postgres:16
+      imagePullPolicy: IfNotPresent
+      command: ["sleep"]
+      args: ["3600"]  # Под будет жить 1 час для интерактивного доступа
+      env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
+      volumeMounts:
+        - name: backup-storage
+          mountPath: /backup
+  volumes:
+    - name: backup-storage
+      persistentVolumeClaim:
+        claimName: postgres-backup-pvc

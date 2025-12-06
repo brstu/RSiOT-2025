@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: state01
+  labels:
+    app: postgres
+    org.bstu.student.fullname: "Vashchuk_Anatoli_Valerevich"
+    org.bstu.student.id: "220036"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "1"
+    org.bstu.course: RSIOT
+    org.bstu.owner: "skevet-avramuk"
+    org.bstu.student.slug: "AS-63-220036-v1"
+spec:
+  clusterIP: None  # Обязательный параметр для Headless Service
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
