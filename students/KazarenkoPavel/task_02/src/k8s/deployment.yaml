@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web05
+  namespace: app05
+  labels:
+    app: web05
+    org.bstu.student.fullname: "Kazarenko Pavel Vladimirovich"
+    org.bstu.student.id: "220008"
+    org.bstu.group: "as-63"
+    org.bstu.variant: "05"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "Catsker"
+    org.bstu.student.slug: "as-63-220008-v05"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web05
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: web05
+        org.bstu.student.id: "220008"
+        org.bstu.variant: "05"
+    spec:
+      containers:
+      - name: web05
+        image: web05:stu-220008-v05
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8091
+          name: http
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: web05-config
+              key: APP_PORT
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: web05-config
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: web05-config
+              key: REDIS_PORT
+        - name: STU_ID
+          valueFrom:
+            configMapKeyRef:
+              name: web05-config
+              key: STU_ID
+        - name: STU_GROUP
+          valueFrom:
+            configMapKeyRef:
+              name: web05-config
+              key: STU_GROUP
+        - name: STU_VARIANT
+          valueFrom:
+            configMapKeyRef:
+              name: web05-config
+              key: STU_VARIANT
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "75m"
+          limits:
+            memory: "128Mi"
+            cpu: "150m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8091
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8091
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 1
+        securityContext:
+          runAsUser: 10001
+          runAsGroup: 10001
+          allowPrivilegeEscalation: false
