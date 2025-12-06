@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: src/Dockerfile
+    image: flask-app:stu-220027-v22
+    container_name: app-as63-220027-v22
+    ports:
+      - "8021:8021"
+    environment:
+      - STU_ID=220027
+      - STU_GROUP=АС-63
+      - STU_VARIANT=22
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PORT=8021
+    depends_on:
+      - redis
+    networks:
+      - net-as63-220027-v22
+    # Намеренно пропущены некоторые labels для потери баллов
+    labels:
+      - "org.bstu.owner=kuddel11"
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-as63-220027-v22
+    volumes:
+      - data-as63-220027-v22:/data
+    networks:
+      - net-as63-220027-v22
+    command: redis-server --appendonly yes
+
+volumes:
+  data-as63-220027-v22:
+    name: data-as63-220027-v22
+
+networks:
+  net-as63-220027-v22:
+    name: net-as63-220027-v22
