@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-backup-pvc
+  namespace: state24
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: premium
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup
+  namespace: state24
+spec:
+  schedule: "5 */8 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: redis-backup
+              image: redis:7
+
+              env:
+                - name: REDIS_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: redis-secret
+                      key: REDIS_PASSWORD
+
+              command: ["/bin/sh"]
+              args:
+                - "-c"
+                - |
+                  mkdir -p /backup
+                  redis-cli -h redis-0.redis.state24.svc.cluster.local -a "$REDIS_PASSWORD" SAVE
+                  cp /data/dump.rdb "/backup/dump-$(date +%Y-%m-%d_%H-%M-%S).rdb"
+
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+
+                # читаем данные Redis для копирования dump.rdb
+                - name: redis-data
+                  mountPath: /data
+
+          volumes:
+            - name: backup
+              persistentVolumeClaim:
+                claimName: redis-backup-pvc
+
+            - name: redis-data
+              persistentVolumeClaim:
+                claimName: data-redis-0
