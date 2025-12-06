@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    org.bstu.student.fullname: kashpir-dmitriy-ruslanovich
+    org.bstu.student.id: "12345678"
+    org.bstu.group: as-64
+    org.bstu.variant: "34"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "kashpirdr"
+    org.bstu.student.slug: "as-64-12345678-v34"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: web
+        org.bstu.student.fullname: kashpir-dmitriy-ruslanovich
+        org.bstu.student.id: "220043"
+        org.bstu.group: as-64
+        org.bstu.variant: "34"
+        org.bstu.course: "RSIOT"
+        org.bstu.owner: "kashpirdr"
+        org.bstu.student.slug: "as-64-220043-v34"
+    spec:
+      containers:
+        - name: web
+          image: placeholder/image:tag
+          ports:
+            - containerPort: 8080
+          env:
+            - name: STU_ID
+              value: "220043"
+            - name: STU_GROUP
+              value: as-64
+            - name: STU_VARIANT
+              value: "34"
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "150m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
