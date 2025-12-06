@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-as63-220027-v22
+  namespace: app22
+  labels:
+    app: web22
+    org.bstu.student.id: "220027"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "22"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web22
+  template:
+    metadata:
+      labels:
+        app: web22
+    spec:
+      containers:
+        - name: web22
+          image: web22:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8042
+          env:
+            - name: PORT
+              value: "8042"
+            - name: STU_ID
+              value: "220027"
+            - name: STU_GROUP
+              value: "AS-63"
+            - name: STU_VARIANT
+              value: "22"

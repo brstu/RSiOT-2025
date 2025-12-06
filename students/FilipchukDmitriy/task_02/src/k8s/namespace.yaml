@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app22
+  labels:
+    org.bstu.owner: kuddel11
+    org.bstu.student.slug: as63-220027-v22
