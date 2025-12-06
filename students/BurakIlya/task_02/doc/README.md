@@ -1,0 +1,105 @@
+# Лабораторная работа №02
+
+<p align="center">Министерство образования Республики Беларусь</p>
+<p align="center">Учреждение образования</p>
+<p align="center">"Брестский Государственный технический университет"</p>
+<p align="center">Кафедра ИИТ</p>
+<br><br><br><br><br><br>
+<p align="center"><strong>Лабораторная работа №02</strong></p>
+<p align="center"><strong>По дисциплине:</strong> "Распределенные системы и облачные технологии"</p>
+<p align="center"><strong>Тема:</strong> Kubernetes: базовый деплой</p>
+<br><br><br><br><br><br>
+<p align="right"><strong>Выполнил:</strong></p>
+<p align="right">Студент 4 курса</p>
+<p align="right">Группы АС-64</p>
+<p align="right">Бурак И. Э.</p>
+<p align="right"><strong>Проверил:</strong></p>
+<p align="right">Несюк А. Н.</p>
+<br><br><br><br><br>
+<p align="center"><strong>Брест 2025</strong></p>
+
+---
+
+## Цель работы
+
+Научиться готовить Kubernetes-манифесты для простого HTTP-сервиса.
+
+---
+
+### Вариант №29
+
+## Метаданные студента
+
+- **ФИО:** Бурак Илья Эдуардович
+- **Группа:** АС-64
+- **№ студенческого (StudentID):** 220035
+- **Email (учебный):** <as006405@g.bstu.by>
+- **GitHub username:** burakillya
+- **Вариант №:** 29
+- **ОС и версия:** Windows 10 1809, Docker Desktop v4.53.0
+
+---
+
+## Окружение и инструменты
+
+- Python 3.11
+- Docker
+- Kubernetes (Minikube)
+
+## Структура репозитория
+
+```text
+src/
+  app.py              # HTTP-сервер
+  Dockerfile          # Сборка образа
+  k8s/
+    deployment.yaml   # Deployment манифест
+    service.yaml      # Service манифест
+doc/
+  README.md           # Документация
+```
+
+## Подробное описание выполнения
+
+1. Создан простой HTTP-сервис на Python
+2. Написан Dockerfile для сборки образа
+3. Созданы Kubernetes манифесты (Deployment, Service)
+
+### Сборка образа
+
+```text
+cd src
+docker build -t web29:latest .
+```
+
+### Деплой в Kubernetes
+
+```text
+kubectl create namespace app29
+kubectl apply -f k8s/
+```
+
+### Проверка
+
+```text
+kubectl get pods -n app29
+kubectl get svc -n app29
+```
+
+## Контрольный список (checklist)
+
+- [ ✅ ] README с метаданными студента
+- [ ✅ ] Dockerfile
+- [ ❌ ] multi-stage build
+- [ ❌ ] non-root пользователь
+- [ ✅ ] Kubernetes манифесты (Deployment, Service)
+- [ ❌ ] ConfigMap/Secret
+- [ ❌ ] Liveness/Readiness probes
+- [ ❌ ] Graceful shutdown
+- [ ❌ ] Полное логирование
+
+---
+
+## Вывод
+
+Выполнена базовая настройка Kubernetes деплоя. Создан HTTP-сервис и манифесты для его развертывания.
