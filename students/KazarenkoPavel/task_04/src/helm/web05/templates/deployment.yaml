@@ -43,7 +43,12 @@ spec:
         - name: STU_VARIANT
           value: "{{.Values.student.variant}}"
         resources:
-{{- toYaml .Values.app.resources | nindent 10 }}
+          requests:
+            memory: "64Mi"
+            cpu: "75m"
+          limits:
+            memory: "128Mi"
+            cpu: "150m"
         livenessProbe:
           httpGet:
             path: /health
