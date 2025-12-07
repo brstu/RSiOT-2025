@@ -2,46 +2,46 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.app.name }}
-  namespace: {{ .Values.app.namespace }}
+  name: {{.Values.app.name}}
+  namespace: {{.Values.app.namespace}}
   labels:
-    app: {{ .Values.app.name }}
-    org.bstu.student.id: {{ .Values.student.id }}
-    org.bstu.student.fullname: {{ .Values.student.fullname }}
-    org.bstu.group: {{ .Values.student.group }}
-    org.bstu.variant: {{ .Values.student.variant }}
+    app: {{.Values.app.name}}
+    org.bstu.student.id: {{.Values.student.id}}
+    org.bstu.student.fullname: {{.Values.student.fullname}}
+    org.bstu.group: {{.Values.student.group}}
+    org.bstu.variant: {{.Values.student.variant}}
     org.bstu.course: "RSIOT"
 spec:
-  replicas: {{ .Values.app.replicas }}
+  replicas: {{.Values.app.replicas}}
   selector:
     matchLabels:
-      app: {{ .Values.app.name }}
+      app: {{.Values.app.name}}
   template:
     metadata:
       labels:
-        app: {{ .Values.app.name }}
-        version: {{ .Values.app.image.tag }}
+        app: {{.Values.app.name}}
+        version: {{.Values.app.image.tag}}
     spec:
       containers:
-      - name: {{ .Values.app.name }}
-        image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
-        imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+      - name: {{.Values.app.name}}
+        image: "{{.Values.app.image.repository}}:{{.Values.app.image.tag}}"
+        imagePullPolicy: {{.Values.app.image.pullPolicy}}
         ports:
-        - containerPort: {{ .Values.app.port }}
+        - containerPort: {{.Values.app.port}}
           name: http
         env:
         - name: PORT
-          value: "{{ .Values.app.port }}"
+          value: "{{.Values.app.port}}"
         - name: REDIS_HOST
-          value: "{{ .Values.redis.host }}"
+          value: "{{.Values.redis.host}}"
         - name: REDIS_PORT
-          value: "{{ .Values.redis.port }}"
+          value: "{{.Values.redis.port}}"
         - name: STU_ID
-          value: "{{ .Values.student.id }}"
+          value: "{{.Values.student.id}}"
         - name: STU_GROUP
-          value: "{{ .Values.student.group }}"
+          value: "{{.Values.student.group}}"
         - name: STU_VARIANT
-          value: "{{ .Values.student.variant }}"
+          value: "{{.Values.student.variant}}"
         resources:
 {{ toYaml .Values.app.resources | indent 10 }}
         livenessProbe:

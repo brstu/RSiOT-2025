@@ -6,14 +6,14 @@ student:
   fullname: "Kazarenko Pavel Vladimirovich"
 
 app:
-  name: web05
-  namespace: app05
+  name: "web05"
+  namespace: "app05"
   port: 8091
   replicas: 2
   image:
-    repository: web05
-    tag: stu-220008-v05
-    pullPolicy: IfNotPresent
+    repository: "web05"
+    tag: "stu-220008-v05"
+    pullPolicy: "IfNotPresent"
   resources:
     requests:
       memory: "64Mi"
@@ -34,10 +34,10 @@ monitoring:
   p95Latency: 300
   serviceMonitor:
     enabled: true
-    interval: 30s
-    scrapeTimeout: 10s
+    interval: "30s"
+    scrapeTimeout: "10s"
 
 alerting:
   errorRateThreshold: 2.0
   latencyThreshold: 0.3
-  window: 15m
+  window: "15m"
