@@ -1,0 +1,13 @@
+apiVersion: v2
+name: web05
+description: Flask application with metrics for student 220008
+type: application
+version: 1.0.0
+appVersion: "1.0"
+maintainers:
+  - name: Kazarenko Pavel
+    email: as006305@g.bstu.by
+annotations:
+  org.bstu.student.id: "220008"
+  org.bstu.group: "as-63"
+  org.bstu.variant: "05"
