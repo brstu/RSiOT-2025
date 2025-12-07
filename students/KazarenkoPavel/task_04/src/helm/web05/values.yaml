@@ -1,11 +1,10 @@
-# Student metadata
+---
 student:
   id: "220008"
   group: "as-63"
   variant: "05"
   fullname: "Kazarenko Pavel Vladimirovich"
 
-# Application settings
 app:
   name: web05
   namespace: app05
@@ -15,7 +14,6 @@ app:
     repository: web05
     tag: stu-220008-v05
     pullPolicy: IfNotPresent
-
   resources:
     requests:
       memory: "64Mi"
@@ -24,27 +22,22 @@ app:
       memory: "128Mi"
       cpu: "150m"
 
-# Redis settings
 redis:
   enabled: true
   host: "redis-service"
   port: 6379
 
-# Monitoring settings
 monitoring:
   enabled: true
   metricsPrefix: "app05_"
   slo: 99.5
   p95Latency: 300
-
-  # ServiceMonitor для Prometheus
   serviceMonitor:
     enabled: true
     interval: 30s
     scrapeTimeout: 10s
 
-# Alerting settings
 alerting:
-  errorRateThreshold: 2.0  # 2%
-  latencyThreshold: 0.3    # 300ms
+  errorRateThreshold: 2.0
+  latencyThreshold: 0.3
   window: 15m

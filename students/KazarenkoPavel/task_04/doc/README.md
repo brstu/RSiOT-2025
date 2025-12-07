@@ -79,8 +79,8 @@ curl http://web05-service.app05.svc.cluster.local:8091/metrics
 Импортируйте дашборд из файла `grafana-dashboards/web05-dashboard.json`:
 
 1. Откройте Grafana (http://localhost:3000)
-2. Навигация → Dashboards → Import 
-3. Загрузите JSON файл 
+2. Навигация → Dashboards → Import
+3. Загрузите JSON файл
 4. Выберите Prometheus как источник данных
 
 Метрики на дашборде:

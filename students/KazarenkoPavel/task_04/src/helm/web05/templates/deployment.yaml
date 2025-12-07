@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,7 +43,7 @@ spec:
         - name: STU_VARIANT
           value: "{{ .Values.student.variant }}"
         resources:
-          {{- toYaml .Values.app.resources | nindent 10 }}
+{{ toYaml .Values.app.resources | indent 10 }}
         livenessProbe:
           httpGet:
             path: /health
