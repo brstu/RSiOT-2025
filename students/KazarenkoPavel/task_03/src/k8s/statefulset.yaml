@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: state05
+  labels:
+    app: postgres
+    org.bstu.student.fullname: "Kazarenko Pavel Vladimirovich"
+    org.bstu.student.id: "220008"
+    org.bstu.group: "as-63"
+    org.bstu.variant: "05"
+    org.bstu.course: "RSIOT"
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        org.bstu.student.id: "220008"
+        org.bstu.variant: "05"
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16-alpine
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-password
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-db
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - exec pg_isready -U postgres
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - exec pg_isready -U postgres
+          initialDelaySeconds: 5
+          periodSeconds: 5
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        app: postgres
+        org.bstu.student.id: "220008"
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: premium
+      resources:
+        requests:
+          storage: 1Gi
