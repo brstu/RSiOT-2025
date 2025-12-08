@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-backup
+  namespace: state01
+  labels:
+    app: db
+    org.bstu.student.fullname: kolodich-maksim-pavlovich
+    org.bstu.student.id: "220013"
+    org.bstu.group: as-63
+    org.bstu.variant: "09"
+    org.bstu.owner: proxladno
+    org.bstu.student.slug: as-63-220013-v09
+spec:
+  schedule: "15 */2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: postgres:16
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  PGPASSWORD=$POSTGRES_PASSWORD pg_dump -U postgres -h db.state01.svc.cluster.local -p 5432 -d postgres > /backup/db-$(date +%Y%m%d%H%M).sql
+              env:
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-secret
+                      key: password
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+          restartPolicy: OnFailure
+          volumes:
+            - name: backup
+              persistentVolumeClaim:
+                claimName: backup-pvc
