@@ -26,6 +26,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: net-as63-220018-v14
+                name: web14
                 port:
                   number: 80

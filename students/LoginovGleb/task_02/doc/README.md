@@ -52,7 +52,16 @@ ns=app14, name=web14, replicas=3, port=8062, ingressClass=nginx, cpu=200m, mem=1
 ### Slug и Labels
 
 - **slug:** `as63-220018-v14`
-- **Префиксы ресурсов:** `app-<slug>`, `data-<slug>`, `net-<slug>`
+- **Основные ресурсы приложения (согласно варианту):** используется имя из варианта (`web14`)
+  - Deployment: `web14`
+  - Service: `web14`
+- **Вспомогательные ресурсы:** используются префиксы `app-<slug>`, `data-<slug>`, `net-<slug>`
+  - ConfigMap: `app-config-as63-220018-v14`
+  - Secret: `data-secret-as63-220018-v14`
+  - PVC: `data-pvc-as63-220018-v14`
+  - DB Deployment: `data-db-as63-220018-v14`
+  - DB Service: `data-db-as63-220018-v14`
+  - Ingress: `net-ingress-as63-220018-v14`
 
 ### Labels/Annotations в манифестах
 
@@ -255,7 +264,7 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-as63-220018-v14
+  name: web14
   namespace: app14
 spec:
   replicas: 3  # Согласно варианту
@@ -310,7 +319,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: net-as63-220018-v14
+  name: web14
   namespace: app14
 spec:
   type: ClusterIP
@@ -344,7 +353,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: net-as63-220018-v14
+                name: web14
                 port:
                   number: 80
 ```
@@ -548,7 +557,7 @@ kubectl apply -f task_02/src/k8s/ingress.yaml
 
 ### Развертывание с Minikube
 
-#### Создание кластера Minikube
+#### Создание кластера
 
 ```bash
 # Запуск Minikube
@@ -570,7 +579,7 @@ cd task_02/src/app
 docker build -t gleb7499/lab1-v14:stu-220018-v14 .
 ```
 
-#### Применение манифестов в Minikube
+#### Применение манифестов
 
 ```bash
 kubectl apply -k task_02/src/k8s/
@@ -620,7 +629,7 @@ kubectl describe pod -n app14 -l app=web14
 
 ```bash
 # Port-forward для доступа к приложению
-kubectl port-forward -n app14 svc/net-as63-220018-v14 8062:80 &
+kubectl port-forward -n app14 svc/web14 8062:80 &
 
 # Проверка healthz
 curl http://localhost:8062/healthz
@@ -649,13 +658,13 @@ kubectl logs -n app14 -l app=web14 -f
 
 ```bash
 # Обновление образа (симуляция rolling update)
-kubectl set image deployment/app-as63-220018-v14 web14=gleb7499/lab1-v14:stu-220018-v14 -n app14
+kubectl set image deployment/web14 web14=gleb7499/lab1-v14:stu-220018-v14 -n app14
 
 # Наблюдение за обновлением
-kubectl rollout status deployment/app-as63-220018-v14 -n app14
+kubectl rollout status deployment/web14 -n app14
 
 # Проверка истории обновлений
-kubectl rollout history deployment/app-as63-220018-v14 -n app14
+kubectl rollout history deployment/web14 -n app14
 ```
 
 ### Удаление ресурсов
@@ -710,7 +719,7 @@ curl http://localhost:8062/healthz
 
 ## Описание компонентов
 
-### Deployment Flask App (app-as63-220018-v14)
+### Deployment Flask App (web14)
 
 | Параметр | Значение |
 |----------|----------|
@@ -741,7 +750,7 @@ curl http://localhost:8062/healthz
 | Liveness Probe | pg_isready (period: 20s) |
 | Readiness Probe | pg_isready (period: 10s) |
 
-### Service Flask App (net-as63-220018-v14)
+### Service Flask App (web14)
 
 | Параметр | Значение |
 |----------|----------|
@@ -764,7 +773,7 @@ curl http://localhost:8062/healthz
 | IngressClass | nginx |
 | Host | web14.local |
 | Path | / |
-| Backend | net-as63-220018-v14:80 |
+| Backend | web14:80 |
 
 ### ConfigMap (app-config-as63-220018-v14)
 
@@ -824,6 +833,12 @@ curl http://localhost:8062/healthz
 | Smoke-test проверка | ✅ |
 | Kustomize для управления манифестами (БОНУС) | ✅ |
 | PVC + демонстрация использования для PostgreSQL (БОНУС) | ✅ |
+
+---
+
+## Ссылки
+
+- [Docker Hub образ](https://hub.docker.com/r/gleb7499/lab1-v14)
 
 ---
 

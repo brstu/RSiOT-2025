@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-as63-220018-v14
+  name: web14
   namespace: app14
   labels:
     app: web14
