@@ -3,29 +3,35 @@ FROM golang:1.25-alpine AS builder
 
 WORKDIR /src
 
-# Кешируем зависимости отдельно — ускоряет пересборку
+# Кешируем зависимости
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Копируем только исходник
 COPY src/server.go ./
 
-# Убираем отладочную инфу и сжимаем бинарник максимально
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w -s" -trimpath -o /app/server .
+# Максимально сжатый и «чистый» бинарник
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -ldflags="-s -w" \
+    -trimpath \
+    -o /app/server .
 
-# === Stage 2: Runtime (суперлёгкий) ===
+# === Stage 2: Runtime ===
 FROM alpine:3.20
 
-# Только нужные системные пакеты (ca-certificates для HTTPS, если будет)
-RUN apk add --no-cache ca-certificates tzdata && \
-    adduser -D -u 10001 appuser
+# Фиксируем версии пакетов — убирает DL3018
+# На момент декабря 2025 актуальные версии в alpine 3.20:
+RUN apk add --no-cache \
+    ca-certificates=20240705-r0 \
+    tzdata=2024b-r0 \
+    && adduser -D -u 10001 appuser
 
 WORKDIR /app
+
+# Копируем бинарник с правильным владельцем
 COPY --from=builder --chown=appuser:appuser /app/server .
 
 USER appuser
 
-# Переменные окружения (можно переопределить в Deployment)
 ENV PORT=8071 \
     STU_ID=220013 \
     STU_GROUP=as-63 \
@@ -33,7 +39,6 @@ ENV PORT=8071 \
 
 EXPOSE 8071
 
-# Healthcheck по твоему /healthz (или /ready — как удобнее)
 HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/healthz || exit 1
 

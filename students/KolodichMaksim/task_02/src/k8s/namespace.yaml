@@ -1,11 +1,9 @@
+---
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: app09
+  name: as-63-220013-v09
   labels:
-    org.bstu.course: RSIOT
-    org.bstu.student.fullname: kolodich-maksim-pavlovich
-    org.bstu.student.id: "220013"
-    org.bstu.group: as-63
-    org.bstu.variant: "09"
     org.bstu.owner: proxladno
+    org.bstu.student.slug: as-63-220013-v09
+    org.bstu.student.fullname: kolodich-maksim-pavlovich

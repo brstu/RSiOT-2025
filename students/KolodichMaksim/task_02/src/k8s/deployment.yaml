@@ -1,75 +1,46 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-web09
-  namespace: app09
+  name: app
+  namespace: as-63-220013-v09
   labels:
-    app: web09
-    org.bstu.student.fullname: kolodich-maksim-pavlovich
-    org.bstu.student.id: "220013"
-    org.bstu.group: as-63
-    org.bstu.variant: "09"
-    org.bstu.owner: frosyka
+    app: app
     org.bstu.student.slug: as-63-220013-v09
 spec:
-  replicas: 2
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
+  replicas: 1
   selector:
     matchLabels:
-      app: web09
+      app: app
   template:
     metadata:
       labels:
-        app: web09
+        app: app
         org.bstu.student.slug: as-63-220013-v09
     spec:
       containers:
-        - name: web
-          image: frosyka/lab02-web09:latest   # замени на свой образ после push
-          imagePullPolicy: IfNotPresent
+        - name: app
+          image: app:stu-220013-v09
+          imagePullPolicy: Never  # потому что образ локальный (kind load)
           ports:
             - containerPort: 8071
           envFrom:
             - configMapRef:
-                name: config-web09
+                name: app-config
             - secretRef:
-                name: secret-web09
+                name: redis-secret
+          # Оставляем ТОЛЬКО ОДИН probe блок!
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8071
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /ready
+              path: /healthz
               port: 8071
-            initialDelaySeconds: 20    # было 5 → стало 10
+            initialDelaySeconds: 5
             periodSeconds: 5
-            failureThreshold: 6        # даём 30 секунд на старт
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 8071
-            initialDelaySeconds: 20    # было 10 → стало 15
-            periodSeconds: 10
-            failureThreshold: 6        # даём целую минуту на восстановление
-          startupProbe:                  # ← ЭТО ГЛАВНОЕ! Добавь обязательно
-            httpGet:
-              path: /healthz
-              port: 8071
-            initialDelaySeconds: 20
-            periodSeconds: 5
-            failureThreshold: 12       # 60 секунд на полный старт
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 8071
-            initialDelaySeconds: 20
-            periodSeconds: 10
-            failureThreshold: 3
-          resources:
-            requests:
-              cpu: 150m
-              memory: 128Mi
-            limits:
-              cpu: 300m
-              memory: 256Mi
