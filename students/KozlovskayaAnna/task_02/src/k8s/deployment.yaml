@@ -60,72 +60,72 @@ spec:
 
       containers:
         - name: web08
-        image: annkrq/web08:latest
-        imagePullPolicy: IfNotPresent
-        
-        ports:
-        - name: http
-          containerPort: 8094
-          protocol: TCP
+          image: annkrq/web08:latest
+          imagePullPolicy: IfNotPresent
 
-        # Переменные окружения из ConfigMap
-        envFrom:
-          - configMapRef:
-              name: app-as63-220012-v8-config
+          ports:
+            - name: http
+              containerPort: 8094
+              protocol: TCP
 
-        # Переменные окружения из Secret
-        env:
-          - name: STU_ID
-          valueFrom:
-            secretKeyRef:
-              name: app-as63-220012-v8-secret
-              key: STU_ID
-          - name: API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: app-as63-220012-v8-secret
-                key: API_KEY
+          # Переменные окружения из ConfigMap
+          envFrom:
+            - configMapRef:
+                name: app-as63-220012-v8-config
 
-        # Ресурсы согласно варианту 8: cpu=200m, mem=256Mi
-        resources:
-          requests:
-            cpu: 200m
-            memory: 256Mi
-          limits:
-            cpu: 400m
-            memory: 512Mi
-        
-        # Liveness probe - проверка жизнеспособности
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: http
-            scheme: HTTP
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          timeoutSeconds: 3
-          successThreshold: 1
-          failureThreshold: 3
-        
-        # Readiness probe - проверка готовности
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: http
-            scheme: HTTP
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 3
-          successThreshold: 1
-          failureThreshold: 3
-        
-        # Security context для контейнера
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-          capabilities:
-            drop:
-              - ALL
+          # Переменные окружения из Secret
+          env:
+            - name: STU_ID
+              valueFrom:
+                secretKeyRef:
+                  name: app-as63-220012-v8-secret
+                  key: STU_ID
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-as63-220012-v8-secret
+                  key: API_KEY
+
+          # Ресурсы согласно варианту 8: cpu=200m, mem=256Mi
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 400m
+              memory: 512Mi
+
+          # Liveness probe - проверка жизнеспособности
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+
+          # Readiness probe - проверка готовности
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+
+          # Security context для контейнера
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
 
       # Настройка терминации
       terminationGracePeriodSeconds: 30
