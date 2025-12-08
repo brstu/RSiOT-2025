@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-as63-220016-v12
+  namespace: app12
+  labels:
+    app: web12
+    org.bstu.student.fullname: "Кульбеда Кирилл Александрович"
+    org.bstu.student.id: "220016"
+    org.bstu.group: "АС-63"
+    org.bstu.variant: "12"
+    org.bstu.course: "RSiOT"
+    org.bstu.owner: "fr0ogi"
+    org.bstu.student.slug: "as63-220016-v12"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web12
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: web12
+    spec:
+      containers:
+      - name: web12
+        image: web12:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8074
+        env:
+        - name: STU_ID
+          value: "220016"
+        - name: STU_GROUP
+          value: "АС-63"
+        - name: STU_VARIANT
+          value: "12"
+        # Минимальные probes (упрощенные)
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8074
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8074
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        # Базовые ресурсы (без оптимизации)
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
