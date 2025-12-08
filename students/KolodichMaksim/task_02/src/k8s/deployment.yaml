@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  namespace: as-63-220013-v09
+  labels:
+    app: app
+    org.bstu.student.slug: as-63-220013-v09
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+        org.bstu.student.slug: as-63-220013-v09
+    spec:
+      containers:
+        - name: app
+          image: app:stu-220013-v09
+          imagePullPolicy: Never  # потому что образ локальный (kind load)
+          ports:
+            - containerPort: 8071
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: redis-secret
+          # Оставляем ТОЛЬКО ОДИН probe блок!
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8071
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8071
+            initialDelaySeconds: 5
+            periodSeconds: 5
