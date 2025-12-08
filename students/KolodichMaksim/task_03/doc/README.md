@@ -14,7 +14,7 @@
 <p align="right">Группы as-63</p>
 <p align="right">Колодич Максим Павлович</p>
 <p align="right"><strong>Проверил:</strong></p>
-<p align="right">(преподаватель)</p>
+<p align="right">Несюк А.Н.</p>
 <br><br><br><br><br>
 <p align="center"><strong>Брест 2025</strong></p>
 
