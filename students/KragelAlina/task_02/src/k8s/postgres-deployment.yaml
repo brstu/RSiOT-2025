@@ -1,0 +1,44 @@
+# k8s/postgres-deployment.yaml (зависимость Postgres как Deployment + Service)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: app10
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16-alpine
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: web10-secret
+              key: PG_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: web10-config
+              key: PG_DB
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: web10-config
+              key: PG_USER
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-storage
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: data-v10
