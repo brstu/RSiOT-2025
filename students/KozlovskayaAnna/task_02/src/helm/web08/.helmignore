@@ -1,0 +1,5 @@
+# Паттерны для игнорирования при упаковке Helm chart
+.git/
+.gitignore
+*.md
+.DS_Store
