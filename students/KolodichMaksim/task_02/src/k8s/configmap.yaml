@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-web09
+  namespace: app09
+  labels:
+    app: web09
+    org.bstu.student.slug: as-63-220013-v09
+data:
+  PORT: "8071"
+  REDIS_HOST: redis-as-63-220013-v09
+  REDIS_PORT: "6379"
+  STU_ID: "220013"
+  STU_GROUP: "as-63"
+  STU_VARIANT: "09"
