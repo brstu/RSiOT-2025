@@ -1,0 +1,32 @@
+# Service для доступа к приложению (NodePort согласно варианту)
+apiVersion: v1
+kind: Service
+metadata:
+  name: net-as63-220012-v8
+  namespace: app08
+  labels:
+    org.bstu.student.fullname: "KozlovskayaAnnaGennadyevna"
+    org.bstu.student.id: "220012"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "8"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "annkrq"
+    org.bstu.student.slug: "as63-220012-v8"
+    app.kubernetes.io/name: web08
+    app.kubernetes.io/component: service
+  annotations:
+    org.bstu.student.fullname: "Козловская Анна Геннадьевна"
+    org.bstu.student.email: "AS006309@g.bstu.by"
+    org.bstu.lab: "task_02"
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: web08
+    app.kubernetes.io/instance: as63-220012-v8
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8094
+    targetPort: http
+    # NodePort будет назначен автоматически в диапазоне 30000-32767
+  sessionAffinity: None

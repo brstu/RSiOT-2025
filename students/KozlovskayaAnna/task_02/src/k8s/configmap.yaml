@@ -1,0 +1,26 @@
+# ConfigMap для конфигурации приложения
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-as63-220012-v8-config
+  namespace: app08
+  labels:
+    org.bstu.student.fullname: "KozlovskayaAnnaGennadyevna"
+    org.bstu.student.id: "220012"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "8"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "annkrq"
+    org.bstu.student.slug: "as63-220012-v8"
+    app.kubernetes.io/name: web08
+    app.kubernetes.io/component: config
+  annotations:
+    org.bstu.student.fullname: "Козловская Анна Геннадьевна"
+data:
+  APP_PORT: "8094"
+  APP_NAME: "web08"
+  APP_NAMESPACE: "app08"
+  STU_GROUP: "АС-63"
+  STU_VARIANT: "8"
+  LOG_LEVEL: "info"
+  ENVIRONMENT: "production"

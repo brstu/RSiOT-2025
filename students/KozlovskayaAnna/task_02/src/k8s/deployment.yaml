@@ -1,0 +1,132 @@
+# Deployment для приложения web08
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-as63-220012-v8
+  namespace: app08
+  labels:
+    org.bstu.student.fullname: "KozlovskayaAnnaGennadyevna"
+    org.bstu.student.id: "220012"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "8"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "annkrq"
+    org.bstu.student.slug: "as63-220012-v8"
+    app.kubernetes.io/name: web08
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/version: "1.0.0"
+  annotations:
+    org.bstu.student.fullname: "Козловская Анна Геннадьевна"
+    org.bstu.student.email: "AS006309@g.bstu.by"
+    org.bstu.lab: "task_02"
+    kubernetes.io/description: "HTTP сервис для демонстрации базового деплоя в Kubernetes"
+spec:
+  # Количество реплик согласно варианту 8
+  replicas: 3
+  
+  # Стратегия обновления RollingUpdate
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: web08
+      app.kubernetes.io/instance: as63-220012-v8
+  
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: web08
+        app.kubernetes.io/instance: as63-220012-v8
+        app.kubernetes.io/component: backend
+        org.bstu.student.slug: "as63-220012-v8"
+        org.bstu.variant: "8"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8094"
+        prometheus.io/path: "/health"
+    spec:
+      # Запуск от непривилегированного пользователя
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      
+      containers:
+      - name: web08
+        image: annkrq/web08:latest
+        imagePullPolicy: IfNotPresent
+        
+        ports:
+        - name: http
+          containerPort: 8094
+          protocol: TCP
+        
+        # Переменные окружения из ConfigMap
+        envFrom:
+        - configMapRef:
+            name: app-as63-220012-v8-config
+        
+        # Переменные окружения из Secret
+        env:
+        - name: STU_ID
+          valueFrom:
+            secretKeyRef:
+              name: app-as63-220012-v8-secret
+              key: STU_ID
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-as63-220012-v8-secret
+              key: API_KEY
+        
+        # Ресурсы согласно варианту 8: cpu=200m, mem=256Mi
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 400m
+            memory: 512Mi
+        
+        # Liveness probe - проверка жизнеспособности
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        
+        # Readiness probe - проверка готовности
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        
+        # Security context для контейнера
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+      
+      # Настройка терминации
+      terminationGracePeriodSeconds: 30
+      
+      # Политика перезапуска
+      restartPolicy: Always
