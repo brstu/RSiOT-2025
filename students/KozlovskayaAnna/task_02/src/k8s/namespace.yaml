@@ -1,3 +1,4 @@
+---
 # Namespace для приложения
 apiVersion: v1
 kind: Namespace

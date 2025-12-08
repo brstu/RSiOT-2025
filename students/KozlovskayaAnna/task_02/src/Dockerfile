@@ -46,7 +46,7 @@ LABEL org.bstu.student.fullname="Козловская Анна Геннадье�
       maintainer="AS006309@g.bstu.by"
 
 # Устанавливаем CA сертификаты
-RUN apk --no-cache add ca-certificates tzdata && \
+RUN apk --no-cache add ca-certificates=20240705-r0 tzdata=2024a-r0 && \
     rm -rf /var/cache/apk/*
 
 # Создаем непривилегированного пользователя

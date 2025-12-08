@@ -1,3 +1,4 @@
+---
 # Service для доступа к приложению (NodePort согласно варианту)
 apiVersion: v1
 kind: Service
@@ -24,9 +25,9 @@ spec:
     app.kubernetes.io/name: web08
     app.kubernetes.io/instance: as63-220012-v8
   ports:
-  - name: http
-    protocol: TCP
-    port: 8094
-    targetPort: http
+    - name: http
+      protocol: TCP
+      port: 8094
+      targetPort: http
     # NodePort будет назначен автоматически в диапазоне 30000-32767
   sessionAffinity: None

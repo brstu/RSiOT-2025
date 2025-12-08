@@ -83,7 +83,8 @@ configMap:
 secret:
   data:
     STU_ID: "MjIwMDEy"  # 220012
-    API_KEY: "ZGVtby1hcGkta2V5LWFzNjMtMjIwMDEyLXY4"  # demo-api-key-as63-220012-v8
+    # demo-api-key-as63-220012-v8
+    API_KEY: "ZGVtby1hcGkta2V5LWFzNjMtMjIwMDEyLXY4"
 
 # Security context
 securityContext:

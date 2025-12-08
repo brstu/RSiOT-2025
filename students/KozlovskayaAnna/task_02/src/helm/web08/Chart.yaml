@@ -1,3 +1,4 @@
+---
 apiVersion: v2
 name: web08
 description: Helm chart для web08 - Лабораторная работа №02
