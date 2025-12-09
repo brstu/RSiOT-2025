@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: state01
+  labels:
+    app: postgres
+    org.bstu.student.fullname: "Vashchuk_Anatoli_Valerevich"
+    org.bstu.student.id: "220036"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "1"
+    org.bstu.course: RSIOT
+    org.bstu.owner: "skevet-avramuk"
+    org.bstu.student.slug: "AS-63-220036-v1"
+spec:
+  schedule: "*/15 * * * *"  # каждые 15 минут
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: pg-backup
+              image: postgres:16
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret
+                      key: POSTGRES_PASSWORD
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  mkdir -p /backup
+                  pg_dump -h postgres-0.postgres.state01.svc.cluster.local -U postgres -d postgresdb > /backup/db-backup-$(date +%F-%H%M).sql
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+          volumes:
+            - name: backup
+              persistentVolumeClaim:
+                claimName: postgres-backup-pvc
