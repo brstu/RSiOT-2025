@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-postgres-pvc
+  namespace: state-as63-220028-v23
+  labels:
+    app: postgres-backup
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220028"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "23"
+    org.bstu.owner: "alexsandro007"
+    org.bstu.student.slug: "AS63-220028-v23"
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 1Gi

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-postgres-headless
+  namespace: state-as63-220028-v23
+  labels:
+    app: postgres
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220028"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "23"
+    org.bstu.owner: "alexsandro007"
+    org.bstu.student.slug: "AS63-220028-v23"
+  annotations:
+    org.bstu.student.fullname: "Ярмола Александр Олегович"
+spec:
+  clusterIP: None  # Headless Service для стабильных DNS имён
+  selector:
+    app: postgres
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
