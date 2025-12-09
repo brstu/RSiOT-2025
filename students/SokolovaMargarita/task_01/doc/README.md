@@ -145,24 +145,9 @@ docker compose -f .\src\docker-compose.yml logs --no-color
 docker compose -f .\src\docker-compose.yml down -v
 ```
 
-## Замечания по оформлению и сдаче
-
-- Убедитесь, что в `Dockerfile` и `docker-compose.yml` актуальные значения `org.bstu.*` labels и `org.bstu.student.slug` совпадают с README.
-- Перед отправкой PR замените плейсхолдер Email и, при необходимости, ОС/версии Docker в разделе Метаданные студента.
-
 ## Файлы проекта
 
 - `src/src/Dockerfile` — Dockerfile
 - `src/docker-compose.yml` — Compose
 - `src/src/server.js` — приложение
 - `src/src/package.json` — package manifest
-
----
-
-Если хотите, я могу:
-
-- дополнительно добавить в `docker-compose.yml` переменные окружения STU_ID/STU_GROUP/STU_VARIANT;
-- сгенерировать `.dockerignore` или улучшить Dockerfile для уменьшения размера образа;
-- собрать и запустить окружение у себя (только если разрешите запуск команд локально).
-
-Готов продолжать — скажите, что делать дальше.
