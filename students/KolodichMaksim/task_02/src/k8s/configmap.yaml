@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: as-63-220013-v09
+data:
+  PORT: "8071"
+  STU_ID: "220013"
+  STU_GROUP: "as-63"
+  STU_VARIANT: "09"
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"

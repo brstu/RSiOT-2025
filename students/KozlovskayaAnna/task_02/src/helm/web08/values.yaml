@@ -1,0 +1,106 @@
+---
+# Значения по умолчанию для Helm chart web08
+
+# Метаданные студента
+student:
+  fullname: "Козловская Анна Геннадьевна"
+  id: "220012"
+  group: "АС-63"
+  variant: "8"
+  email: "AS006309@g.bstu.by"
+  owner: "annkrq"
+  slug: "as63-220012-v8"
+  course: "RSIOT"
+
+# Настройки приложения
+app:
+  name: web08
+  namespace: app08
+  port: 8094
+
+# Настройки репликации
+replicaCount: 3
+
+# Настройки образа
+image:
+  repository: annkrq/web08
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+# Стратегия обновления
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+
+# Ресурсы (согласно варианту 8)
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 400m
+    memory: 512Mi
+
+# Liveness probe
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Readiness probe
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Service настройки
+service:
+  type: NodePort
+  port: 8094
+  targetPort: http
+
+# ConfigMap данные
+configMap:
+  data:
+    APP_PORT: "8094"
+    APP_NAME: "web08"
+    APP_NAMESPACE: "app08"
+    STU_GROUP: "АС-63"
+    STU_VARIANT: "8"
+    LOG_LEVEL: "info"
+    ENVIRONMENT: "production"
+
+# Secret данные (base64)
+secret:
+  data:
+    STU_ID: "MjIwMDEy"  # 220012
+    # demo-api-key-as63-220012-v8
+    API_KEY: "ZGVtby1hcGkta2V5LWFzNjMtMjIwMDEyLXY4"
+
+# Security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+# Настройки контейнера
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+
+# Настройки терминации
+terminationGracePeriodSeconds: 30
