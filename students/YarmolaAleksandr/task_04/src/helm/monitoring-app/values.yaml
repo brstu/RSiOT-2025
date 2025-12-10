@@ -1,3 +1,4 @@
+---
 # Default values for monitoring-app
 # Параметры для варианта 23
 
@@ -41,7 +42,7 @@ service:
   type: ClusterIP
   port: 80
   targetPort: 8080
-  annotations: {}
+  annotations: { }
   labels:
     app: monitoring-app
     monitoring: "true"
@@ -50,13 +51,13 @@ service:
 ingress:
   enabled: false
   className: nginx
-  annotations: {}
+  annotations: { }
   hosts:
     - host: monitoring-app.local
       paths:
         - path: /
           pathType: Prefix
-  tls: []
+  tls: [ ]
 
 # Ресурсы
 resources:
@@ -106,38 +107,47 @@ prometheusRule:
         # Alert: доступность ниже 99.5%
         - alert: LowAvailability
           expr: |
-            (sum(rate(app23_http_requests_total{status!~"5.."}[5m])) / sum(rate(app23_http_requests_total[5m]))) * 100 < 99.5
+            (sum(rate(app23_http_requests_total{status!~"5.."}[5m]))
+            / sum(rate(app23_http_requests_total[5m]))) * 100 < 99.5
           for: 5m
           labels:
             severity: critical
             variant: "23"
           annotations:
             summary: "Доступность ниже SLO 99.5%"
-            description: "Текущая доступность {{ $value }}% (требуется ≥99.5%)"
-        
+            description: >
+              Текущая доступность {{ $value }}%
+              (требуется ≥99.5%)
+
         # Alert: 5xx ошибок больше 1% за 5 минут
         - alert: HighErrorRate5xx
           expr: |
-            (sum(rate(app23_http_requests_total{status=~"5.."}[5m])) / sum(rate(app23_http_requests_total[5m]))) * 100 > 1
+            (sum(rate(app23_http_requests_total{status=~"5.."}[5m]))
+            / sum(rate(app23_http_requests_total[5m]))) * 100 > 1
           for: 5m
           labels:
             severity: warning
             variant: "23"
           annotations:
             summary: "Процент 5xx ошибок превышает 1%"
-            description: "5xx ошибок: {{ $value }}% за последние 5 минут (порог >1%)"
-        
+            description: >
+              5xx ошибок: {{ $value }}% за последние 5 минут
+              (порог >1%)
+
         # Alert: p95 latency превышает 200ms
         - alert: HighLatencyP95
           expr: |
-            histogram_quantile(0.95, sum(rate(app23_http_request_duration_seconds_bucket[5m])) by (le)) > 0.2
+            histogram_quantile(0.95,
+            sum(rate(app23_http_request_duration_seconds_bucket[5m]))
+            by (le)) > 0.2
           for: 5m
           labels:
             severity: warning
             variant: "23"
           annotations:
             summary: "p95 latency превышает 200ms"
-            description: "p95 latency: {{ $value }}s (требуется ≤0.2s)"
+            description: >
+              p95 latency: {{ $value }}s (требуется ≤0.2s)
 
 # Autoscaling
 autoscaling:
@@ -147,10 +157,10 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
 
 # Node selector
-nodeSelector: {}
+nodeSelector: { }
 
 # Tolerations
-tolerations: []
+tolerations: [ ]
 
 # Affinity
-affinity: {}
+affinity: { }

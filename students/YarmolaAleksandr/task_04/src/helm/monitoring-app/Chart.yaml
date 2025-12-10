@@ -1,3 +1,4 @@
+---
 apiVersion: v2
 name: monitoring-app
 description: Flask приложение с метриками Prometheus для мониторинга

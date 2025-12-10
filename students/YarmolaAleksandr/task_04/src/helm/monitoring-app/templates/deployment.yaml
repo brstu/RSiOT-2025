@@ -1,53 +1,54 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "monitoring-app.fullname" . }}
-  namespace: {{ .Values.namespace }}
+  name: {{include "monitoring-app.fullname" .}}
+  namespace: {{.Values.namespace}}
   labels:
-    {{- include "monitoring-app.labels" . | nindent 4 }}
+    {{- include "monitoring-app.labels" . | nindent 4}}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{.Values.replicaCount}}
   selector:
     matchLabels:
-      {{- include "monitoring-app.selectorLabels" . | nindent 6 }}
+      {{- include "monitoring-app.selectorLabels" . | nindent 6}}
   template:
     metadata:
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: "{{ .Values.metrics.port }}"
-        prometheus.io/path: "{{ .Values.metrics.path }}"
+        prometheus.io/port: "{{.Values.metrics.port}}"
+        prometheus.io/path: "{{.Values.metrics.path}}"
       labels:
-        {{- include "monitoring-app.selectorLabels" . | nindent 8 }}
+        {{- include "monitoring-app.selectorLabels" . | nindent 8}}
         monitoring: "true"
     spec:
       containers:
-      - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        ports:
-        - name: http
-          containerPort: {{ .Values.service.targetPort }}
-          protocol: TCP
-        env:
-        - name: STUDENT_ID
-          value: {{ .Values.student.id | quote }}
-        - name: STUDENT_GROUP
-          value: {{ .Values.student.group | quote }}
-        - name: VARIANT
-          value: {{ .Values.student.variant | quote }}
-        - name: PORT
-          value: "{{ .Values.service.targetPort }}"
-        {{- if .Values.livenessProbe }}
-        livenessProbe:
-          {{- toYaml .Values.livenessProbe | nindent 10 }}
-        {{- end }}
-        {{- if .Values.readinessProbe }}
-        readinessProbe:
-          {{- toYaml .Values.readinessProbe | nindent 10 }}
-        {{- end }}
-        resources:
-          {{- toYaml .Values.resources | nindent 10 }}
-      {{- with .Values.nodeSelector }}
+        - name: {{.Chart.Name}}
+          image: "{{.Values.image.repository}}:{{.Values.image.tag | default .Chart.AppVersion}}"
+          imagePullPolicy: {{.Values.image.pullPolicy}}
+          ports:
+            - name: http
+              containerPort: {{.Values.service.targetPort}}
+              protocol: TCP
+          env:
+            - name: STUDENT_ID
+              value: {{.Values.student.id | quote}}
+            - name: STUDENT_GROUP
+              value: {{.Values.student.group | quote}}
+            - name: VARIANT
+              value: {{.Values.student.variant | quote}}
+            - name: PORT
+              value: "{{.Values.service.targetPort}}"}"
+          {{- if .Values.livenessProbe}}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12}}
+          {{- end}}
+          {{- if .Values.readinessProbe}}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12}}
+          {{- end}}
+          resources:
+            {{- toYaml .Values.resources | nindent 12}}
+      {{- with .Values.nodeSelector}}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}

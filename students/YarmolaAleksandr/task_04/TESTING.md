@@ -18,6 +18,7 @@
 **Password:** s5jn5b37lzXKU7LUBfheMovpdEvQJWXyoIESsN5C
 
 Команда для port-forward:
+
 ```powershell
 kubectl port-forward svc/monitoring-grafana 3000:80 -n monitoring
 ```
@@ -27,6 +28,7 @@ kubectl port-forward svc/monitoring-grafana 3000:80 -n monitoring
 **URL:** http://localhost:9090
 
 Команда для port-forward:
+
 ```powershell
 kubectl port-forward svc/monitoring-kube-prometheus-prometheus 9090:9090 -n monitoring
 ```
@@ -86,7 +88,7 @@ while ($true) {
 3. Найдите target `monitoring-app/monitoring-app-monitoring-app`
 4. Убедитесь, что Status = UP
 
-### Тестовые запросы в Prometheus:
+### Тестовые запросы в Prometheus
 
 #### Rate запросов
 
@@ -132,9 +134,11 @@ histogram_quantile(0.95, sum(rate(app23_http_request_duration_seconds_bucket[5m]
 1. Откройте Grafana → Create → Dashboard
 2. Add visualization
 3. Query:
+
    ```promql
    (sum(rate(app23_http_requests_total{status!~"5.."}[5m])) / sum(rate(app23_http_requests_total[5m]))) * 100
    ```
+
 4. Title: "Availability (SLO 99.5%)"
 5. Add threshold: Value = 99.5, Mode = Base
 
@@ -142,9 +146,11 @@ histogram_quantile(0.95, sum(rate(app23_http_request_duration_seconds_bucket[5m]
 
 1. Add new panel
 2. Query:
+
    ```promql
    histogram_quantile(0.95, sum(rate(app23_http_request_duration_seconds_bucket[5m])) by (le))
    ```
+
 3. Title: "p95 Latency (SLO ≤200ms)"
 4. Unit: seconds (s)
 5. Add threshold: Value = 0.2, Mode = Base
@@ -153,9 +159,11 @@ histogram_quantile(0.95, sum(rate(app23_http_request_duration_seconds_bucket[5m]
 
 1. Add new panel
 2. Query:
+
    ```promql
    (sum(rate(app23_http_requests_total{status=~"5.."}[5m])) / sum(rate(app23_http_requests_total[5m]))) * 100
    ```
+
 3. Title: "5xx Error Rate (Alert >1%)"
 4. Unit: percent (0-100)
 5. Add threshold: Value = 1, Mode = Base

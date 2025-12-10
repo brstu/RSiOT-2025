@@ -664,7 +664,7 @@ kubectl rollout restart deployment/monitoring-app -n monitoring-app
 
 ## 🎯 Соответствие критериям приёмки
 
-### ✅ Обязательные критерии:
+### ✅ Обязательные критерии
 
 | Критерий | Статус | Подтверждение |
 |----------|--------|---------------|
@@ -678,7 +678,7 @@ kubectl rollout restart deployment/monitoring-app -n monitoring-app
 | 2-3 дашборда | ✅ | Графики: Availability, Latency, Error Rate |
 | 1-2 алерта по SLO | ✅ | 3 алерта: LowAvailability, HighErrorRate5xx, HighLatencyP95 |
 
-### ✅ Дополнительно реализовано:
+### ✅ Дополнительно реализовано
 
 - ✅ Helm chart с параметризацией (values.yaml)
 - ✅ Templates: Deployment, Service, ServiceMonitor, PrometheusRule, _helpers.tpl
@@ -698,20 +698,20 @@ kubectl rollout restart deployment/monitoring-app -n monitoring-app
 
 В рамках данной работы реализованы компоненты **Observability**:
 
-**1. Метрики (Metrics)**
+#### 1. Метрики (Metrics)
 
 - Prometheus собирает метрики из приложения через endpoint `/metrics`
 - Метрики с префиксом `app23_` согласно варианту 23
 - Counter: `app23_http_requests_total` - количество запросов
 - Histogram: `app23_http_request_duration_seconds` - время обработки
 
-**2. Дашборды (Dashboards)**
+#### 2. Дашборды (Dashboards)
 
 - Grafana визуализирует метрики в реальном времени
 - 3 категории графиков: Availability, Latency, Error Rate
 - PromQL запросы для расчёта SLO метрик
 
-**3. Алертинг (Alerting)**
+#### 3. Алертинг (Alerting)
 
 - PrometheusRule с 3 алертами по SLO
 - Alertmanager для маршрутизации уведомлений
@@ -758,7 +758,7 @@ spec:
 
 ### Типичные проблемы и решения
 
-**Проблема 1: Метрики не собираются**
+#### Проблема 1: Метрики не собираются
 
 ```bash
 # Проверить ServiceMonitor
@@ -769,7 +769,7 @@ kubectl port-forward svc/monitoring-kube-prometheus-prometheus 9090:9090 -n moni
 # Открыть: http://localhost:9090/targets
 ```
 
-**Проблема 2: Алерты не срабатывают**
+#### Проблема 2: Алерты не срабатывают
 
 ```bash
 # Проверить PrometheusRule
@@ -782,7 +782,7 @@ kubectl get prometheusrule -n monitoring-app -o yaml
 kubectl logs -l app.kubernetes.io/name=alertmanager -n monitoring
 ```
 
-**Проблема 3: Helm chart не деплоится**
+#### Проблема 3: Helm chart не деплоится
 
 ```powershell
 # Линтинг чарта
