@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web19
+  namespace: app19
+  labels:
+    org.bstu.student.fullname: "Sokolova-Margarita-Aleksandrovna"
+    org.bstu.student.id: "220024"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "19"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "soko1ova"
+    org.bstu.student.slug: "as-63-220024-v19"
+spec:
+  ingressClassName: nginx  # Новое поле здесь (удалите annotation)
+  rules:
+    - host: web19.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web19
+                port:
+                  number: 80
