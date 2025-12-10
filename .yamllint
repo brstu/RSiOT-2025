@@ -1,0 +1,22 @@
+---
+extends: default
+
+rules:
+  document-start:
+    present: false
+  line-length:
+    max: 120
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+  indentation:
+    spaces: 2
+    indent-sequences: true
+
+ignore: |
+  **/templates/**
+  **/.helm/**
+  **/charts/**
