@@ -51,7 +51,7 @@ helm template monitoring-app ./src/helm/monitoring-app
 
 Все крупные Helm charts (включая официальные от Kubernetes, Prometheus, Grafana и т.д.) имеют те же "ошибки" yamllint, потому что **yamllint не предназначен для проверки Helm templates**.
 
-### Примеры официальных charts с Go template синтаксисом:
+### Примеры официальных charts с Go template синтаксисом
 
 - [prometheus-community/kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack/templates)
 - [grafana/grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana/templates)
