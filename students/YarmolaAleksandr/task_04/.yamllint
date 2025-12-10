@@ -17,6 +17,6 @@ rules:
     indent-sequences: true
 
 ignore: |
-  **/templates/**
-  **/.helm/**
-  **/charts/**
+  templates/
+  .helm/
+  charts/
