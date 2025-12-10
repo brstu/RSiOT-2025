@@ -1,3 +1,4 @@
+# yamllint disable rule:syntax
 ---
 apiVersion: apps/v1
 kind: Deployment
