@@ -278,7 +278,7 @@ minikube delete
 
 Вывод команды `kubectl describe pod` показывает настроенные health checks:
 
-- **Liveness Probe:** 
+- **Liveness Probe:**
   - http-get http://:8043/live
   - delay=10s, timeout=1s, period=10s
   - success=1, failure=3
@@ -326,12 +326,14 @@ minikube delete
 Демонстрация стратегии RollingUpdate при обновлении Deployment:
 
 - **Стратегия:**
+
   ```yaml
   type: RollingUpdate
   rollingUpdate:
     maxSurge: 1
     maxUnavailable: 0
   ```
+
 - **Процесс обновления:**
   - Старые поды: app-web23-764569654d (старая версия)
   - Новые поды: app-web23-7b844c54c9 (новая версия)
