@@ -1,28 +1,24 @@
-# yamllint disable
-{{- if .Values.serviceMonitor.enabled}}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{include "monitoring-app.fullname" .}}
-  namespace: {{.Values.namespace}}
+  name: monitoring-app
+  namespace: monitoring-app
   labels:
-    {{- include "monitoring-app.labels" . | nindent 4}}
-  {{- with .Values.serviceMonitor.labels}}
-    {{- toYaml . | nindent 4}}
-  {{- end}}
+    app: monitoring-app
+    release: monitoring
 spec:
   selector:
     matchLabels:
-      {{- include "monitoring-app.selectorLabels" . | nindent 6}}
+      app: monitoring-app
   namespaceSelector:
     matchNames:
-      - {{.Values.namespace}}
+      - monitoring-app
   endpoints:
     - port: http
-      path: {{.Values.metrics.path}}
-      interval: {{.Values.serviceMonitor.interval}}
-      scrapeTimeout: {{.Values.serviceMonitor.scrapeTimeout}}
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
       relabelings:
         - sourceLabels: [__meta_kubernetes_pod_name]
           targetLabel: pod
@@ -30,4 +26,3 @@ spec:
           targetLabel: namespace
         - sourceLabels: [__meta_kubernetes_pod_label_app]
           targetLabel: app
-{{- end}}

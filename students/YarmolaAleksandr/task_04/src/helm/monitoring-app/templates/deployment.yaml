@@ -1,65 +1,63 @@
-# yamllint disable
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{include "monitoring-app.fullname" .}}
-  namespace: {{.Values.namespace}}
+  name: monitoring-app
+  namespace: monitoring-app
   labels:
-    {{- include "monitoring-app.labels" . | nindent 4}}
+    app: monitoring-app
 spec:
-  replicas: {{.Values.replicaCount}}
+  replicas: 2
   selector:
     matchLabels:
-      {{- include "monitoring-app.selectorLabels" . | nindent 6}}
+      app: monitoring-app
   template:
     metadata:
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: "{{.Values.metrics.port}}"
-        prometheus.io/path: "{{.Values.metrics.path}}"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
       labels:
-        {{- include "monitoring-app.selectorLabels" . | nindent 8}}
+        app: monitoring-app
         monitoring: "true"
     spec:
       containers:
-        - name: {{.Chart.Name}}
-          image: >
-            {{.Values.image.repository}}:{{.Values.image.tag |
-            default .Chart.AppVersion}}
-          imagePullPolicy: {{.Values.image.pullPolicy}}
+        - name: monitoring-app
+          image: monitoring-app:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
-              containerPort: {{.Values.service.targetPort}}
+              containerPort: 8080
               protocol: TCP
           env:
             - name: STUDENT_ID
-              value: {{.Values.student.id | quote}}
+              value: "220028"
             - name: STUDENT_GROUP
-              value: {{.Values.student.group | quote}}
+              value: "АС-63"
             - name: VARIANT
-              value: {{.Values.student.variant | quote}}
+              value: "23"
             - name: PORT
-              value: "{{.Values.service.targetPort}}"}"
-          {{- if .Values.livenessProbe}}
+              value: "8080"
           livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12}}
-          {{- end}}
-          {{- if .Values.readinessProbe}}
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
           readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12}}
-          {{- end}}
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
           resources:
-            {{- toYaml .Values.resources | nindent 12}}
-      {{- with .Values.nodeSelector}}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 256Mi

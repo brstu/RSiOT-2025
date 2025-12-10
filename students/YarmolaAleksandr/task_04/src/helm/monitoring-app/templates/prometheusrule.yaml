@@ -1,32 +1,50 @@
-# yamllint disable
-{{- if .Values.prometheusRule.enabled}}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: {{include "monitoring-app.fullname" .}}
-  namespace: {{.Values.namespace}}
+  name: monitoring-app
+  namespace: monitoring-app
   labels:
-    {{- include "monitoring-app.labels" . | nindent 4}}
-  {{- with .Values.prometheusRule.labels}}
-    {{- toYaml . | nindent 4}}
-  {{- end}}
+    app: monitoring-app
+    release: monitoring
 spec:
   groups:
-  {{- range .Values.prometheusRule.groups}}
-    - name: {{.name}}
-      interval: {{.interval}}
+    - name: monitoring-app-alerts
+      interval: 30s
       rules:
-      {{- range .rules}}
-        - alert: {{.alert}}
-          expr: {{.expr | nindent 12}}
-          {{- if .for}}
-          for: {{.for}}
-          {{- end}}
+        - alert: LowAvailability
+          expr: |
+            (sum(rate(app23_http_requests_total{status!~"5.."}[5m]))
+            / sum(rate(app23_http_requests_total[5m]))) * 100 < 99.5
+          for: 5m
           labels:
-            {{- toYaml .labels | nindent 12}}
+            severity: critical
+            variant: "23"
           annotations:
-            {{- toYaml .annotations | nindent 12}}
-      {{- end}}
-  {{- end}}
-{{- end}}
+            summary: "Доступность ниже SLO 99.5%"
+            description: >
+              Текущая доступность ниже требуемого уровня 99.5%
+        - alert: HighErrorRate5xx
+          expr: |
+            (sum(rate(app23_http_requests_total{status=~"5.."}[5m]))
+            / sum(rate(app23_http_requests_total[5m]))) * 100 > 1
+          for: 5m
+          labels:
+            severity: warning
+            variant: "23"
+          annotations:
+            summary: "Процент 5xx ошибок превышает 1%"
+            description: >
+              5xx ошибок за последние 5 минут превышает порог 1%
+        - alert: HighLatencyP95
+          expr: |
+            histogram_quantile(0.95,
+            sum(rate(app23_http_request_duration_seconds_bucket[5m]))
+            by (le)) > 0.2
+          for: 5m
+          labels:
+            severity: warning
+            variant: "23"
+          annotations:
+            summary: "p95 latency превышает 200ms"
+            description: "p95 latency превышает требуемый уровень 200ms"

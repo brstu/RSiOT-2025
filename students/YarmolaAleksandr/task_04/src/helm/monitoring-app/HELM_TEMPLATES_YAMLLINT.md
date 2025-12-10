@@ -57,7 +57,7 @@ helm template monitoring-app ./src/helm/monitoring-app
 - [grafana/grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana/templates)
 - [bitnami/postgresql](https://github.com/bitnami/charts/tree/main/bitnami/postgresql/templates)
 
-## Рекомендация
+## Рекомендация для CI/CD
 
 Для CI/CD рекомендуется:
 1. Исключить `**/templates/**` из проверки yamllint

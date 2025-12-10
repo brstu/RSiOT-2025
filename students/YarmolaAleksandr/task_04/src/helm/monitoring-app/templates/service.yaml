@@ -1,25 +1,18 @@
-# yamllint disable
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{include "monitoring-app.fullname" .}}
-  namespace: {{.Values.namespace}}
+  name: monitoring-app
+  namespace: monitoring-app
   labels:
-    {{- include "monitoring-app.labels" . | nindent 4}}
-  {{- if .Values.service.labels}}
-    {{- toYaml .Values.service.labels | nindent 4}}
-  {{- end}}
-  {{- if .Values.service.annotations}}
-  annotations:
-    {{- toYaml .Values.service.annotations | nindent 4}}
-  {{- end}}
+    app: monitoring-app
+    monitoring: "true"
 spec:
-  type: {{.Values.service.type}}
+  type: ClusterIP
   ports:
-    - port: {{.Values.service.port}}
+    - port: 80
       targetPort: http
       protocol: TCP
       name: http
   selector:
-    {{- include "monitoring-app.selectorLabels" . | nindent 4}}
+    app: monitoring-app
