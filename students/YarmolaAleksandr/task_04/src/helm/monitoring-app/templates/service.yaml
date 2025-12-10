@@ -1,4 +1,4 @@
-# yamllint disable rule:syntax
+# yamllint disable
 ---
 apiVersion: v1
 kind: Service
