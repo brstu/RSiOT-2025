@@ -1,0 +1,22 @@
+replicaCount: 1
+
+image:
+  repository: lr04-app07
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+metricsPrefix: app07_
+
+resources: {}
+
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+
+prometheusRule:
+  enabled: true
+  namespace: monitoring
