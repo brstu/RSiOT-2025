@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+- ../../k8s
+
+namespace: app23-dev
+
+namePrefix: dev-
+
+commonLabels:
+  environment: development
+
+images:
+- name: alexsandro007/rsiot-lab02
+  newTag: latest
+
+replicas:
+- name: app-web23
+  count: 1
