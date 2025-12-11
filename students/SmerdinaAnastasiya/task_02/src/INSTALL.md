@@ -13,10 +13,10 @@
 
 ```powershell
 # 1. Перейти в каталог
-cd task_02\src
+cd task_02/src
 
 # 2. Запустить автоматическую установку
-.\deploy.ps1 -Action setup
+deploy.ps1 -Action setup
 
 # 3. Дождаться завершения установки
 
@@ -48,8 +48,8 @@ kubectl port-forward -n app41 svc/net-as64-220053-v41 7991:7991
 
 ```
 
-## Пошаговая установка
 
+# Пошаговая установка
 
 
 ## 1. Сборка образа
@@ -63,8 +63,9 @@ docker build -t KotyaLapka/web41:latest ./src
 ```
 
 ## 2. Создание Kind кластера
+docker build -t annkrq/web41:latest ./src
 
-
+```
 
 ```bash
 
@@ -80,15 +81,28 @@ kind load docker-image KotyaLapka/web41:latest --name lab02-cluster
 
 ```
 
+## 3. Загрузка образа в Kind
+
+
+
+```bash
+
+kind load docker-image annkrq/web08:latest --name lab02-cluster
+
+```
+
 ## 4. Установка через Helm
+
+
 
 ```bash
 
 helm upgrade --install web41 ./src/helm/web41 --create-namespace
 
 ```
-
 ## 5. Проверка статуса
+
+
 
 ```bash
 
@@ -101,6 +115,7 @@ kubectl get all -n app41
 ## Health check
 
 
+
 ```bash
 
 kubectl run curl-test --image=curlimages/curl:latest --rm -i --restart=Never -n app41 
@@ -108,8 +123,11 @@ kubectl run curl-test --image=curlimages/curl:latest --rm -i --restart=Never -n 
 ```
 
 ## Ready check
+kubectl run curl-test --image=curlimages/curl:latest --rm -i --restart=Never -n app41 
 
+ -- curl -s http://net-as64-220053-v41:7991/health
 
+```
 
 ```bash
 
@@ -130,14 +148,19 @@ kubectl run curl-test --image=curlimages/curl:latest --rm -i --restart=Never -n 
 # Удаление
 
 ## Удалить приложение
+kubectl run curl-test --image=curlimages/curl:latest --rm -i --restart=Never -n app41 
+
+ -- curl -s http://net-as64-220053-v41:7991/ready
+
+```
 
 ```bash
 
 helm uninstall web41 -n app41
+
 kubectl delete namespace app41
 
 ```
-
 ## Удалить Kind кластер
 
 ```bash
@@ -168,10 +191,34 @@ kubectl get events -n app41 --sort-by='.lastTimestamp'
 
 Проверка resource usage
 
+
+ Статус подов
+
+kubectl get pods -n app41 -o wide
+
+
+
+ Описание Deployment
+
+kubectl describe deployment app-as64-220053-v41 -n app41
+
+
+
+ Проверка events
+
+kubectl get events -n app41 --sort-by='.lastTimestamp'
+
+
+
+ Проверка resource usage
+
 kubectl top pods -n app41
 
 ```
+
 # Makefile команды
+
+
 
 ```bash
 
@@ -194,12 +241,10 @@ make clean          # Удалить все ресурсы
 
 ## Образ не найден
 
-```bash
 
-kind load docker-image annkrq/web41:latest --name lab02-cluster
-
-```
 ## Поды не запускаются
+
+
 
 ```bash
 
@@ -211,11 +256,6 @@ kubectl logs -n app41 -l app.kubernetes.io/name=web41
 
 ## Service недоступен
 
-```bash
-
-kubectl get svc -n app41
-
-kubectl describe svc net-as64-220053-v41 -n app41
 
 ```
 # Контакты

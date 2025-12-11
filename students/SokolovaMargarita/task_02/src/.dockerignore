@@ -1,0 +1,10 @@
+node_modules
+npm-debug.log
+.DS_Store
+.git
+.env
+*.log
+.vscode/
+.idea/
+dist/
+package-lock.json  # Добавь это, чтобы не копировать lock-файл (он может добавлять вес)

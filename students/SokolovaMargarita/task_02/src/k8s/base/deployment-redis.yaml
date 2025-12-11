@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis19
+  namespace: app19
+  labels:
+    org.bstu.student.fullname: "Sokolova-Margarita-Aleksandrovna"
+    org.bstu.student.id: "220024"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "19"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "soko1ova"
+    org.bstu.student.slug: "as-63-220024-v19"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis19
+  template:
+    metadata:
+      labels:
+        app: redis19
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - mountPath: /data
+              name: data
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-v19

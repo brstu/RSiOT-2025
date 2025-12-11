@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web19
+  namespace: app19
+  labels:
+    org.bstu.student.fullname: "Sokolova-Margarita-Aleksandrovna"
+    org.bstu.student.id: "220024"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "19"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "soko1ova"
+    org.bstu.student.slug: "as-63-220024-v19"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web19
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: web19
+    spec:
+      containers:
+        - name: web
+          image: soko1ova/lr01-node-v19:v19
+          ports:
+            - containerPort: 8053
+          envFrom:
+            - configMapRef:
+                name: app-config
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8053
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8053
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "150m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
