@@ -1,0 +1,106 @@
+---
+# Значения по умолчанию для Helm chart web41
+
+# Метаданные студента
+student:
+  fullname: "Смердина Анастасия Валентиновна"
+  id: "220053"
+  group: "АС-64"
+  variant: "41"
+  email: "AS006409@g.bstu.by"
+  owner: "KotyaLapka"
+  slug: "as64-220053-v41"
+  course: "RSIOT"
+
+# Настройки приложения
+app:
+  name: web41
+  namespace: app41
+  port: 7991
+
+# Настройки репликации
+replicaCount: 3
+
+# Настройки образа
+image:
+  repository: KotyaLapka/web41
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+# Стратегия обновления
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+
+# Ресурсы (согласно варианту 41)
+resources:
+  requests:
+    cpu: 75m
+    memory: 64Mi
+  limits:
+    cpu: 150m
+    memory: 128Mi
+
+# Liveness probe
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Readiness probe
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Service настройки
+service:
+  type: NodePort
+  port: 7991
+  targetPort: http
+
+# ConfigMap данные
+configMap:
+  data:
+    APP_PORT: "7991"
+    APP_NAME: "web41"
+    APP_NAMESPACE: "app41"
+    STU_GROUP: "АС-64"
+    STU_VARIANT: "41"
+    LOG_LEVEL: "info"
+    ENVIRONMENT: "production"
+
+# Secret данные (base64)
+secret:
+  data:
+    STU_ID: "MjIwMDUz"  # 220053
+    # demo-api-key-as64-220053-v41
+    API_KEY: "ZGVtby1hcGkta2V5LWFzNjQtMjIwMDUzLXY0MQ=="
+
+# Security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+# Настройки контейнера
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+
+# Настройки терминации
+terminationGracePeriodSeconds: 30

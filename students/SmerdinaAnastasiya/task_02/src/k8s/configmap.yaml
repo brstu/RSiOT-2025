@@ -1,0 +1,27 @@
+---
+# ConfigMap для конфигурации приложения
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-as64-220053-v41-config
+  namespace: app41
+  labels:
+    org.bstu.student.fullname: "SmerdinaAnastasiyaValentynovna"
+    org.bstu.student.id: "220053"
+    org.bstu.group: "AS-64"
+    org.bstu.variant: "41"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "KotyaLapka"
+    org.bstu.student.slug: "as64-220053-v41"
+    app.kubernetes.io/name: web41
+    app.kubernetes.io/component: config
+  annotations:
+    org.bstu.student.fullname: "Смердина Анастасия Валентиновна"
+data:
+  APP_PORT: "7991"
+  APP_NAME: "web41"
+  APP_NAMESPACE: "app41"
+  STU_GROUP: "АС-64"
+  STU_VARIANT: "41"
+  LOG_LEVEL: "info"
+  ENVIRONMENT: "production"
