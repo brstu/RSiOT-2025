@@ -1,0 +1,22 @@
+---
+apiVersion: v2
+name: web41
+description: Helm chart для web41 - Лабораторная работа №02
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - kubernetes
+  - rsiot
+  - lab02
+maintainers:
+  - name: Смердина Анастасия Валентиновна
+    email: AS006424@g.bstu.by
+annotations:
+  org.bstu.student.fullname: "Смердина Анастасия Валентиновна"
+  org.bstu.student.id: "220053"
+  org.bstu.group: "АС-64"
+  org.bstu.variant: "41"
+  org.bstu.course: "RSIOT"
+  org.bstu.owner: "KotyaLapka"
+  org.bstu.student.slug: "as64-220053-v41"
