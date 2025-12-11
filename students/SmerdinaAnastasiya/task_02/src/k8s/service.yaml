@@ -1,0 +1,33 @@
+---
+# Service для доступа к приложению (NodePort согласно варианту)
+apiVersion: v1
+kind: Service
+metadata:
+  name: net-as64-220053-v41
+  namespace: app41
+  labels:
+    org.bstu.student.fullname: "SmerdinaAnastasiyaValentynovna"
+    org.bstu.student.id: "220053"
+    org.bstu.group: "AS-64"
+    org.bstu.variant: "41"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "KotyaLapka"
+    org.bstu.student.slug: "as64-220053-v41"
+    app.kubernetes.io/name: web41
+    app.kubernetes.io/component: service
+  annotations:
+    org.bstu.student.fullname: "Смердина Анастасия Валентиновна"
+    org.bstu.student.email: "AS006409@g.bstu.by"
+    org.bstu.lab: "task_02"
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: web41
+    app.kubernetes.io/instance: as64-220053-v41
+  ports:
+    - name: http
+      protocol: TCP
+      port: 7991
+      targetPort: http
+    # NodePort будет назначен автоматически в диапазоне 30000-32767
+  sessionAffinity: None
