@@ -21,16 +21,16 @@
 - `Dockerfile` — multi‑stage build, non‑root final image.
 - `k8s/` — Kubernetes манифесты: `deployment.yaml`, `service.yaml`, `configmap.yaml`, `secret.yaml`.
 
-Как проверить локально (пример):
+Как проверить локально (пример)
 
-1. Собрать образ:
+Собрать образ:
 
 ```powershell
 cd d:\Orders\Kozlovich\2
 docker build -t rsiot-lr02-kozlovich:local .
 ```
 
-2. Запустить контейнер:
+Запустить контейнер:
 
 ```powershell
 docker run --rm -p 8081:8080 rsiot-lr02-kozlovich:local
