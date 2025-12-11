@@ -16,10 +16,8 @@ resources: {}
 serviceMonitor:
   enabled: true
   namespace: monitoring
-  # Обязательные поля для ServiceMonitor (добавьте):
   interval: 30s
   scrapeTimeout: 10s
-  # Укажите селекторы для вашего приложения
   selector:
     matchLabels:
       app: app07
@@ -30,7 +28,6 @@ serviceMonitor:
 prometheusRule:
   enabled: true
   namespace: monitoring
-  # Добавьте правила Prometheus (пример):
   rules:
     - alert: App07Down
       expr: up{job="app07"} == 0
