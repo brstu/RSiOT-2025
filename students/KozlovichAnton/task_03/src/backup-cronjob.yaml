@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pg-backup
+  namespace: lr03
+spec:
+  schedule: "*/10 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: pg-dump
+              image: postgres:16
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: pg-secret
+                      key: POSTGRES_PASSWORD
+              command: ["/bin/sh","-c"]
+              args:
+                - pg_dump -h pg-0.pg.lr03.svc.cluster.local -U postgres -F c -d postgres > /backups/backup-$(date +%s).dump || true
+              volumeMounts:
+                - name: backup-vol
+                  mountPath: /backups
+          restartPolicy: OnFailure
+          volumes:
+            - name: backup-vol
+              emptyDir: {}
