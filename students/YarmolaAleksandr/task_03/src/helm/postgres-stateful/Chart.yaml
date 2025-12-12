@@ -1,3 +1,4 @@
+---
 apiVersion: v2
 name: postgres-stateful
 description: PostgreSQL StatefulSet with backup/restore for Lab 03

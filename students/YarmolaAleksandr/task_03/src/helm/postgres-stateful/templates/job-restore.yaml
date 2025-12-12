@@ -1,29 +1,30 @@
-{{- if .Values.restore.enabled }}
+{{- if .Values.restore.enabled}}
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Values.restore.name }}
-  namespace: {{ .Values.namespace.name }}
+  name: {{.Values.restore.name}}
+  namespace: {{.Values.namespace.name}}
   labels:
-    app: {{ .Values.labels.app }}
+    app: {{.Values.labels.app}}
     component: restore
-    org.bstu.course: {{ .Values.labels.course | quote }}
-    org.bstu.student.id: {{ .Values.student.id | quote }}
-    org.bstu.group: {{ .Values.student.groupLatin | quote }}
-    org.bstu.variant: {{ .Values.student.variant | quote }}
+    org.bstu.course: {{.Values.labels.course | quote}}
+    org.bstu.student.id: {{.Values.student.id | quote}}
+    org.bstu.group: {{.Values.student.groupLatin | quote}}
+    org.bstu.variant: {{.Values.student.variant | quote}}
 spec:
   ttlSecondsAfterFinished: 300
   template:
     metadata:
       labels:
-        app: {{ .Values.labels.app }}
+        app: {{.Values.labels.app}}
         component: restore
-        org.bstu.student.id: {{ .Values.student.id | quote }}
+        org.bstu.student.id: {{.Values.student.id | quote}}
     spec:
       restartPolicy: Never
       containers:
         - name: restore
-          image: {{ .Values.restore.image.repository }}:{{ .Values.restore.image.tag }}
+          image: {{.Values.restore.image.repository}}:{{.Values.restore.image.tag}}
           command:
             - /bin/bash
             - /scripts/restore.sh
@@ -32,28 +33,28 @@ spec:
                 name: db-postgres-secret
           env:
             - name: POSTGRES_HOST
-              value: {{ .Values.service.name }}
+              value: {{.Values.service.name}}
             - name: POSTGRES_PORT
-              value: {{ .Values.postgres.port | quote }}
+              value: {{.Values.postgres.port | quote}}
             - name: STU_ID
-              value: {{ .Values.student.id | quote }}
+              value: {{.Values.student.id | quote}}
             - name: STU_GROUP
-              value: {{ .Values.student.group | quote }}
+              value: {{.Values.student.group | quote}}
             - name: STU_VARIANT
-              value: {{ .Values.student.variant | quote }}
+              value: {{.Values.student.variant | quote}}
           volumeMounts:
             - name: backups
               mountPath: /backups
             - name: scripts
               mountPath: /scripts
           resources:
-            {{- toYaml .Values.restore.resources | nindent 12 }}
+            {{- toYaml .Values.restore.resources | nindent 12}}
       volumes:
         - name: backups
           persistentVolumeClaim:
-            claimName: {{ .Values.storage.backup.name }}
+            claimName: {{.Values.storage.backup.name}}
         - name: scripts
           configMap:
-            name: {{ .Values.scripts.name }}
+            name: {{.Values.scripts.name}}
             defaultMode: 0755
-{{- end }}
+{{- end}}

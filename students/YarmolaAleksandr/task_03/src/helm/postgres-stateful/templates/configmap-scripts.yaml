@@ -1,31 +1,32 @@
-{{- if .Values.scripts.enabled }}
+{{- if .Values.scripts.enabled}}
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.scripts.name }}
-  namespace: {{ .Values.namespace.name }}
+  name: {{.Values.scripts.name}}
+  namespace: {{.Values.namespace.name}}
   labels:
-    app: {{ .Values.labels.app }}
+    app: {{.Values.labels.app}}
     component: scripts
-    org.bstu.course: {{ .Values.labels.course | quote }}
-    org.bstu.student.id: {{ .Values.student.id | quote }}
-    org.bstu.variant: {{ .Values.student.variant | quote }}
+    org.bstu.course: {{.Values.labels.course | quote}}
+    org.bstu.student.id: {{.Values.student.id | quote}}
+    org.bstu.variant: {{.Values.student.variant | quote}}
 data:
   backup.sh: |
     #!/bin/bash
     set -e
 
     echo "=== PostgreSQL Backup Script ==="
-    echo "Student ID: ${STU_ID:-{{ .Values.student.id }}}"
-    echo "Group: ${STU_GROUP:-{{ .Values.student.group }}}"
-    echo "Variant: ${STU_VARIANT:-{{ .Values.student.variant }}}"
+    echo "Student ID: ${STU_ID:-{{.Values.student.id}}}"
+    echo "Group: ${STU_GROUP:-{{.Values.student.group}}}"
+    echo "Variant: ${STU_VARIANT:-{{.Values.student.variant}}}"
     echo "Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
 
     # Параметры подключения
-    DB_HOST="${POSTGRES_HOST:-{{ .Values.service.name }}}"
-    DB_PORT="${POSTGRES_PORT:-{{ .Values.postgres.port }}}"
-    DB_USER="${POSTGRES_USER:-{{ .Values.postgres.credentials.username }}}"
-    DB_NAME="${POSTGRES_DB:-{{ .Values.postgres.credentials.database }}}"
+    DB_HOST="${POSTGRES_HOST:-{{.Values.service.name}}}"
+    DB_PORT="${POSTGRES_PORT:-{{.Values.postgres.port}}}"
+    DB_USER="${POSTGRES_USER:-{{.Values.postgres.credentials.username}}}"
+    DB_NAME="${POSTGRES_DB:-{{.Values.postgres.credentials.database}}}"
 
     # Путь для backup
     BACKUP_DIR="/backups"
@@ -58,9 +59,9 @@ data:
       echo "File: ${BACKUP_FILE}"
       echo "Size: ${BACKUP_SIZE}"
       
-      # Удаление старых backup (оставляем последние {{ .Values.backup.retention }})
-      echo "Cleaning old backups (keeping last {{ .Values.backup.retention }})..."
-      ls -t ${BACKUP_DIR}/backup_*.sql.gz | tail -n +{{ add1 .Values.backup.retention }} | xargs -r rm -f
+      # Удаление старых backup (оставляем последние {{.Values.backup.retention}})
+      echo "Cleaning old backups (keeping last {{.Values.backup.retention}})..."
+      ls -t ${BACKUP_DIR}/backup_*.sql.gz | tail -n +{{add1 .Values.backup.retention}} | xargs -r rm -f
       
       # Список всех backup
       echo "Available backups:"
@@ -77,16 +78,16 @@ data:
     set -e
 
     echo "=== PostgreSQL Restore Script ==="
-    echo "Student ID: ${STU_ID:-{{ .Values.student.id }}}"
-    echo "Group: ${STU_GROUP:-{{ .Values.student.group }}}"
-    echo "Variant: ${STU_VARIANT:-{{ .Values.student.variant }}}"
+    echo "Student ID: ${STU_ID:-{{.Values.student.id}}}"
+    echo "Group: ${STU_GROUP:-{{.Values.student.group}}}"
+    echo "Variant: ${STU_VARIANT:-{{.Values.student.variant}}}"
     echo "Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
 
     # Параметры подключения
-    DB_HOST="${POSTGRES_HOST:-{{ .Values.service.name }}}"
-    DB_PORT="${POSTGRES_PORT:-{{ .Values.postgres.port }}}"
-    DB_USER="${POSTGRES_USER:-{{ .Values.postgres.credentials.username }}}"
-    DB_NAME="${POSTGRES_DB:-{{ .Values.postgres.credentials.database }}}"
+    DB_HOST="${POSTGRES_HOST:-{{.Values.service.name}}}"
+    DB_PORT="${POSTGRES_PORT:-{{.Values.postgres.port}}}"
+    DB_USER="${POSTGRES_USER:-{{.Values.postgres.credentials.username}}}"
+    DB_NAME="${POSTGRES_DB:-{{.Values.postgres.credentials.database}}}"
 
     BACKUP_DIR="/backups"
     LATEST_BACKUP=$(ls -t ${BACKUP_DIR}/backup_*.sql.gz 2>/dev/null | head -n1)
@@ -119,4 +120,4 @@ data:
 
     echo "✅ Restore completed successfully!"
     echo "Database ${DB_NAME} restored from ${LATEST_BACKUP}"
-{{- end }}
+{{- end}}
