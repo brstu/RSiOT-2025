@@ -1,3 +1,5 @@
+---
+
 apiVersion: v2
 name: monitoring-app
 description: Helm chart for LR04 monitoring app (variant 20)

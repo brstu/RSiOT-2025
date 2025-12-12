@@ -1,3 +1,5 @@
+---
+
 replicaCount: 2
 
 namespace: app20-ns  # или default

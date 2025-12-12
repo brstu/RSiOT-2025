@@ -1,4 +1,7 @@
 {{- if .Values.metrics.serviceMonitor.enabled }}
+
+---
+
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -6,7 +9,7 @@ metadata:
   namespace: {{ .Values.namespace | default "default" }}
   labels:
     {{- include "monitoring-app.labels" . | nindent 4 }}
-    release: monitoring
+  release: monitoring
 spec:
   selector:
     matchLabels:
