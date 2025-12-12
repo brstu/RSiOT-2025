@@ -1,0 +1,38 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "monitoring-app.fullname" . }}-slo-alerts
+  namespace: {{ .Values.namespace | default "default" }}
+  labels:
+    {{- include "monitoring-app.labels" . | nindent 4 }}
+    release: monitoring  # важно для kube-prometheus-stack
+spec:
+  groups:
+    - name: app20-slo-rules
+      rules:
+        - alert: App20High5xxErrorRate
+          expr: sum(rate(app20__http_request_total{status=~"5.."}[15m])) / sum(rate(app20__http_request_total[15m])) > 0.025
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Высокий процент 5xx ошибок в приложении app20 (>2.5% за 15m)"
+            description: "Error rate 5xx превысил 2.5% за последние 15 минут. Текущий запрос: sum(rate(app20__http_request_total{status=~\"5..\"}[15m])) / sum(rate(app20__http_request_total[15m]))"
+
+        - alert: App20HighLatencyP95
+          expr: histogram_quantile(0.95, sum(rate(app20__http_request_duration_seconds_bucket[5m])) by (le)) > 0.35
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Высокая p95 latency в приложении app20 (>350ms)"
+            description: "95-й перцентиль latency превысил 350ms за последние 5 минут."
+
+        - alert: App20LowAvailability
+          expr: 1 - (sum(rate(app20__http_request_total{status=~"2..|3.."}[30d])) / sum(rate(app20__http_request_total[30d]))) > 0.005
+          for: 1h
+          labels:
+            severity: critical
+          annotations:
+            summary: "Низкая доступность приложения app20 (<99.5% за 30d)"
+            description: "Доступность упала ниже 99.5% за последние 30 дней (окно оценки)."
