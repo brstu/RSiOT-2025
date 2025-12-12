@@ -1,0 +1,16 @@
+{{- if .Values.namespace.create }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace.name }}
+  labels:
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: {{ .Values.student.id | quote }}
+    org.bstu.group: {{ .Values.student.groupLatin | quote }}
+    org.bstu.variant: {{ .Values.student.variant | quote }}
+    org.bstu.owner: {{ .Values.student.owner | quote }}
+    org.bstu.student.slug: {{ .Values.student.slug | quote }}
+  annotations:
+    org.bstu.student.fullname: {{ .Values.student.fullname | quote }}
+    org.bstu.group.cyrillic: {{ .Values.student.group | quote }}
+{{- end }}

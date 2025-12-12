@@ -1,0 +1,13 @@
+{{- if .Values.storageClass.create }}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.storageClass.name }}
+  labels:
+    org.bstu.course: {{ .Values.labels.course | quote }}
+    org.bstu.student.id: {{ .Values.student.id | quote }}
+    org.bstu.variant: {{ .Values.student.variant | quote }}
+provisioner: {{ .Values.storageClass.provisioner }}
+reclaimPolicy: {{ .Values.storageClass.reclaimPolicy }}
+volumeBindingMode: {{ .Values.storageClass.volumeBindingMode }}
+{{- end }}

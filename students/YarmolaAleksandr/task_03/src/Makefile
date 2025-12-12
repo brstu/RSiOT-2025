@@ -1,14 +1,16 @@
-.PHONY: help deploy test-data backup restore clean status logs
+.PHONY: help deploy test-data backup restore clean status logs helm-install helm-upgrade helm-uninstall helm-lint helm-template
 
 NAMESPACE := state-as63-220028-v23
 STATEFULSET := db-postgres-as63-220028-v23
 SERVICE := db-postgres-headless
+HELM_RELEASE := postgres-lab03
+HELM_CHART := helm/postgres-stateful
 
 help:
 	@echo "Лабораторная работа 03 - PostgreSQL StatefulSet"
 	@echo "================================================"
 	@echo ""
-	@echo "Доступные команды:"
+	@echo "Базовые команды (kubectl):"
 	@echo "  make deploy      - Развернуть все манифесты"
 	@echo "  make test-data   - Создать тестовые данные"
 	@echo "  make status      - Проверить статус всех ресурсов"
@@ -16,6 +18,14 @@ help:
 	@echo "  make backup-now  - Запустить backup вручную"
 	@echo "  make restore     - Восстановить из последнего backup"
 	@echo "  make clean       - Удалить все ресурсы"
+	@echo ""
+	@echo "Helm команды (Бонус +5 баллов):"
+	@echo "  make helm-install   - Установить через Helm"
+	@echo "  make helm-upgrade   - Обновить Helm release"
+	@echo "  make helm-uninstall - Удалить Helm release"
+	@echo "  make helm-lint      - Проверить Helm chart"
+	@echo "  make helm-template  - Вывести шаблоны Helm"
+	@echo "  make helm-status    - Статус Helm release"
 	@echo ""
 
 deploy:
@@ -142,3 +152,50 @@ shell:
 	@echo "=== Подключение к PostgreSQL ==="
 	@POD=$$(kubectl get pod -n $(NAMESPACE) -l app=postgres -o jsonpath='{.items[0].metadata.name}'); \
 	kubectl exec -it -n $(NAMESPACE) $$POD -- psql -U admin -d testdb
+
+# ========================================
+# Helm команды (Бонус +5 баллов)
+# ========================================
+
+helm-lint:
+	@echo "=== Проверка Helm chart ==="
+	helm lint $(HELM_CHART)
+	@echo "✅ Helm chart валиден!"
+
+helm-template:
+	@echo "=== Вывод шаблонов Helm ==="
+	helm template $(HELM_RELEASE) $(HELM_CHART)
+
+helm-install:
+	@echo "=== Установка через Helm ==="
+	helm install $(HELM_RELEASE) $(HELM_CHART) --create-namespace
+	@echo ""
+	@echo "✅ Helm release установлен. Ожидание готовности подов..."
+	kubectl wait --for=condition=ready pod -l app=postgres -n $(NAMESPACE) --timeout=120s
+	@echo "✅ PostgreSQL готов к работе!"
+
+helm-upgrade:
+	@echo "=== Обновление Helm release ==="
+	helm upgrade $(HELM_RELEASE) $(HELM_CHART)
+	@echo "✅ Helm release обновлен!"
+
+helm-uninstall:
+	@echo "=== Удаление Helm release ==="
+	helm uninstall $(HELM_RELEASE) -n $(NAMESPACE)
+	kubectl delete storageclass premium-storage --ignore-not-found
+	@echo "✅ Helm release удален!"
+
+helm-status:
+	@echo "=== Статус Helm release ==="
+	helm status $(HELM_RELEASE) -n $(NAMESPACE)
+	@echo ""
+	@echo "=== Список всех ресурсов ==="
+	kubectl get all,pvc,secret,configmap,cronjob -n $(NAMESPACE)
+
+helm-values:
+	@echo "=== Используемые values ==="
+	helm get values $(HELM_RELEASE) -n $(NAMESPACE)
+
+helm-history:
+	@echo "=== История релизов ==="
+	helm history $(HELM_RELEASE) -n $(NAMESPACE)
