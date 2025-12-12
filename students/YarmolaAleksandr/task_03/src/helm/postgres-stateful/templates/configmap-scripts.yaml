@@ -1,3 +1,4 @@
+# yamllint disable rule:document-start rule:syntax rule:line-length
 {{- if .Values.scripts.enabled}}
 ---
 apiVersion: v1
