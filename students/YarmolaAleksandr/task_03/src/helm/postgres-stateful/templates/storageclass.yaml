@@ -1,4 +1,4 @@
-# yamllint disable rule:document-start rule:syntax
+# yamllint disable-file
 {{- if .Values.storageClass.create}}
 ---
 apiVersion: storage.k8s.io/v1

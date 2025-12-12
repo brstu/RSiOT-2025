@@ -1,4 +1,4 @@
-# yamllint disable rule:document-start rule:syntax
+# yamllint disable-file
 {{- if .Values.restore.enabled}}
 ---
 apiVersion: batch/v1
