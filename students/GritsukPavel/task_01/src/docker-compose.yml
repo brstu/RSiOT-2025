@@ -1,0 +1,41 @@
+networks:
+  internal:
+    name: net-${SLUG}
+
+volumes:
+  data_v4:
+    name: data_v4
+
+services:
+  app:
+    image: lab01-node-express-pg:stu-${STU_ID}-v4
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app-${SLUG}
+    depends_on:
+      - db
+    environment:
+      STU_ID: "${STU_ID}"
+      STU_GROUP: "${STU_GROUP}"
+      STU_VARIANT: "v4"
+      PORT: "${PORT}"
+      DATABASE_URL: "${DATABASE_URL}"
+    ports:
+      - "${PORT}:${PORT}"
+    networks:
+      - internal
+
+  db:
+    image: postgres:16-alpine
+    container_name: pg-${SLUG}
+    environment:
+      POSTGRES_DB: "app_${STU_ID}_v4"
+      POSTGRES_USER: "app"
+      POSTGRES_PASSWORD: "app"
+    volumes:
+      - data_v4:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    networks:
+      - internal
