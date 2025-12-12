@@ -3,7 +3,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: "{{ include "monitoring-app.fullname" . }}-slo-alerts"
+  name: {{ include "monitoring-app.fullname" . }}-slo-alerts
   namespace: {{ .Values.namespace | default "default" }}
   labels:
     {{- include "monitoring-app.labels" . | nindent 4 }}

@@ -6,16 +6,16 @@ metadata:
   name: {{ include "monitoring-app.fullname" . }}
   namespace: {{ .Values.namespace | default "default" }}
   labels:
-    {{- include "monitoring-app.labels" . | nindent 4 }}
+    {{ include "monitoring-app.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "monitoring-app.selectorLabels" . | nindent 6 }}
+    {{ include "monitoring-app.selectorLabels" . | indent 4 }}
   template:
     metadata:
       labels:
-        {{- include "monitoring-app.selectorLabels" . | nindent 8 }}
+        {{ include "monitoring-app.selectorLabels" . | indent 8 }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -24,4 +24,4 @@ spec:
           ports:
             - containerPort: 5000
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{ toYaml .Values.resources | indent 12 }}

@@ -1,4 +1,4 @@
-{{- if .Values.metrics.serviceMonitor.enabled }}
+{{ if .Values.metrics.serviceMonitor.enabled }}
 
 ---
 
@@ -8,7 +8,7 @@ metadata:
   name: {{ include "monitoring-app.fullname" . }}
   namespace: {{ .Values.namespace | default "default" }}
   labels:
-    {{- include "monitoring-app.labels" . | nindent 4 }}
+    {{ include "monitoring-app.labels" . | indent 4 }}
   release: monitoring
 spec:
   selector:
