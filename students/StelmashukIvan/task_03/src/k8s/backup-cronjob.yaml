@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup
+  namespace: state01
+spec:
+  schedule: "10 */4 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: redis:7
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  redis-cli -h redis.state01 -p 6379 -a "${REDIS_PASSWORD}" BGSAVE && \
+                  sleep 10 && \
+                  cp /data/dump.rdb "/backup/backup-$(date +%Y%m%d%H%M).rdb"
+              env:
+                - name: REDIS_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-secret
+                      key: password
+              volumeMounts:
+                - name: redis-data
+                  mountPath: /data
+                - name: backup
+                  mountPath: /backup
+          restartPolicy: OnFailure
+          volumes:
+            - name: redis-data
+              persistentVolumeClaim:
+                claimName: data-redis-0
+            - name: backup
+              persistentVolumeClaim:
+                claimName: backup-storage
