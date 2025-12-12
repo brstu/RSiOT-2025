@@ -1,0 +1,22 @@
+# yamllint disable-file
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.service.name}}
+  namespace: {{.Values.namespace.name}}
+  labels:
+    app: {{.Values.labels.app}}
+    org.bstu.course: {{.Values.labels.course | quote}}
+    org.bstu.student.id: {{.Values.student.id | quote}}
+    org.bstu.group: {{.Values.student.groupLatin | quote}}
+    org.bstu.variant: {{.Values.student.variant | quote}}
+    org.bstu.owner: {{.Values.student.owner | quote}}
+spec:
+  clusterIP: {{.Values.service.clusterIP}}
+  selector:
+    app: {{.Values.labels.app}}
+  ports:
+    - port: {{.Values.service.port}}
+      targetPort: {{.Values.postgres.port}}
+      name: postgres

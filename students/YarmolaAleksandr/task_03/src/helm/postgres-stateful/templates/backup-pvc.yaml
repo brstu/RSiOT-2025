@@ -1,0 +1,22 @@
+# yamllint disable-file
+{{- if .Values.storage.backup.enabled}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{.Values.storage.backup.name}}
+  namespace: {{.Values.namespace.name}}
+  labels:
+    app: {{.Values.labels.app}}
+    component: backup
+    org.bstu.course: {{.Values.labels.course | quote}}
+    org.bstu.student.id: {{.Values.student.id | quote}}
+    org.bstu.variant: {{.Values.student.variant | quote}}
+spec:
+  accessModes:
+    - {{.Values.storage.backup.accessMode}}
+  storageClassName: {{.Values.storage.backup.storageClass}}
+  resources:
+    requests:
+      storage: {{.Values.storage.backup.size}}
+{{- end}}

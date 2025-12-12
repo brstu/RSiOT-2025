@@ -1,0 +1,64 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: restore-postgres-as63-220028-v23
+  namespace: state-as63-220028-v23
+  labels:
+    app: postgres-restore
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220028"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "23"
+    org.bstu.owner: "alexsandro007"
+    org.bstu.student.slug: "AS63-220028-v23"
+  annotations:
+    org.bstu.student.fullname: "Ярмола Александр Олегович"
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: postgres-restore
+        org.bstu.student.id: "220028"
+        org.bstu.variant: "23"
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: restore
+          image: postgres:15-alpine
+          command:
+            - /bin/bash
+            - /scripts/restore.sh
+          env:
+            - name: STU_ID
+              value: "220028"
+            - name: STU_GROUP
+              value: "АС-63"
+            - name: STU_VARIANT
+              value: "23"
+            - name: POSTGRES_HOST
+              value: "db-postgres-headless"
+          envFrom:
+            - secretRef:
+                name: db-postgres-secret
+          volumeMounts:
+            - name: backup-storage
+              mountPath: /backups
+            - name: backup-scripts
+              mountPath: /scripts
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+      volumes:
+        - name: backup-storage
+          persistentVolumeClaim:
+            claimName: backup-postgres-pvc
+        - name: backup-scripts
+          configMap:
+            name: backup-scripts
+            defaultMode: 0755
