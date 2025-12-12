@@ -1,0 +1,6 @@
+apiVersion: v2
+name: app07
+description: Helm chart for LR04 variant 7 (Kozlovich)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
