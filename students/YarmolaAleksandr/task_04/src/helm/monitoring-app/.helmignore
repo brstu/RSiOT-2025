@@ -1,0 +1,3 @@
+# Helm templates are not valid YAML until rendered
+*.yaml
+templates/

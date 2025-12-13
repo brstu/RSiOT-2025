@@ -1,0 +1,14 @@
+---
+apiVersion: v2
+name: monitoring-app
+description: Flask приложение с метриками Prometheus для мониторинга
+type: application
+version: 1.0.0
+appVersion: "1.0"
+keywords:
+  - monitoring
+  - prometheus
+  - observability
+maintainers:
+  - name: Ярмола Александр Олегович
+    email: aleksandro.yarmola@gmail.com
