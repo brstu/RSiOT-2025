@@ -1,0 +1,11 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-web15-config
+  namespace: app15
+  labels:
+    app: web15
+    org.bstu.variant: "15"
+data:
+  APP_PORT: "8063"
+  APP_ENV: "production"

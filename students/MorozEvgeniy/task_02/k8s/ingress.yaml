@@ -1,0 +1,19 @@
+﻿apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web15-ingress
+  namespace: app15
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: web15.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: net-web15
+                port:
+                  number: 80

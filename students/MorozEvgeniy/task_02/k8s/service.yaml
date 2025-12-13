@@ -1,0 +1,16 @@
+﻿apiVersion: v1
+kind: Service
+metadata:
+  name: net-web15
+  namespace: app15
+  labels:
+    app: web15
+    org.bstu.variant: "15"
+spec:
+  type: ClusterIP
+  selector:
+    app: web15
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8063
