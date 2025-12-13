@@ -1,0 +1,73 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-web15
+  namespace: app15
+  labels:
+    app: web15
+    org.bstu.student.fullname: "Moroz_Evgeniy_Vasilevich"
+    org.bstu.student.id: "220019"
+    org.bstu.group: "AC-63"
+    org.bstu.variant: "15"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "EugeneFr0st"
+    org.bstu.student.slug: "as-63-220019-v15"
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: web15
+  template:
+    metadata:
+      labels:
+        app: web15
+        org.bstu.variant: "15"
+    spec:
+      containers:
+        - name: web15
+          image: eugenefrost/web15:latest
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 8063
+
+          envFrom:
+            - configMapRef:
+                name: app-web15-config
+
+          env:
+            - name: STU_ID
+              value: "220019"
+            - name: STU_GROUP
+              value: "AC-63"
+            - name: STU_VARIANT
+              value: "15"
+            - name: REDIS_ADDR
+              value: "redis:6379"
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8063
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: 8063
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          resources:
+            requests:
+              cpu: "150m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
