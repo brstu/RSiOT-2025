@@ -1,0 +1,14 @@
+﻿apiVersion: v1
+kind: Service
+metadata:
+  name: app15
+  namespace: app15
+  labels:
+    app: app15
+spec:
+  selector:
+    app: app15
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
