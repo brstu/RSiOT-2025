@@ -1,3 +1,4 @@
+---
 replicaCount: 1
 
 image:
@@ -11,7 +12,7 @@ service:
 
 metricsPrefix: app07_
 
-resources: {}
+resources: { }
 
 serviceMonitor:
   enabled: true

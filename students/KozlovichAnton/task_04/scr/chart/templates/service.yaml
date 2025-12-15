@@ -1,15 +1,16 @@
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "app07.fullname" . }}
+  name: {{include "app07.fullname" .}}
   labels:
-    app: {{ include "app07.name" . }}
+    app: {{include "app07.name" .}}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{.Values.service.type}}
   selector:
-    app: {{ include "app07.name" . }}
+    app: {{include "app07.name" .}}
   ports:
     - name: http-metrics
-      port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.port }}
+      port: {{.Values.service.port}}
+      targetPort: {{.Values.service.port}}
       protocol: TCP

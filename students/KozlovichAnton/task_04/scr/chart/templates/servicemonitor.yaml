@@ -1,15 +1,16 @@
-{{- if .Values.serviceMonitor.enabled }}
+---
+{{- if .Values.serviceMonitor.enabled}}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "app07.fullname" . }}
-  namespace: {{ .Values.serviceMonitor.namespace }}
+  name: {{include "app07.fullname" .}}
+  namespace: {{ .Values.serviceMonitor.namespace}}
   labels:
-    app: {{ include "app07.name" . }}
+    app: {{include "app07.name" .}}
 spec:
   selector:
     matchLabels:
-      app: {{ include "app07.name" . }}
+      app: {{include "app07.name" .}}
   endpoints:
     - port: http-metrics
       path: /metrics
