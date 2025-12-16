@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-as63-220007-v04
+  namespace: app04
+  labels:
+    app: web04
+    org.bstu.student.fullname: "Грицук Павел Эдуардович"
+    org.bstu.student.id: "220007"
+    org.bstu.group: "АС-63"
+    org.bstu.variant: "4"
+    org.bstu.course: "RSiOT"
+    org.bstu.owner: "momo-kitsune"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web04
+  template:
+    metadata:
+      labels:
+        app: web04
+    spec:
+      containers:
+      - name: web04
+        image: momo-kitsune/web04:latest
+        ports:
+        - containerPort: 8084
+        env:
+        - name: STU_ID
+          value: "220007"
+        - name: STU_GROUP
+          value: "АС-63"
+        - name: STU_VARIANT
+          value: "4"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8084
+          initialDelaySeconds: 10
+          periodSeconds: 15
