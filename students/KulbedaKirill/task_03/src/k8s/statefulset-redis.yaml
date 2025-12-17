@@ -1,0 +1,66 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-as63-220016-v12
+  namespace: state-as63-220016-v12
+  labels:
+    org.bstu.student.fullname: "РљСѓР»СЊР±РµРґР° РљРёСЂРёР»Р» РђР»РµРєСЃР°РЅРґСЂРѕРІРёС‡"
+    org.bstu.student.id: "220016"
+    org.bstu.group: "РђРЎ-63"
+    org.bstu.variant: "12"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "fr0ogi"
+    org.bstu.student.slug: "as63-220016-v12"
+spec:
+  serviceName: db-as63-220016-v12
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-as63-220016-v12
+  template:
+    metadata:
+      labels:
+        app: db-as63-220016-v12
+        org.bstu.owner: "fr0ogi"
+        org.bstu.student.slug: "as63-220016-v12"
+        org.bstu.variant: "12"
+        org.bstu.course: "RSIOT"
+    spec:
+      containers:
+        - name: redis
+          image: redis:7
+          ports:
+            - containerPort: 6379
+              name: redis
+          env:
+            - name: STU_ID
+              value: "220016"
+            - name: STU_GROUP
+              value: "РђРЎ-63"
+            - name: STU_VARIANT
+              value: "12"
+          command:
+            - sh
+            - -c
+            - |
+              echo "STU_ID=$STU_ID STU_GROUP=$STU_GROUP \
+              STU_VARIANT=$STU_VARIANT";
+              exec redis-server --appendonly yes --save 20 1 --dir /data
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+        labels:
+          org.bstu.student.slug: "as63-220016-v12"
+          org.bstu.variant: "12"
+          org.bstu.course: "RSIOT"
+        annotations:
+          org.bstu.storage.desiredClass: "premium"
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi
