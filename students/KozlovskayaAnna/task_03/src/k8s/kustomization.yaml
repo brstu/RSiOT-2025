@@ -1,0 +1,14 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: state-as63-220012-v8
+resources:
+  - namespace.yaml
+  - storageclass.yaml
+  - secret.yaml
+  - configmap-scripts.yaml
+  - service-headless.yaml
+  - statefulset.yaml
+  - pvc-backup.yaml
+  - cronjob-backup.yaml
+  - job-restore.yaml
