@@ -5,15 +5,17 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "app24.labels" . | nindent 4 }}
+    app: app24
     app.kubernetes.io/component: backend
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "app24.selectorLabels" . | nindent 6 }}
+      app: app24
   template:
     metadata:
       labels:
+        app: app24
         {{- include "app24.selectorLabels" . | nindent 8 }}
         monitoring: "true"
     spec:

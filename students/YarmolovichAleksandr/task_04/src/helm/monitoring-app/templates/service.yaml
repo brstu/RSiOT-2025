@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "app24.labels" . | nindent 4 }}
+    app: app24
     app.kubernetes.io/component: backend
     monitoring: "true"
 spec:
@@ -15,4 +16,4 @@ spec:
       targetPort: http
       protocol: TCP
   selector:
-    {{- include "app24.selectorLabels" . | nindent 4 }}
+    app: app24

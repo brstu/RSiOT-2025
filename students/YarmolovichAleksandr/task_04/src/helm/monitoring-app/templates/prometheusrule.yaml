@@ -1,3 +1,4 @@
+{{- if .Values.prometheusRule.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
@@ -18,15 +19,16 @@ spec:
               sum(rate({{ .Values.metrics.prefix }}http_requests_total{status!~"5.."}[10m]))
               /
               sum(rate({{ .Values.metrics.prefix }}http_requests_total[10m]))
-            ) * 100 < 99.9
+            ) * 100 < {{ .Values.metrics.slo.availability }}
           for: 5m
           labels:
             severity: critical
             variant: "{{ .Values.student.variant }}"
           annotations:
-            summary: "Доступность ниже SLO 99.9%"
+            summary: "Доступность ниже SLO {{ .Values.metrics.slo.availability }}%"
             description: >
-              Доступность приложения ниже 99.9% за последние 10 минут
+              Доступность приложения ниже {{ .Values.metrics.slo.availability }}%
+              за последние 10 минут
 
         - alert: App24HighErrorRate5xx
           expr: |
@@ -34,15 +36,16 @@ spec:
               sum(rate({{ .Values.metrics.prefix }}http_requests_total{status=~"5.."}[10m]))
               /
               sum(rate({{ .Values.metrics.prefix }}http_requests_total[10m]))
-            ) * 100 > 2.5
+            ) * 100 > {{ .Values.metrics.slo.errorRate5xx }}
           for: 5m
           labels:
             severity: warning
             variant: "{{ .Values.student.variant }}"
           annotations:
-            summary: "Процент 5xx ошибок превышает 2.5%"
+            summary: "Процент 5xx ошибок превышает {{ .Values.metrics.slo.errorRate5xx }}%"
             description: >
-              Доля HTTP 5xx ответов превышает 2.5% за последние 10 минут
+              Доля HTTP 5xx ответов превышает {{ .Values.metrics.slo.errorRate5xx }}%
+              за последние 10 минут
 
         - alert: App24HighLatencyP95
           expr: |
@@ -50,12 +53,14 @@ spec:
               0.95,
               sum(rate({{ .Values.metrics.prefix }}http_request_duration_seconds_bucket[10m]))
               by (le)
-            ) > 0.35
+            ) > {{ .Values.metrics.slo.latencyP95 }}
           for: 5m
           labels:
             severity: warning
             variant: "{{ .Values.student.variant }}"
           annotations:
-            summary: "p95 latency превышает 350ms"
+            summary: "p95 latency превышает {{ mul .Values.metrics.slo.latencyP95 1000 }}ms"
             description: >
-              95-й перцентиль задержки превышает 350ms за последние 10 минут
+              95-й перцентиль задержки превышает
+              {{ mul .Values.metrics.slo.latencyP95 1000 }}ms
+{{- end }}
