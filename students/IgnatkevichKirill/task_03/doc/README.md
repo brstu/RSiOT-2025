@@ -388,7 +388,7 @@ kubectl exec -it db-0 -n state01 -- \
 # CREATE TABLE test_data (id SERIAL, name TEXT);
 # INSERT INTO test_data (name) VALUES ('test1'), ('test2');
 # SELECT * FROM test_data;
-# \q (выход)
+
 ```
 
 ### Удаление ресурсов
