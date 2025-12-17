@@ -60,11 +60,11 @@ func main() {
 	// === Обязательное логирование по требованиям ЛР ===
 	stuID := os.Getenv("STU_ID")
 	if stuID == "" {
-		stuID = "220013"
+		stuID = "220042"
 	}
 	stuGroup := os.Getenv("STU_GROUP")
 	if stuGroup == "" {
-		stuGroup = "as-63"
+		stuGroup = "as-64"
 	}
 	stuVariant := os.Getenv("STU_VARIANT")
 	if stuVariant == "" {
