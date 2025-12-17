@@ -1,0 +1,105 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-as64-220031-v25
+  namespace: state-as64-220031-v25
+  labels:
+    org.bstu.student.fullname: "Белаш Александр Олегович"
+    org.bstu.student.id: "220031"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "25"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "went2smoke"
+    org.bstu.student.slug: "as64-220031-v25"
+spec:
+  schedule: "*/18 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: pg-backup
+              image: postgres:16-alpine
+              env:
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-as64-220031-v25-secret
+                      key: POSTGRES_USER
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-as64-220031-v25-secret
+                      key: POSTGRES_PASSWORD
+              command: ["sh", "-c"]
+              args:
+                - |
+                  set -e;
+                  HOST="db-as64-220031-v25-0.db-as64-220031-v25-headless";
+                  FILE="/backup/backup-$(date +%F_%H-%M).sql";
+                  echo "Backup to $FILE from $HOST";
+                  pg_dump -h "$HOST" -U "$POSTGRES_USER" -d postgres > "$FILE";
+                  ls -l /backup;
+              volumeMounts:
+                - name: backup-vol
+                  mountPath: /backup
+          volumes:
+            - name: backup-vol
+              persistentVolumeClaim:
+                claimName: backup-as64-220031-v25-pvc
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: restore-as64-220031-v25
+  namespace: state-as64-220031-v25
+  labels:
+    org.bstu.student.fullname: "Белаш Александр Олегович"
+    org.bstu.student.id: "220031"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "25"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "went2smoke"
+    org.bstu.student.slug: "as64-220031-v25"
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: pg-restore
+          image: postgres:16-alpine
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-as64-220031-v25-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-as64-220031-v25-secret
+                  key: POSTGRES_PASSWORD
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e;
+              HOST="db-as64-220031-v25-0.db-as64-220031-v25-headless";
+              FILE=$(ls -t /backup/*.sql 2>/dev/null | head -n1 || true);
+              if [ -z "$FILE" ]; then
+                echo "No backup file found in /backup"; exit 1;
+              fi;
+              echo "Restoring from $FILE to $HOST";
+              psql -h "$HOST" -U "$POSTGRES_USER" -d postgres < "$FILE";
+              echo "Restore completed";
+          volumeMounts:
+            - name: backup-vol
+              mountPath: /backup
+      volumes:
+        - name: backup-vol
+          persistentVolumeClaim:
+            claimName: backup-as64-220031-v25-pvc
