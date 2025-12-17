@@ -1,0 +1,38 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-as64-220035-v29
+  namespace: state-as64-220035-v29
+  labels:
+    org.bstu.student.fullname: "Бурак Илья Эдуардович"
+    org.bstu.student.id: "220035"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "29"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "burakillya"
+    org.bstu.student.slug: "as64-220035-v29"
+  annotations:
+    description: "Periodic backup task for PostgreSQL database"
+spec:
+  schedule: "*/22 * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            job: backup-stub
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: busybox:1.36
+              command: ["sh", "-c"]
+              args:
+                - |
+                  echo "[backup] START $(date)";
+                  echo "Backup task executed";
+                  sleep 2;
+                  echo "[backup] DONE";
