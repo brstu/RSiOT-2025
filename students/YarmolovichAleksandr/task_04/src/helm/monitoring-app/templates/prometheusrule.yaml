@@ -1,0 +1,61 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "app24.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "app24.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+    release: {{ .Values.monitoring.release }}
+spec:
+  groups:
+    - name: app24-alerts
+      interval: 30s
+      rules:
+        - alert: App24LowAvailability
+          expr: |
+            (
+              sum(rate({{ .Values.metrics.prefix }}http_requests_total{status!~"5.."}[10m]))
+              /
+              sum(rate({{ .Values.metrics.prefix }}http_requests_total[10m]))
+            ) * 100 < 99.9
+          for: 5m
+          labels:
+            severity: critical
+            variant: "{{ .Values.student.variant }}"
+          annotations:
+            summary: "Доступность ниже SLO 99.9%"
+            description: >
+              Доступность приложения ниже 99.9% за последние 10 минут
+
+        - alert: App24HighErrorRate5xx
+          expr: |
+            (
+              sum(rate({{ .Values.metrics.prefix }}http_requests_total{status=~"5.."}[10m]))
+              /
+              sum(rate({{ .Values.metrics.prefix }}http_requests_total[10m]))
+            ) * 100 > 2.5
+          for: 5m
+          labels:
+            severity: warning
+            variant: "{{ .Values.student.variant }}"
+          annotations:
+            summary: "Процент 5xx ошибок превышает 2.5%"
+            description: >
+              Доля HTTP 5xx ответов превышает 2.5% за последние 10 минут
+
+        - alert: App24HighLatencyP95
+          expr: |
+            histogram_quantile(
+              0.95,
+              sum(rate({{ .Values.metrics.prefix }}http_request_duration_seconds_bucket[10m]))
+              by (le)
+            ) > 0.35
+          for: 5m
+          labels:
+            severity: warning
+            variant: "{{ .Values.student.variant }}"
+          annotations:
+            summary: "p95 latency превышает 350ms"
+            description: >
+              95-й перцентиль задержки превышает 350ms за последние 10 минут
