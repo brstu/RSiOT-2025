@@ -1,18 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "app24.fullname" . }}
-  namespace: {{ .Values.namespace }}
+  name: monitoring-app
+  namespace: default
   labels:
-    {{- include "app24.labels" . | nindent 4 }}
     app: app24
     app.kubernetes.io/component: backend
     monitoring: "true"
 spec:
-  type: {{ .Values.service.type }}
+  type: ClusterIP
   ports:
     - name: http
-      port: {{ .Values.service.port }}
+      port: 8080
       targetPort: http
       protocol: TCP
   selector:

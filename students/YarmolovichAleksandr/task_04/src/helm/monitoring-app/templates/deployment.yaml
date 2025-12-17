@@ -1,14 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "app24.fullname" . }}
-  namespace: {{ .Values.namespace }}
+  name: monitoring-app
+  namespace: default
   labels:
-    {{- include "app24.labels" . | nindent 4 }}
     app: app24
     app.kubernetes.io/component: backend
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 2
   selector:
     matchLabels:
       app: app24
@@ -16,28 +15,27 @@ spec:
     metadata:
       labels:
         app: app24
-        {{- include "app24.selectorLabels" . | nindent 8 }}
         monitoring: "true"
     spec:
       containers:
-        - name: {{ include "app24.name" . }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: monitoring-app
+          image: "myrepo/monitoring-app:1.0.0"
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: 8080
               protocol: TCP
           env:
             - name: STUDENT_ID
-              value: "{{ .Values.student.id }}"
+              value: "220029"
             - name: STUDENT_GROUP
-              value: "{{ .Values.student.group }}"
+              value: "AC-63"
             - name: VARIANT
-              value: "{{ .Values.student.variant }}"
+              value: "24"
             - name: PORT
-              value: "{{ .Values.service.port }}"
+              value: "8080"
             - name: METRICS_PREFIX
-              value: "{{ .Values.metrics.prefix }}"
+              value: "app24_"
           livenessProbe:
             httpGet:
               path: /health
@@ -55,4 +53,9 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 3
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"

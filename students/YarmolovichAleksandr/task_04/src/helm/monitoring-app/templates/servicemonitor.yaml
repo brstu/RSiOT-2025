@@ -1,28 +1,19 @@
-{{- if .Values.serviceMonitor.enabled }}
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
+apiVersion: v1
+kind: Service
 metadata:
-  name: {{ include "app24.fullname" . }}
-  namespace: {{ .Values.namespace }}
+  name: monitoring-app
+  namespace: default
   labels:
-    {{- include "app24.labels" . | nindent 4 }}
+    app: app24
     app.kubernetes.io/component: backend
-    release: {{ .Values.monitoring.release }}
+    monitoring: "true"
 spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
   selector:
-    matchLabels:
-      app: app24
-  namespaceSelector:
-    matchNames:
-      - {{ .Values.namespace }}
-  endpoints:
-    - port: http
-      path: {{ .Values.metrics.path }}
-      interval: {{ .Values.monitoring.scrapeInterval }}
-      scrapeTimeout: {{ .Values.monitoring.scrapeTimeout }}
-      relabelings:
-        - sourceLabels: [__meta_kubernetes_pod_name]
-          targetLabel: pod
-        - sourceLabels: [__meta_kubernetes_namespace]
-          targetLabel: namespace
-{{- end }}
+    app: app24
+    monitoring: "true"

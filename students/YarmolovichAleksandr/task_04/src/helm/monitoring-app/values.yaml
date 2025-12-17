@@ -1,65 +1,52 @@
----
-# Default values for monitoring-app
-# Параметры для варианта 1
-
-# Реплики приложения
 replicaCount: 2
 
-# Образ приложения
 image:
-  repository: monitoring-app
+  repository: app24
   pullPolicy: IfNotPresent
   tag: "latest"
 
-# Namespace
-namespace: monitoring-app
+namespace: app24
 
-# Метаданные студента
 student:
-  id: "220036"
-  fullname: "Ващук Анатолий Валерьевич"
-  group: "АС-63"
-  variant: "1"
+  id: "220029"
+  fullname: "Ярмолович Александр Сергеевич"
+  group: "AC-63"
+  variant: "24"
   course: "RSIOT"
-  owner: "skevet-avramuk"
-  slug: "AS63-220036-v1"
+  owner: "yarmolov"
+  slug: "AC63-220029-v24"
 
-# Метрики
 metrics:
   enabled: true
-  prefix: "app01_"   # Префикс метрик для варианта 1
+  prefix: "app24_"
   port: 8080
   path: /metrics
 
-  # SLO для варианта 1
   slo:
-    availability: 99.0     # 99.0%
-    latencyP95: 0.3        # 300ms
-    errorRate5xx: 2        # 2% за 10 минут
+    availability: 99.9    
+    latencyP95: 0.35      
+    errorRate5xx: 2.5     
 
-# Service
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
   targetPort: 8080
   annotations: { }
   labels:
-    app: monitoring-app
+    app: app24
     monitoring: "true"
 
-# Ingress
 ingress:
   enabled: false
   className: nginx
   annotations: { }
   hosts:
-    - host: monitoring-app.local
+    - host: app24.local
       paths:
         - path: /
           pathType: Prefix
   tls: [ ]
 
-# Ресурсы
 resources:
   limits:
     cpu: 500m
@@ -68,7 +55,6 @@ resources:
     cpu: 250m
     memory: 256Mi
 
-# Probes
 livenessProbe:
   httpGet:
     path: /health
@@ -87,7 +73,6 @@ readinessProbe:
   timeoutSeconds: 3
   failureThreshold: 3
 
-# ServiceMonitor для Prometheus
 serviceMonitor:
   enabled: true
   interval: 30s
@@ -95,74 +80,72 @@ serviceMonitor:
   labels:
     release: monitoring
 
-# PrometheusRule - алерты
+monitoring:
+  release: monitoring
+  scrapeInterval: 30s
+  scrapeTimeout: 10s
+
 prometheusRule:
   enabled: true
   labels:
     release: monitoring
   groups:
-    - name: monitoring-app-alerts
+    - name: app24-alerts
       interval: 30s
       rules:
-        # Alert: доступность ниже 99.0%
-        - alert: LowAvailability
+
+        - alert: App24LowAvailability
           expr: |
-            (sum(rate(app01_http_requests_total{status!~"5.."}[10m]))
-            / sum(rate(app01_http_requests_total[10m]))) * 100 < 99.0
+            (sum(rate(app24_http_requests_total{status!~"5.."}[10m]))
+            / sum(rate(app24_http_requests_total[10m]))) * 100 < 99.9
           for: 5m
           labels:
             severity: critical
-            variant: "1"
+            variant: "24"
           annotations:
-            summary: "Доступность ниже SLO 99.0%"
+            summary: "Доступность ниже SLO 99.9%"
             description: >
               Текущая доступность {{ $value }}%
-              (требуется ≥99.0%)
+              (требуется ≥99.9%)
 
-        # Alert: 5xx ошибок больше 2% за 10 минут
-        - alert: HighErrorRate5xx
+        - alert: App24HighErrorRate5xx
           expr: |
-            (sum(rate(app01_http_requests_total{status=~"5.."}[10m]))
-            / sum(rate(app01_http_requests_total[10m]))) * 100 > 2
+            (sum(rate(app24_http_requests_total{status=~"5.."}[10m]))
+            / sum(rate(app24_http_requests_total[10m]))) * 100 > 2.5
           for: 5m
           labels:
             severity: warning
-            variant: "1"
+            variant: "24"
           annotations:
-            summary: "Процент 5xx ошибок превышает 2%"
+            summary: "Процент 5xx ошибок превышает 2.5%"
             description: >
               5xx ошибок: {{ $value }}% за последние 10 минут
-              (порог >2%)
+              (порог >2.5%)
 
-        # Alert: p95 latency превышает 300ms
-        - alert: HighLatencyP95
+        - alert: App24HighLatencyP95
           expr: |
             histogram_quantile(
               0.95,
-              sum(rate(app01_http_request_duration_seconds_bucket[10m]))
+              sum(rate(app24_http_request_duration_seconds_bucket[10m]))
               by (le)
-            ) > 0.3
+            ) > 0.35
           for: 5m
           labels:
             severity: warning
-            variant: "1"
+            variant: "24"
           annotations:
-            summary: "p95 latency превышает 300ms"
+            summary: "p95 latency превышает 350ms"
             description: >
-              p95 latency: {{ $value }}s (требуется ≤0.3s)
+              p95 latency: {{ $value }}s (требуется ≤0.35s)
 
-# Autoscaling
 autoscaling:
   enabled: false
   minReplicas: 2
   maxReplicas: 5
   targetCPUUtilizationPercentage: 80
 
-# Node selector
 nodeSelector: { }
 
-# Tolerations
 tolerations: [ ]
 
-# Affinity
 affinity: { }

@@ -1,13 +1,12 @@
-{{- if .Values.prometheusRule.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: {{ include "app24.fullname" . }}
-  namespace: {{ .Values.namespace }}
+  name: monitoring-app
+  namespace: default
   labels:
-    {{- include "app24.labels" . | nindent 4 }}
+    app: app24
     app.kubernetes.io/component: backend
-    release: {{ .Values.monitoring.release }}
+    release: monitoring-release
 spec:
   groups:
     - name: app24-alerts
@@ -16,51 +15,50 @@ spec:
         - alert: App24LowAvailability
           expr: |
             (
-              sum(rate({{ .Values.metrics.prefix }}http_requests_total{status!~"5.."}[10m]))
+              sum(rate(http_requests_total{status!~"5.."}[10m]))
               /
-              sum(rate({{ .Values.metrics.prefix }}http_requests_total[10m]))
-            ) * 100 < {{ .Values.metrics.slo.availability }}
+              sum(rate(http_requests_total[10m]))
+            ) * 100 < 99.9
           for: 5m
           labels:
             severity: critical
-            variant: "{{ .Values.student.variant }}"
+            variant: "24"
           annotations:
-            summary: "Доступность ниже SLO {{ .Values.metrics.slo.availability }}%"
+            summary: "Доступность ниже SLO 99.9%"
             description: >
-              Доступность приложения ниже {{ .Values.metrics.slo.availability }}%
+              Доступность приложения ниже 99.9%
               за последние 10 минут
 
         - alert: App24HighErrorRate5xx
           expr: |
             (
-              sum(rate({{ .Values.metrics.prefix }}http_requests_total{status=~"5.."}[10m]))
+              sum(rate(http_requests_total{status=~"5.."}[10m]))
               /
-              sum(rate({{ .Values.metrics.prefix }}http_requests_total[10m]))
-            ) * 100 > {{ .Values.metrics.slo.errorRate5xx }}
+              sum(rate(http_requests_total[10m]))
+            ) * 100 > 2.5
           for: 5m
           labels:
             severity: warning
-            variant: "{{ .Values.student.variant }}"
+            variant: "24"
           annotations:
-            summary: "Процент 5xx ошибок превышает {{ .Values.metrics.slo.errorRate5xx }}%"
+            summary: "Процент 5xx ошибок превышает 2.5%"
             description: >
-              Доля HTTP 5xx ответов превышает {{ .Values.metrics.slo.errorRate5xx }}%
+              Доля HTTP 5xx ответов превышает 2.5%
               за последние 10 минут
 
         - alert: App24HighLatencyP95
           expr: |
             histogram_quantile(
               0.95,
-              sum(rate({{ .Values.metrics.prefix }}http_request_duration_seconds_bucket[10m]))
+              sum(rate(http_request_duration_seconds_bucket[10m]))
               by (le)
-            ) > {{ .Values.metrics.slo.latencyP95 }}
+            ) > 0.35
           for: 5m
           labels:
             severity: warning
-            variant: "{{ .Values.student.variant }}"
+            variant: "24"
           annotations:
-            summary: "p95 latency превышает {{ mul .Values.metrics.slo.latencyP95 1000 }}ms"
+            summary: "p95 latency превышает 350ms"
             description: >
               95-й перцентиль задержки превышает
-              {{ mul .Values.metrics.slo.latencyP95 1000 }}ms
-{{- end }}
+              350msms

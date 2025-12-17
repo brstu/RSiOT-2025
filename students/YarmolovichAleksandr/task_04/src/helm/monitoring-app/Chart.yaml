@@ -1,6 +1,6 @@
 apiVersion: v2
-name: monitoring-app
-description: Flask приложение с метриками Prometheus и алертами (ЛР04, вариант 1)
+name: app24
+description: Flask приложение с метриками Prometheus и алертами (ЛР04, вариант 24)
 type: application
 
 version: 1.0.0
@@ -14,5 +14,5 @@ keywords:
   - kubernetes
 
 maintainers:
-  - name: Ващук Анатолий Валерьевич
-    email: as006407@g.bstu.by
+  - name: Ярмолович Александр Сергеевич
+    email: as220029@g.bstu.by
