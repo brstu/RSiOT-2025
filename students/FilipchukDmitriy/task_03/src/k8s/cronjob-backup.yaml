@@ -1,0 +1,44 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-as63-220027-v22
+  namespace: state-as63-220027-v22
+  labels:
+    org.bstu.student.fullname: "Filipchuk Dmitriy Vasilevich"
+    org.bstu.student.id: "220027"
+    org.bstu.group: "РђРЎ-63"
+    org.bstu.variant: "22"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "kuddel11"
+    org.bstu.student.slug: "as63-220027-v22"
+spec:
+  schedule: "40 */5 * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            org.bstu.student.slug: "as63-220027-v22"
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: redis-backup
+              image: redis:7.2
+              env:
+                - name: REDIS_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-as63-220027-v22-secret
+                      key: REDIS_PASSWORD
+              args:
+                - |
+                  redis-cli -h db-as63-220027-v22 -a "$REDIS_PASSWORD" SAVE;
+                  date >> /backup/last-backup.txt
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+          volumes:
+            - name: backup
+              persistentVolumeClaim:
+                claimName: backup-as63-220027-v22

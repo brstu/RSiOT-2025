@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-as63-220027-v22
+  namespace: state-as63-220027-v22
+  labels:
+    org.bstu.student.fullname: "Filipchuk Dmitriy Vasilevich"
+    org.bstu.student.id: "220027"
+    org.bstu.group: "РђРЎ-63"
+    org.bstu.variant: "22"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "kuddel11"
+    org.bstu.student.slug: "as63-220027-v22"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: storage-as63-220027-v22-fast

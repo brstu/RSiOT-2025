@@ -1,0 +1,77 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-as63-220027-v22
+  namespace: state-as63-220027-v22
+  labels:
+    app: db-as63-220027-v22
+    org.bstu.student.fullname: "Filipchuk Dmitriy Vasilevich"
+    org.bstu.student.id: "220027"
+    org.bstu.group: "РђРЎ-63"
+    org.bstu.variant: "22"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "kuddel11"
+    org.bstu.student.slug: "as63-220027-v22"
+spec:
+  serviceName: db-as63-220027-v22
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-as63-220027-v22
+  template:
+    metadata:
+      labels:
+        app: db-as63-220027-v22
+        org.bstu.student.fullname: "Filipchuk Dmitriy Vasilevich"
+        org.bstu.student.id: "220027"
+        org.bstu.group: "РђРЎ-63"
+        org.bstu.variant: "22"
+        org.bstu.course: "RSIOT"
+        org.bstu.owner: "kuddel11"
+        org.bstu.student.slug: "as63-220027-v22"
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.2
+          ports:
+            - containerPort: 6379
+              name: redis
+          env:
+            - name: STU_ID
+              value: "220027"
+            - name: STU_GROUP
+              value: "РђРЎ-63"
+            - name: STU_VARIANT
+              value: "22"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-as63-220027-v22-secret
+                  key: REDIS_PASSWORD
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "starting redis for $STU_ID $STU_GROUP v$STU_VARIANT";
+              redis-server --requirepass "$REDIS_PASSWORD" --save 60 1
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          org.bstu.student.slug: "as63-220027-v22"
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 3Gi
+        storageClassName: storage-as63-220027-v22-fast

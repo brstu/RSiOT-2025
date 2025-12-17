@@ -1,0 +1,15 @@
+---
+version: "3.9"
+services:
+  redis-local:
+    image: redis:7.2
+    command: ["redis-server", "--save", "60", "1"]
+    labels:
+      org.bstu.owner: "kuddel11"
+      org.bstu.student.slug: "as63-220027-v22"
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+volumes:
+  redis-data: {}
