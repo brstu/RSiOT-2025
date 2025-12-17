@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+namespace: app14
+
+# Production настройки - используем параметры из варианта
+replicas:
+  - name: web14
+    count: 3
+
+commonLabels:
+  environment: production
+
+commonAnnotations:
+  environment: production
+  org.bstu.deployment: "production-ready"
+
+# В production используются значения из base (variant 14)
+# replicas: 3, cpu: 200m, mem: 192Mi

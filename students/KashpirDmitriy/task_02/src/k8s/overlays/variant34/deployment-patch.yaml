@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+        - name: web
+          image: ghcr.io/kashpirdr/rsiot-lab02:v34
+          ports:
+            - containerPort: 8012
+          readinessProbe:
+            httpGet:
+              port: 8012
+          livenessProbe:
+            httpGet:
+              port: 8012
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "192Mi"
+            limits:
+              cpu: "400m"
+              memory: "384Mi"

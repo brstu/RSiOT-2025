@@ -1,0 +1,17 @@
+---
+# Kind конфигурация для локального тестирования
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: lab02-cluster
+nodes:
+  - role: control-plane
+    kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "org.bstu.variant=41,org.bstu.student=as64-220053-v41"
+    extraPortMappings:
+      - containerPort: 30000
+        hostPort: 7991
+        protocol: TCP

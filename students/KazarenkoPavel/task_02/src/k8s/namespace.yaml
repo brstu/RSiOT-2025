@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app05
+  labels:
+    org.bstu.student.id: "220008"
+    org.bstu.group: "as-63"
+    org.bstu.variant: "05"

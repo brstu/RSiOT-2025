@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-web23
+  namespace: app23
+  labels:
+    app: web23
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220028"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "23"
+    org.bstu.owner: "alexsandro007"
+    org.bstu.student.slug: "AS63-220028-v23"
+  annotations:
+    org.bstu.student.fullname: "Ярмола Александр Олегович"
+    org.bstu.student.id: "220028"
+    org.bstu.group: "АС-63"
+    org.bstu.variant: "23"
+    org.bstu.course: "RSIOT"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web23
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: web23
+        org.bstu.course: "RSIOT"
+        org.bstu.student.id: "220028"
+        org.bstu.group: "AS-63"
+        org.bstu.variant: "23"
+        org.bstu.owner: "alexsandro007"
+        org.bstu.student.slug: "AS63-220028-v23"
+      annotations:
+        org.bstu.student.fullname: "Ярмола Александр Олегович"
+    spec:
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-web23
+      containers:
+        - name: web
+          image: alexsandro007/rsiot-lab02:v1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8043
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: app-web23-config
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8043
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: 8043
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "150m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1001
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL

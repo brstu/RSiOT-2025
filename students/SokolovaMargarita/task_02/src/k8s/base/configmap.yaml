@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: app19
+  labels:
+    org.bstu.student.fullname: "Sokolova-Margarita-Aleksandrovna"
+    org.bstu.student.id: "220024"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "19"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "soko1ova"
+    org.bstu.student.slug: "as-63-220024-v19"
+data:
+  PORT: "8053"
+  REDIS_HOST: "redis19"
+  REDIS_PORT: "6379"
+  STU_ID: "220024"
+  STU_GROUP: "AS-63"
+  STU_VARIANT: "19"

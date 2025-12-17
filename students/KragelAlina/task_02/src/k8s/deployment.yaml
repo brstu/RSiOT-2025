@@ -1,0 +1,85 @@
+# k8s/deployment.yaml (для web10)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web10
+  namespace: app10
+  labels:
+    app: web10
+    org.bstu.student.fullname: krahel-alina
+    org.bstu.student.id: "1234567"
+    org.bstu.group: as-63
+    org.bstu.variant: "10"
+    org.bstu.course: RSIOT
+    org.bstu.owner: ivan-ivanov
+    org.bstu.student.slug: feis-41-1234567-v10
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: web10
+  template:
+    metadata:
+      labels:
+        app: web10
+        org.bstu.student.slug: feis-41-1234567-v10
+    spec:
+      containers:
+      - name: web10
+        image: alina272/lab02-web10:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8072
+        env:
+        - name: STU_ID
+          value: "1234567"
+        - name: STU_GROUP
+          value: "ФЭИС-41"
+        - name: STU_VARIANT
+          value: "10"
+        - name: APP_PORT
+          value: "8072"
+        - name: PG_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: web10-config
+              key: PG_HOST
+        - name: PG_USER
+          valueFrom:
+            configMapKeyRef:
+              name: web10-config
+              key: PG_USER
+        - name: PG_DB
+          valueFrom:
+            configMapKeyRef:
+              name: web10-config
+              key: PG_DB
+        - name: PG_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: web10-secret
+              key: PG_PASSWORD
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "192Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 8072
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8072
+          initialDelaySeconds: 5
+          periodSeconds: 5

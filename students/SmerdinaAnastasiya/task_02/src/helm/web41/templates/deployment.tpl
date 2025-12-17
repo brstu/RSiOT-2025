@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{include "web41.fullname" .}}
+  namespace: {{.Values.app.namespace}}
+  labels:
+    {{- include "web41.labels" . | nindent 4}}
+    app.kubernetes.io/component: backend
+  annotations:
+    {{- include "web41.annotations" . | nindent 4}}
+    kubernetes.io/description: >
+      HTTP сервис для демонстрации базового деплоя в Kubernetes
+spec:
+  replicas: {{.Values.replicaCount}}
+  strategy:
+    {{- toYaml .Values.strategy | nindent 4}}
+  selector:
+    matchLabels:
+      {{- include "web41.selectorLabels" . | nindent 6}}
+  template:
+    metadata:
+      labels:
+        {{- include "web41.selectorLabels" . | nindent 8}}
+        app.kubernetes.io/component: backend
+        org.bstu.student.slug: {{.Values.student.slug | quote}}
+        org.bstu.variant: {{.Values.student.variant | quote}}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{.Values.app.port | quote}}
+        prometheus.io/path: "/health"
+    spec:
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 8}}
+      containers:
+        - name: {{.Values.app.name}}
+          image: >-
+            {{.Values.image.repository}}:{{.Values.image.tag |
+            default .Chart.AppVersion}}
+          imagePullPolicy: {{.Values.image.pullPolicy}}
+          ports:
+            - name: http
+              containerPort: {{.Values.app.port}}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{include "web41.fullname" .}}-config
+          env:
+            - name: STU_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{include "web41.fullname" .}}-secret
+                  key: STU_ID
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{include "web41.fullname" .}}-secret
+                  key: API_KEY
+          resources:
+            {{- toYaml .Values.resources | nindent 12}}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12}}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12}}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12}}
+      terminationGracePeriodSeconds: {{.Values.terminationGracePeriodSeconds}}
+      restartPolicy: Always

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-as64-220051-v38
+  namespace: app38
+  labels:
+    app: web38
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web38
+  template:
+    metadata:
+      labels:
+        app: web38
+    spec:
+      containers:
+        - name: web38
+          image: web38:latest
+          ports:
+            - containerPort: 8002
+          resources:
+            limits:
+              cpu: 200m
+              memory: 192Mi

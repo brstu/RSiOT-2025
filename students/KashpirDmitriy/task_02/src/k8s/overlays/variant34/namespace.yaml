@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app34
+  labels:
+    org.bstu.student.fullname: kashpir-dmitriy-ruslanovich
+    org.bstu.student.id: "220043"
+    org.bstu.group: as-64
+    org.bstu.variant: "34"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "kashpirdr"
+    org.bstu.student.slug: "as-64-220043-v34"
