@@ -1,0 +1,19 @@
+{{- if .Values.metrics.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: web03
+  namespace: {{ .Values.namespace }}
+  labels:
+    release: {{ .Values.monitoring.releaseLabel }}
+    {{- include "web03.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: web03
+  endpoints:
+    - port: http
+      path: {{ .Values.metrics.path }}
+      interval: {{ .Values.metrics.interval }}
+      scrapeTimeout: {{ .Values.metrics.scrapeTimeout }}
+{{- end }}

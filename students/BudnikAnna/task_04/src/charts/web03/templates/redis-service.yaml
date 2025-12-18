@@ -1,0 +1,16 @@
+{{- if .Values.redis.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: web03-redis
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "web03.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: web03-redis
+  ports:
+    - name: redis
+      port: {{ .Values.redis.port }}
+      targetPort: redis
+{{- end }}
