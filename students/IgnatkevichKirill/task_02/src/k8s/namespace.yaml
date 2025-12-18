@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: as-64-220042-v09
+  labels:
+    org.bstu.owner: pyrokekw
+    org.bstu.student.slug: as-64-220042-v09
+    org.bstu.student.fullname: ignatkevich-kirill-sergeevich

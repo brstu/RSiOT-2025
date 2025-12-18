@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app17-service
+  namespace: app17-namespace
+  labels:
+    app: app17
+    org.bstu.course: RSIOT
+    org.bstu.variant: "17"
+spec:
+  selector:
+    app: app17
+  ports:
+  - port: 80
+    targetPort: 8000
+    name: http
+  type: ClusterIP
