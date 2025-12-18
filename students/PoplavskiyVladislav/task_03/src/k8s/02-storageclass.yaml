@@ -1,0 +1,12 @@
+﻿apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: premium
+  labels:
+    org.bstu.course: "RSIOT"
+    org.bstu.variant: "17"
+provisioner: kubernetes.io/no-provisioner # Для Minikube. Для облака укажите реальный, например: kubernetes.io/gce-pd
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+parameters:
+  type: pd-ssd # Пример параметра для "премиумного" SSD-диска

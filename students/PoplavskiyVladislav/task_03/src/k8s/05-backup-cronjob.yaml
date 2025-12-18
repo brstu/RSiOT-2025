@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-postgres
+  namespace: state-lab03
+  labels:
+    org.bstu.course: "RSIOT"
+    org.bstu.variant: "17"
+spec:
+  schedule: "0 12 * * *" # Каждый день в 12:00
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: postgres:15-alpine
+            env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres-password
+            - name: PGHOST
+              value: "db-postgres-0.postgres-headless.state-lab03.svc.cluster.local" # Стабильный DNS Pod'a
+            command: ["/bin/sh", "-c"]
+            args:
+              - >
+                pg_dump -U postgres -d testdb > /backup/backup-$(date +%Y%m%d-%H%M%S).sql &&
+                echo "Backup created successfully"
+            volumeMounts:
+            - name: backup-volume
+              mountPath: /backup
+          restartPolicy: OnFailure
+          volumes:
+          - name: backup-volume
+            persistentVolumeClaim:
+              claimName: backup-pvc # Нужно создать отдельный PVC для бэкапов

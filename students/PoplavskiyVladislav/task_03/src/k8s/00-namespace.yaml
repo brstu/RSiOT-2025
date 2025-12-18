@@ -1,0 +1,8 @@
+﻿apiVersion: v1
+kind: Namespace
+metadata:
+  name: state-lab03
+  labels:
+    org.bstu.course: "RSIOT"
+    org.bstu.group: "<AS-63>" # Например, "FICT-123"
+    org.bstu.variant: "17"

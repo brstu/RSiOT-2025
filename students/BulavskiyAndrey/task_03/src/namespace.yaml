@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: state24
+  labels:
+    org.bstu.course: RSIOT
+    org.bstu.variant: "24"
+    org.bstu.student.fullname: "Yarmolovich_Aleksandr_Sergeevich"
+    org.bstu.student.id: "220029"
+    org.bstu.group: "AS-63"
+    org.bstu.owner: "YarmolovichAleksandr"
+    org.bstu.student.slug: "AS-63-220029-v24"

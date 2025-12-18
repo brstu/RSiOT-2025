@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: state01
+  labels:
+    app: db
+    org.bstu.student.fullname: ignatkevich-kirill-sergeevich
+    org.bstu.student.id: "220042"
+    org.bstu.group: as-64
+    org.bstu.variant: "09"
+    org.bstu.owner: pyrokekw
+    org.bstu.student.slug: as-64-220042-v09
+spec:
+  clusterIP: None
+  selector:
+    app: db
+  ports:
+    - port: 5432

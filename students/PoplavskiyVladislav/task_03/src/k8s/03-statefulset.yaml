@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-postgres
+  namespace: state-lab03
+  labels:
+    org.bstu.student.fullname: "<Poplavsky Vladislav Vladmirovich>"
+    org.bstu.student.id: "<as006321>"
+    org.bstu.group: "<AS-63>"
+    org.bstu.variant: "17"
+    org.bstu.course: "RSIOT"
+    app: postgres
+spec:
+  serviceName: "postgres-headless"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        org.bstu.variant: "17"
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-password
+        - name: POSTGRES_DB
+          value: "testdb"
+        - name: STU_ID           # Для логгирования, как в требованиях
+          value: "<ВАШ_STUDENT_ID>"
+        - name: STU_GROUP
+          value: "<ВАША_ГРУППА>"
+        - name: STU_VARIANT
+          value: "17"
+        ports:
+        - containerPort: 5432
+          name: postgresql
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        org.bstu.course: "RSIOT"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "premium"
+      resources:
+        requests:
+          storage: 1Gi

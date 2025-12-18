@@ -1,0 +1,21 @@
+---
+apiVersion: v2
+name: postgres-stateful
+description: PostgreSQL StatefulSet with backup/restore for Lab 03
+type: application
+version: 1.0.0
+appVersion: "15-alpine"
+keywords:
+  - postgresql
+  - statefulset
+  - backup
+  - restore
+maintainers:
+  - name: Ярмола Александр Олегович
+    email: as006325@g.bstu.by
+annotations:
+  org.bstu.course: "RSIOT"
+  org.bstu.student.id: "220028"
+  org.bstu.group: "AS-63"
+  org.bstu.variant: "23"
+  org.bstu.owner: "alexsandro007"
