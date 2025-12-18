@@ -1,0 +1,134 @@
+---
+# Метаданные студента
+student:
+  id: "220028"
+  fullname: "Ярмола Александр Олегович"
+  group: "АС-63"
+  groupLatin: "AS-63"
+  variant: "23"
+  owner: "alexsandro007"
+  slug: "AS63-220028-v23"
+
+# Имя namespace
+namespace:
+  name: state-as63-220028-v23
+  create: true
+
+# PostgreSQL конфигурация
+postgres:
+  image:
+    repository: postgres
+    tag: "15-alpine"
+    pullPolicy: IfNotPresent
+  
+  # Имя StatefulSet
+  name: db-postgres-as63-220028-v23
+  
+  # Количество реплик
+  replicas: 1
+  
+  # Порт
+  port: 5432
+  
+  # Учетные данные (используйте Secret в production!)
+  credentials:
+    username: admin
+    password: SecurePass123!
+    database: testdb
+  
+  # Ресурсы
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+  
+  # Probes
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Headless Service
+service:
+  name: db-postgres-headless
+  type: ClusterIP
+  clusterIP: None
+  port: 5432
+
+# Storage
+storage:
+  # Data PVC (через volumeClaimTemplates)
+  data:
+    size: 1Gi
+    storageClass: premium-storage
+    accessMode: ReadWriteOnce
+  
+  # Backup PVC
+  backup:
+    enabled: true
+    name: backup-postgres-pvc
+    size: 1Gi
+    storageClass: standard
+    accessMode: ReadWriteMany
+
+# StorageClass
+storageClass:
+  create: true
+  name: premium-storage
+  provisioner: k8s.io/minikube-hostpath
+  reclaimPolicy: Retain
+  volumeBindingMode: Immediate
+
+# Backup конфигурация
+backup:
+  enabled: true
+  name: backup-postgres-as63-220028-v23
+  schedule: "50 * * * *"  # каждый час в 50 минут (вариант 23)
+  retention: 5  # хранить последние 5 backup
+  image:
+    repository: postgres
+    tag: "15-alpine"
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+
+# Restore Job
+restore:
+  enabled: true
+  name: restore-postgres-as63-220028-v23
+  image:
+    repository: postgres
+    tag: "15-alpine"
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+
+# ConfigMap со скриптами
+scripts:
+  enabled: true
+  name: backup-scripts
+
+# Labels для всех ресурсов
+labels:
+  app: postgres
+  course: "RSIOT"
+
+# Annotations для всех ресурсов
+annotations:
+  description: "PostgreSQL StatefulSet for Lab 03"
