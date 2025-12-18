@@ -1,50 +1,21 @@
 ---
+{{- if .Values.prometheusRule.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: monitoring-app
-  namespace: monitoring-app
+  name: {{ include "monitoring-app.fullname" . }}
+  namespace: {{ .Values.namespace }}
   labels:
-    app: monitoring-app
-    release: monitoring
+    {{- include "monitoring-app.labels" . | nindent 4 }}
+    {{- with .Values.prometheusRule.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    org.bstu.student.id: {{ .Values.student.id | quote }}
+    org.bstu.student.group: {{ .Values.student.group | quote }}
+    org.bstu.variant: {{ .Values.student.variant | quote }}
 spec:
+  {{- with .Values.prometheusRule.groups }}
   groups:
-    - name: monitoring-app-alerts
-      interval: 30s
-      rules:
-        - alert: LowAvailability
-          expr: |
-            (sum(rate(app23_http_requests_total{status!~"5.."}[5m]))
-            / sum(rate(app23_http_requests_total[5m]))) * 100 < 99.5
-          for: 5m
-          labels:
-            severity: critical
-            variant: "23"
-          annotations:
-            summary: "Доступность ниже SLO 99.5%"
-            description: >
-              Текущая доступность ниже требуемого уровня 99.5%
-        - alert: HighErrorRate5xx
-          expr: |
-            (sum(rate(app23_http_requests_total{status=~"5.."}[5m]))
-            / sum(rate(app23_http_requests_total[5m]))) * 100 > 1
-          for: 5m
-          labels:
-            severity: warning
-            variant: "23"
-          annotations:
-            summary: "Процент 5xx ошибок превышает 1%"
-            description: >
-              5xx ошибок за последние 5 минут превышает порог 1%
-        - alert: HighLatencyP95
-          expr: |
-            histogram_quantile(0.95,
-            sum(rate(app23_http_request_duration_seconds_bucket[5m]))
-            by (le)) > 0.2
-          for: 5m
-          labels:
-            severity: warning
-            variant: "23"
-          annotations:
-            summary: "p95 latency превышает 200ms"
-            description: "p95 latency превышает требуемый уровень 200ms"
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

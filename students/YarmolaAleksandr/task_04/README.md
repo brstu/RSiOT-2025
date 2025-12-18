@@ -48,6 +48,33 @@ kubectl port-forward svc/monitoring-kube-prometheus-prometheus 9090:9090 -n moni
 2. **HighErrorRate5xx** - 5xx ошибок > 1% за 5м
 3. **HighLatencyP95** - p95 latency > 200ms
 
+## Helm параметризация
+
+Все параметры настраиваются через `values.yaml`:
+
+- `replicaCount` - количество реплик (по умолчанию: 2)
+- `image.repository`, `image.tag`, `image.pullPolicy` - параметры образа
+- `namespace` - namespace для развертывания
+- `student.*` - метаданные студента (id, group, variant, fullname, etc.)
+- `metrics.*` - настройки метрик (prefix, port, path, SLO)
+- `service.*` - параметры Service (type, port)
+- `resources.*` - ресурсы CPU/Memory
+- `livenessProbe.*`, `readinessProbe.*` - настройки проб
+- `serviceMonitor.*` - параметры ServiceMonitor
+- `prometheusRule.*` - правила алертов
+
+## Метки org.bstu.*
+
+Все ресурсы содержат метки:
+
+- `org.bstu.student.id` - ID студента
+- `org.bstu.student.group` - группа студента
+- `org.bstu.variant` - номер варианта
+- `org.bstu.course` - курс (RSIOT)
+- `org.bstu.owner` - владелец
+- `org.bstu.student.slug` - уникальный slug
+- `org.bstu.student.fullname` - полное имя (в annotations)
+
 ## Документация
 
 Полная документация в [doc/README.md](doc/README.md)

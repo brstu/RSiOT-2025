@@ -2,62 +2,66 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: monitoring-app
-  namespace: monitoring-app
+  name: {{ include "monitoring-app.fullname" . }}
+  namespace: {{ .Values.namespace }}
   labels:
-    app: monitoring-app
+    {{- include "monitoring-app.labels" . | nindent 4 }}
+    org.bstu.student.id: {{ .Values.student.id | quote }}
+    org.bstu.student.group: {{ .Values.student.group | quote }}
+    org.bstu.variant: {{ .Values.student.variant | quote }}
 spec:
-  replicas: 2
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: monitoring-app
+      {{- include "monitoring-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/path: "/metrics"
+        prometheus.io/scrape: {{ .Values.metrics.enabled | quote }}
+        prometheus.io/port: {{ .Values.metrics.port | quote }}
+        prometheus.io/path: {{ .Values.metrics.path | quote }}
+        org.bstu.student.fullname: {{ .Values.student.fullname | quote }}
+        org.bstu.course: {{ .Values.student.course | quote }}
       labels:
-        app: monitoring-app
+        {{- include "monitoring-app.selectorLabels" . | nindent 8 }}
         monitoring: "true"
+        org.bstu.student.id: {{ .Values.student.id | quote }}
+        org.bstu.variant: {{ .Values.student.variant | quote }}
     spec:
       containers:
-        - name: monitoring-app
-          image: monitoring-app:latest
-          imagePullPolicy: IfNotPresent
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: {{ .Values.metrics.port }}
               protocol: TCP
           env:
             - name: STUDENT_ID
-              value: "220028"
+              value: {{ .Values.student.id | quote }}
             - name: STUDENT_GROUP
-              value: "АС-63"
+              value: {{ .Values.student.group | quote }}
             - name: VARIANT
-              value: "23"
+              value: {{ .Values.student.variant | quote }}
             - name: PORT
-              value: "8080"
+              value: {{ .Values.metrics.port | quote }}
+            - name: METRICS_PREFIX
+              value: {{ .Values.metrics.prefix | quote }}
           livenessProbe:
             httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 3
-            failureThreshold: 3
+              path: {{ .Values.livenessProbe.httpGet.path }}
+              port: {{ .Values.livenessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
           readinessProbe:
             httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            timeoutSeconds: 3
-            failureThreshold: 3
+              path: {{ .Values.readinessProbe.httpGet.path }}
+              port: {{ .Values.readinessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
           resources:
-            limits:
-              cpu: 500m
-              memory: 512Mi
-            requests:
-              cpu: 250m
-              memory: 256Mi
+            {{- toYaml .Values.resources | nindent 12 }}
