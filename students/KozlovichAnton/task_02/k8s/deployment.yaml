@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-kozlovich
+  labels:
+    app: app-kozlovich
+    org.bstu.student.slug: "as-63-220011-v07"
+    org.bstu.student.id: "220011"
+    org.bstu.group: "as-63"
+    org.bstu.variant: "7"
+    org.bstu.course: "RSIOT"
+  annotations:
+    org.bstu.student.fullname: "Козлович Антон Александрович"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-kozlovich
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: app-kozlovich
+        org.bstu.student.slug: "as-63-220011-v07"
+        org.bstu.student.id: "220011"
+        org.bstu.group: "as-63"
+        org.bstu.variant: "7"
+        org.bstu.course: "RSIOT"
+      annotations:
+        org.bstu.student.fullname: "Козлович Антон Александрович"
+    spec:
+      containers:
+        - name: app
+          image: docker.io/library/rsiot-lr02-kozlovich:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"

@@ -1,0 +1,13 @@
+apiVersion: v2
+name: web14-chart
+description: Helm chart для Flask приложения (Вариант 14, ЛР02)
+type: application
+version: 1.0.0
+appVersion: "1.0"
+keywords:
+  - flask
+  - kubernetes
+  - rsiot
+maintainers:
+  - name: Логинов Глеб Олегович
+    email: as006315@g.bstu.by

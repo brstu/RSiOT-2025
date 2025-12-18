@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: state01
+  labels:
+    org.bstu.app: redis
+    org.bstu.student: Stelmashuk-I_A
+    org.bstu.group: AS-63
+    org.bstu.variant: v_20
+  annotations:
+    org.bstu.type: headless
+spec:
+  clusterIP: None
+  selector:
+    app: redis
+  ports:
+    - port: 6379
+      targetPort: 6379

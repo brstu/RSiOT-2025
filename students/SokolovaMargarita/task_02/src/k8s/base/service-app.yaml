@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web19
+  namespace: app19
+  labels:
+    org.bstu.student.fullname: "Sokolova-Margarita-Aleksandrovna"
+    org.bstu.student.id: "220024"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "19"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "soko1ova"
+    org.bstu.student.slug: "as-63-220024-v19"
+spec:
+  selector:
+    app: web19
+  ports:
+    - port: 80
+      targetPort: 8053
