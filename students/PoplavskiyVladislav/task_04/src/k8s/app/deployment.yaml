@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app17-deployment
+  namespace: app17-namespace
+  labels:
+    app: app17
+    org.bstu.course: RSIOT
+    org.bstu.variant: "17"
+    org.bstu.student.id: "ваш_id"
+    org.bstu.group: "ваша_группа"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app17
+  template:
+    metadata:
+      labels:
+        app: app17
+        org.bstu.course: RSIOT
+        org.bstu.variant: "17"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: app17
+        image: app17:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: STU_ID
+          value: "ваш_student_id"
+        - name: STU_GROUP
+          value: "ваша_группа"
+        - name: STU_VARIANT
+          value: "17"
+        - name: METRICS_PREFIX
+          value: "app17_"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 20

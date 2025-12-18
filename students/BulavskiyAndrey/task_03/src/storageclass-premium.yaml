@@ -1,0 +1,9 @@
+# storageclass-premium.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: premium
+provisioner: docker.io/hostpath
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+allowVolumeExpansion: true

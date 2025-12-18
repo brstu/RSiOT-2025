@@ -1,0 +1,55 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: app17-prometheus-rules
+  namespace: app17-namespace
+  labels:
+    release: kube-prometheus-stack
+    org.bstu.course: RSIOT
+    org.bstu.variant: "17"
+spec:
+  groups:
+  - name: app17-slo-rules
+    interval: 30s
+    rules:
+    - alert: App17High5xxErrorRate
+      expr: |
+        sum(rate(app17_http_requests_total{status=~"5.."}[15m])) 
+        / 
+        sum(rate(app17_http_requests_total[15m])) > 0.02
+      for: 5m
+      labels:
+        severity: critical
+        variant: "17"
+      annotations:
+        summary: "High 5xx error rate for app17"
+        description: "5xx error rate is {{ $value }}% (threshold: 2%) over last 15 minutes"
+        runbook_url: "https://example.com/runbook/app17-5xx"
+        
+    - alert: App17HighLatencyP95
+      expr: |
+        histogram_quantile(0.95, rate(app17_http_request_duration_seconds_bucket[5m])) > 0.3
+      for: 5m
+      labels:
+        severity: warning
+        variant: "17"
+      annotations:
+        summary: "High latency p95 for app17"
+        description: "95th percentile latency is {{ $value }}s (threshold: 0.3s)"
+        runbook_url: "https://example.com/runbook/app17-latency"
+        
+    - alert: App17LowAvailability
+      expr: |
+        1 - (
+          sum(rate(app17_http_requests_total{status=~"2.."}[15m]))
+          /
+          sum(rate(app17_http_requests_total[15m]))
+        ) > 0.005
+      for: 10m
+      labels:
+        severity: critical
+        variant: "17"
+      annotations:
+        summary: "Low availability for app17"
+        description: "Availability is {{ $value }}% (SLO: 99.5%)"
+        runbook_url: "https://example.com/runbook/app17-availability"

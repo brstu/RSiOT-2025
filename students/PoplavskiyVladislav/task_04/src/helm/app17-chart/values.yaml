@@ -1,0 +1,56 @@
+# Метаданные студента
+student:
+  id: "as006321"
+  group: "AS-63"
+  fullName: "Poplavsky Vladislav Vladimirovich"
+  variant: 17
+
+# Настройки приложения
+replicaCount: 2
+image:
+  repository: app17
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: false
+  className: "nginx"
+  hosts:
+    - host: app17.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "500m"
+
+monitoring:
+  enabled: true
+  metricsPrefix: "app17_"
+  scrapeInterval: "15s"
+  prometheusRule:
+    enabled: true
+    slo:
+      availability: 99.5
+      p95Latency: 0.3
+      errorRate: 2.0
+
+env:
+  - name: STU_ID
+    value: "as006321"
+  - name: STU_GROUP
+    value: "AS-63"
+  - name: STU_VARIANT
+    value: "17"
+  - name: METRICS_PREFIX
+    value: "app17_"
