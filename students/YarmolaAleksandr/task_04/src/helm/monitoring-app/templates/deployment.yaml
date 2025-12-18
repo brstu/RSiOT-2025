@@ -2,66 +2,75 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "monitoring-app.fullname" . }}
-  namespace: {{ .Values.namespace }}
+  name: {{include "monitoring-app.fullname" .}}
+  namespace: {{.Values.namespace}}
   labels:
-    {{- include "monitoring-app.labels" . | nindent 4 }}
-    org.bstu.student.id: {{ .Values.student.id | quote }}
-    org.bstu.student.group: {{ .Values.student.group | quote }}
-    org.bstu.variant: {{ .Values.student.variant | quote }}
+    app: monitoring-app
+    helm.sh/chart: monitoring-app
+    org.bstu.student.id: {{.Values.student.id | quote}}
+    org.bstu.student.group: {{.Values.student.group | quote}}
+    org.bstu.variant: {{.Values.student.variant | quote}}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{.Values.replicaCount}}
   selector:
     matchLabels:
-      {{- include "monitoring-app.selectorLabels" . | nindent 6 }}
+      app: monitoring-app
   template:
     metadata:
       annotations:
-        prometheus.io/scrape: {{ .Values.metrics.enabled | quote }}
-        prometheus.io/port: {{ .Values.metrics.port | quote }}
-        prometheus.io/path: {{ .Values.metrics.path | quote }}
-        org.bstu.student.fullname: {{ .Values.student.fullname | quote }}
-        org.bstu.course: {{ .Values.student.course | quote }}
+        prometheus.io/scrape: {{.Values.metrics.enabled | quote}}
+        prometheus.io/port: {{.Values.metrics.port | quote}}
+        prometheus.io/path: {{.Values.metrics.path | quote}}
+        org.bstu.student.fullname: {{.Values.student.fullname | quote}}
+        org.bstu.course: {{.Values.student.course | quote}}
       labels:
-        {{- include "monitoring-app.selectorLabels" . | nindent 8 }}
+        app: monitoring-app
         monitoring: "true"
-        org.bstu.student.id: {{ .Values.student.id | quote }}
-        org.bstu.variant: {{ .Values.student.variant | quote }}
+        org.bstu.student.id: {{.Values.student.id | quote}}
+        org.bstu.variant: {{.Values.student.variant | quote}}
     spec:
       containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: {{.Chart.Name}}
+          image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+          imagePullPolicy: {{.Values.image.pullPolicy}}
           ports:
             - name: http
-              containerPort: {{ .Values.metrics.port }}
+              containerPort: {{.Values.metrics.port}}
               protocol: TCP
           env:
             - name: STUDENT_ID
-              value: {{ .Values.student.id | quote }}
+              value: {{.Values.student.id | quote}}
             - name: STUDENT_GROUP
-              value: {{ .Values.student.group | quote }}
+              value: {{.Values.student.group | quote}}
             - name: VARIANT
-              value: {{ .Values.student.variant | quote }}
+              value: {{.Values.student.variant | quote}}
             - name: PORT
-              value: {{ .Values.metrics.port | quote }}
+              value: {{.Values.metrics.port | quote}}
             - name: METRICS_PREFIX
-              value: {{ .Values.metrics.prefix | quote }}
+              value: {{.Values.metrics.prefix | quote}}
           livenessProbe:
             httpGet:
-              path: {{ .Values.livenessProbe.httpGet.path }}
-              port: {{ .Values.livenessProbe.httpGet.port }}
-            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
-            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+              path: {{.Values.livenessProbe.httpGet.path}}
+              port: {{.Values.livenessProbe.httpGet.port}}
+            initialDelaySeconds:
+              {{.Values.livenessProbe.initialDelaySeconds}}
+            periodSeconds: {{.Values.livenessProbe.periodSeconds}}
+            timeoutSeconds: {{.Values.livenessProbe.timeoutSeconds}}
+            failureThreshold: {{.Values.livenessProbe.failureThreshold}}
           readinessProbe:
             httpGet:
-              path: {{ .Values.readinessProbe.httpGet.path }}
-              port: {{ .Values.readinessProbe.httpGet.port }}
-            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
-            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+              path: {{.Values.readinessProbe.httpGet.path}}
+              port: {{.Values.readinessProbe.httpGet.port}}
+            initialDelaySeconds:
+              {{.Values.readinessProbe.initialDelaySeconds}}
+            periodSeconds: {{.Values.readinessProbe.periodSeconds}}
+            timeoutSeconds: {{.Values.readinessProbe.timeoutSeconds}}
+            failureThreshold:
+              {{.Values.readinessProbe.failureThreshold}}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            limits:
+              cpu: {{.Values.resources.limits.cpu}}
+              memory: {{.Values.resources.limits.memory}}
+            requests:
+              cpu: {{.Values.resources.requests.cpu}}
+              memory: {{.Values.resources.requests.memory}}

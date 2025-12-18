@@ -1,30 +1,27 @@
 ---
-{{- if .Values.serviceMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "monitoring-app.fullname" . }}
-  namespace: {{ .Values.namespace }}
+  name: {{include "monitoring-app.fullname" .}}
+  namespace: {{.Values.namespace}}
   labels:
-    {{- include "monitoring-app.labels" . | nindent 4 }}
-    {{- with .Values.serviceMonitor.labels }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
-    org.bstu.student.id: {{ .Values.student.id | quote }}
-    org.bstu.student.group: {{ .Values.student.group | quote }}
-    org.bstu.variant: {{ .Values.student.variant | quote }}
+    app: monitoring-app
+    release: monitoring
+    org.bstu.student.id: {{.Values.student.id | quote}}
+    org.bstu.student.group: {{.Values.student.group | quote}}
+    org.bstu.variant: {{.Values.student.variant | quote}}
 spec:
   selector:
     matchLabels:
-      {{- include "monitoring-app.selectorLabels" . | nindent 6 }}
+      app: monitoring-app
   namespaceSelector:
     matchNames:
-      - {{ .Values.namespace }}
+      - {{.Values.namespace}}
   endpoints:
     - port: http
-      path: {{ .Values.metrics.path }}
-      interval: {{ .Values.serviceMonitor.interval }}
-      scrapeTimeout: {{ .Values.serviceMonitor.scrapeTimeout }}
+      path: {{.Values.metrics.path}}
+      interval: {{.Values.serviceMonitor.interval}}
+      scrapeTimeout: {{.Values.serviceMonitor.scrapeTimeout}}
       relabelings:
         - sourceLabels: [__meta_kubernetes_pod_name]
           targetLabel: pod
@@ -32,4 +29,3 @@ spec:
           targetLabel: namespace
         - sourceLabels: [__meta_kubernetes_pod_label_app]
           targetLabel: app
-{{- end }}
