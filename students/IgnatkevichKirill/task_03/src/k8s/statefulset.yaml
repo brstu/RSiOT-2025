@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+  namespace: state01
+  labels:
+    app: db
+    org.bstu.student.fullname: ignatkevich-kirill-sergeevich
+    org.bstu.student.id: "220042"
+    org.bstu.group: as-64
+    org.bstu.variant: "09"
+    org.bstu.owner: pyrokekw
+    org.bstu.student.slug: as-64-220042-v09
+spec:
+  serviceName: db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+      org.bstu.student.slug: as-64-220042-v09
+  template:
+    metadata:
+      labels:
+        app: db
+        org.bstu.student.slug: as-64-220042-v09
+    spec:
+      containers:
+        - name: db
+          image: postgres:16
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 3
+          startupProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            failureThreshold: 12
+          resources:
+            requests:
+              cpu: 150m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app: db
+          org.bstu.student.slug: as-64-220042-v09
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: fast
+        resources:
+          requests:
+            storage: 2Gi
