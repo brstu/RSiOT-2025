@@ -1,0 +1,36 @@
+﻿apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: state-moroz-evgeniy-v15
+spec:
+  schedule: "0 6 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: postgres:16
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-secret
+                      key: password
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  pg_dump \
+                  -U postgres \
+                  -h db-0.db \
+                  postgres > /backup/backup-$(date +%F-%H%M).sql
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+          volumes:
+            - name: backup
+              persistentVolumeClaim:
+                claimName: backup-pvc
