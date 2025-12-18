@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: backup-storage
   namespace: state01
+  labels:
+    org.bstu.volume: redis-backup
 spec:
   accessModes:
     - ReadWriteOnce

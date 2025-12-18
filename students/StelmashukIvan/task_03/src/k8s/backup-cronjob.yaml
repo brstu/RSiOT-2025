@@ -3,12 +3,21 @@ kind: CronJob
 metadata:
   name: redis-backup
   namespace: state01
+  labels:
+    org.bstu.app: redis-backup
+    org.bstu.student: Stelmashuk-I_A
+    org.bstu.group: AS-63
+    org.bstu.variant: v_20
 spec:
   schedule: "10 */4 * * *"
   jobTemplate:
     spec:
       template:
+        metadata:
+          labels:
+            org.bstu.job: redis-backup
         spec:
+          restartPolicy: OnFailure
           containers:
             - name: backup
               image: redis:7
@@ -16,9 +25,15 @@ spec:
                 - /bin/sh
                 - -c
                 - |
-                  redis-cli -h redis.state01 -p 6379 -a "${REDIS_PASSWORD}" BGSAVE && \
-                  sleep 10 && \
-                  cp /data/dump.rdb "/backup/backup-$(date +%Y%m%d%H%M).rdb"
+                  set -e
+                  BEFORE=$(redis-cli -h redis.state01 -a "$REDIS_PASSWORD" LASTSAVE)
+                  redis-cli -h redis.state01 -a "$REDIS_PASSWORD" BGSAVE
+                  while true; do
+                    AFTER=$(redis-cli -h redis.state01 -a "$REDIS_PASSWORD" LASTSAVE)
+                    [ "$AFTER" -gt "$BEFORE" ] && break
+                    sleep 1
+                  done
+                  cp /data/dump.rdb /backup/backup-$(date +%Y%m%d%H%M).rdb
               env:
                 - name: REDIS_PASSWORD
                   valueFrom:
@@ -30,7 +45,6 @@ spec:
                   mountPath: /data
                 - name: backup
                   mountPath: /backup
-          restartPolicy: OnFailure
           volumes:
             - name: redis-data
               persistentVolumeClaim:

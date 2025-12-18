@@ -3,6 +3,13 @@ kind: StatefulSet
 metadata:
   name: redis
   namespace: state01
+  labels:
+    org.bstu.app: redis
+    org.bstu.student: Stelmashuk-I_A
+    org.bstu.group: AS-63
+    org.bstu.variant: v_20
+  annotations:
+    org.bstu.lab: "statefulset-redis"
 spec:
   serviceName: redis
   replicas: 1
@@ -13,13 +20,20 @@ spec:
     metadata:
       labels:
         app: redis
+        org.bstu.app: redis
     spec:
       containers:
         - name: redis
           image: redis:7
           ports:
             - containerPort: 6379
-          command: ["redis-server", "--requirepass", "$(REDIS_PASSWORD)", "--appendonly", "yes"] 
+          command:
+            - /bin/sh
+            - -c
+            - |
+              exec redis-server \
+                --requirepass "$REDIS_PASSWORD" \
+                --appendonly yes
           env:
             - name: REDIS_PASSWORD
               valueFrom:
@@ -32,6 +46,8 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: data
+        labels:
+          org.bstu.volume: redis-data
       spec:
         accessModes: ["ReadWriteOnce"]
         storageClassName: standard

@@ -4,6 +4,20 @@
 
 Цель — освоить управление stateful-приложениями в Kubernetes с использованием StatefulSet, Headless Service, PersistentVolumeClaim (PVC) и PersistentVolume (PV), StorageClass. В варианте 20 развернём Redis как stateful-сервис с объёмом хранилища 1Gi на StorageClass "standard". Настроим резервное копирование (backup) и восстановление (restore) данных с помощью CronJob по расписанию - каждые 4 часа в 10-й минуте. Проверим сохранность данных при перезапуске подов и продемонстрируем backup/restore.
 
+## Метаданные студента
+
+* **ФИО:** Стельмашук Иван Александрович
+* **Группа:** АС-63
+* **№ студенческого (StudentID):** 220025
+* **Email (учебный):** [AS006322@g.bstu.by](AS006322@g.bstu.by)
+* **GitHub username:** KulibinI
+* **Вариант №:** 20
+* **Дата выполнения:** 01.12.2025
+* **ОС (версия):** Windows 10 Home 22H2
+* **Версия Docker Desktop:** 28.3.3
+* **Версия kubectl:** 1.28.0
+* **Версия Minikube:** 1.31.2
+
 ## Архитектура хранения
 
 **StatefulSet:** Управляет подами Redis с упорядоченной идентичностью (имена вроде redis-0). Обеспечивает последовательный rollout и scaling.
