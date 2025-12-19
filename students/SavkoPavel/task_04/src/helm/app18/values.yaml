@@ -1,3 +1,4 @@
+---
 replicas: 1
 
 image:
@@ -8,7 +9,7 @@ image:
 service:
   port: 80
 
-resources: {}
+resources: { }
 
 ingress:
   enabled: false

@@ -1,6 +1,7 @@
+---
 apiVersion: v2
 name: app18
-description: App18 monitored application
+description: Helm chart for app18
 type: application
 version: 0.1.0
 appVersion: "1.0"

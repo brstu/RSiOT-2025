@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -9,7 +10,7 @@ metadata:
     org.bstu.group: "AS-63"
     org.bstu.variant: "18"
 spec:
-  replicas: {{ .Values.replicas }}
+  replicas: {{.Values.replicas}}
   selector:
     matchLabels:
       app: app18
@@ -20,10 +21,10 @@ spec:
     spec:
       containers:
         - name: app18
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+          imagePullPolicy: {{.Values.image.pullPolicy}}
           ports:
-            - containerPort: {{ .Values.service.port }}
+            - containerPort: {{.Values.service.port}}
           env:
             - name: STU_ID
               value: "2200023"
@@ -31,5 +32,4 @@ spec:
               value: "AS-63"
             - name: STU_VARIANT
               value: "18"
-          resources:
-{{ toYaml .Values.resources | nindent 12 }}
+          resources: {{ toYaml .Values.resources | nindent 12 }}
