@@ -61,7 +61,15 @@
 
 ### 3. Деплой и проверка
 
+<<<<<<< HEAD
 Установлен kube-prometheus-stack в namespace monitoring:
+=======
+<<<<<<< HEAD
+Установлен kube-prometheus-stack в namespace monitoring:
+=======
+1. Установлен kube-prometheus-stack в namespace monitoring:
+>>>>>>> origin/task_04
+>>>>>>> origin/task_04
 
 ``` bash
 
@@ -70,7 +78,15 @@ helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n
 
 ```
 
+<<<<<<< HEAD
 Развернуто приложение с метриками в namespace app17-namespace:
+=======
+<<<<<<< HEAD
+Развернуто приложение с метриками в namespace app17-namespace:
+=======
+2. Развернуто приложение с метриками в namespace app17-namespace:
+>>>>>>> origin/task_04
+>>>>>>> origin/task_04
 
 ``` bash
 
@@ -80,7 +96,15 @@ kubectl apply -f k8s/app/service.yaml
 
 ```
 
+<<<<<<< HEAD
 Настроен сбор метрик и алертинг:
+=======
+<<<<<<< HEAD
+Настроен сбор метрик и алертинг:
+=======
+3. Настроен сбор метрик и алертинг:
+>>>>>>> origin/task_04
+>>>>>>> origin/task_04
 
 ``` bash
 
