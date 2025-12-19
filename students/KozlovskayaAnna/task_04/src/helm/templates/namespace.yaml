@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ include "monitoring-app.namespace" . }}
+  labels:
+    {{- include "monitoring-app.labels" . | nindent 4 }}
+    name: {{ include "monitoring-app.namespace" . }}
+  annotations:
+    org.bstu.student.fullname: {{ .Values.student.fullname | quote }}
+    org.bstu.student.id: {{ .Values.student.id | quote }}
+    org.bstu.group: {{ .Values.student.group | quote }}
+    org.bstu.variant: {{ .Values.student.variant | quote }}
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: {{ .Values.student.owner | quote }}
+    org.bstu.student.slug: {{ .Values.student.slug | quote }}

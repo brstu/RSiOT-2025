@@ -1,0 +1,396 @@
+{
+  "dashboard": {
+    "title": "Error Rate - Variant 8",
+    "tags": ["monitoring", "errors", "variant-8", "as63-220012-v8"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "5xx Error Rate (SLO: <2.5%)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "(sum(rate(app08_http_errors_5xx_total[15m])) / sum(rate(app08_http_requests_total[15m]))) * 100",
+            "legendFormat": "5xx Rate",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 0,
+          "y": 0
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "colorMode": "value",
+          "graphMode": "area"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 1.5, "color": "yellow"},
+                {"value": 2.5, "color": "red"}
+              ]
+            },
+            "decimals": 2
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "4xx Error Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "(sum(rate(app08_http_errors_4xx_total[5m])) / sum(rate(app08_http_requests_total[5m]))) * 100",
+            "legendFormat": "4xx Rate",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 8,
+          "y": 0
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "colorMode": "value",
+          "graphMode": "area"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 5, "color": "yellow"},
+                {"value": 10, "color": "red"}
+              ]
+            },
+            "decimals": 2
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Total Error Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "(sum(rate(app08_http_requests_total{status=~\"4..|5..\"}[5m])) / sum(rate(app08_http_requests_total[5m]))) * 100",
+            "legendFormat": "Total Errors",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 0
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "colorMode": "value",
+          "graphMode": "area"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 3, "color": "yellow"},
+                {"value": 5, "color": "red"}
+              ]
+            },
+            "decimals": 2
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "5xx Error Rate Over Time (15m window)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "(sum(rate(app08_http_errors_5xx_total[15m])) / sum(rate(app08_http_requests_total[15m]))) * 100",
+            "legendFormat": "5xx Error Rate",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 10,
+          "w": 24,
+          "x": 0,
+          "y": 8
+        },
+        "yaxes": [
+          {
+            "format": "percent",
+            "label": "Error Rate"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "pointradius": 2,
+        "legend": {
+          "show": true,
+          "values": true,
+          "avg": true,
+          "current": true,
+          "max": true,
+          "min": true
+        },
+        "thresholds": [
+          {
+            "value": 2.5,
+            "colorMode": "critical",
+            "op": "gt",
+            "fill": true,
+            "line": true,
+            "yaxis": "left"
+          }
+        ],
+        "alert": {
+          "name": "High 5xx Error Rate",
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [2.5],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": ["A", "15m", "now"]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ]
+        }
+      },
+      {
+        "id": 5,
+        "title": "Error Breakdown by Status Code",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(app08_http_requests_total{status=~\"4..|5..\"}[5m])) by (status)",
+            "legendFormat": "{{status}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 0,
+          "y": 18
+        },
+        "yaxes": [
+          {
+            "format": "reqps",
+            "label": "Requests/s"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "legend": {
+          "show": true,
+          "values": true,
+          "current": true,
+          "total": true
+        },
+        "stack": true
+      },
+      {
+        "id": 6,
+        "title": "Errors by Endpoint",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(app08_http_errors_5xx_total[5m])) by (endpoint)",
+            "legendFormat": "{{endpoint}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 12,
+          "y": 18
+        },
+        "yaxes": [
+          {
+            "format": "reqps",
+            "label": "5xx Errors/s"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "legend": {
+          "show": true,
+          "values": true,
+          "current": true,
+          "total": true
+        }
+      },
+      {
+        "id": 7,
+        "title": "Total 5xx Errors Count",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(app08_http_errors_5xx_total)",
+            "legendFormat": "5xx Count",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 0,
+          "y": 28
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name",
+          "colorMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "decimals": 0
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "Total 4xx Errors Count",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(app08_http_errors_4xx_total)",
+            "legendFormat": "4xx Count",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 8,
+          "y": 28
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name",
+          "colorMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "decimals": 0
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": "Success vs Errors Distribution",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum(rate(app08_http_requests_total{status=~\"2..|3..\"}[5m]))",
+            "legendFormat": "Success (2xx/3xx)",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(app08_http_requests_total{status=~\"4..\"}[5m]))",
+            "legendFormat": "Client Errors (4xx)",
+            "refId": "B"
+          },
+          {
+            "expr": "sum(rate(app08_http_requests_total{status=~\"5..\"}[5m]))",
+            "legendFormat": "Server Errors (5xx)",
+            "refId": "C"
+          }
+        ],
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 16,
+          "y": 28
+        },
+        "options": {
+          "legend": {
+            "display": "table",
+            "placement": "right",
+            "values": ["value", "percent"]
+          },
+          "pieType": "pie",
+          "displayLabels": ["percent"]
+        }
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    }
+  }
+}

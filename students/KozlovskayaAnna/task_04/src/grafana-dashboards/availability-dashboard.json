@@ -1,0 +1,285 @@
+{
+  "dashboard": {
+    "title": "Service Availability - Variant 8",
+    "tags": ["monitoring", "availability", "variant-8", "as63-220012-v8"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Service Availability (%)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "(sum(rate(app08_http_requests_total{status!~\"5..\"}[5m])) / sum(rate(app08_http_requests_total[5m]))) * 100",
+            "legendFormat": "Availability",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "colorMode": "value",
+          "graphMode": "area"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 95, "color": "yellow"},
+                {"value": 99.5, "color": "green"}
+              ]
+            },
+            "decimals": 2
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Service Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "app08_health_status",
+            "legendFormat": "Health",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name",
+          "colorMode": "background"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {"type": "value", "value": "1", "text": "Healthy"},
+              {"type": "value", "value": "0", "text": "Unhealthy"}
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 1, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Availability Over Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "(sum(rate(app08_http_requests_total{status!~\"5..\"}[5m])) / sum(rate(app08_http_requests_total[5m]))) * 100",
+            "legendFormat": "Availability %",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 9,
+          "w": 24,
+          "x": 0,
+          "y": 8
+        },
+        "yaxes": [
+          {
+            "format": "percent",
+            "label": "Availability",
+            "min": "95",
+            "max": "100"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "pointradius": 2,
+        "legend": {
+          "show": true,
+          "values": true,
+          "avg": true,
+          "current": true,
+          "max": true,
+          "min": true
+        },
+        "alert": {
+          "name": "Low Availability Alert",
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [99.5],
+                "type": "lt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": ["A", "5m", "now"]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ]
+        }
+      },
+      {
+        "id": 4,
+        "title": "Total Requests",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(rate(app08_http_requests_total[5m]))",
+            "legendFormat": "Requests/s",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 0,
+          "y": 17
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "colorMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "decimals": 2
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Success Rate (2xx/3xx)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "(sum(rate(app08_http_requests_total{status=~\"2..|3..\"}[5m])) / sum(rate(app08_http_requests_total[5m]))) * 100",
+            "legendFormat": "Success %",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 8,
+          "y": 17
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name",
+          "colorMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 90, "color": "yellow"},
+                {"value": 99, "color": "green"}
+              ]
+            },
+            "decimals": 2
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "Uptime",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=~\".*monitoring-app.*\"}",
+            "legendFormat": "Up",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 16,
+          "y": 17
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name",
+          "colorMode": "background"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {"type": "value", "value": "1", "text": "UP"},
+              {"type": "value", "value": "0", "text": "DOWN"}
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 1, "color": "green"}
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    }
+  }
+}
