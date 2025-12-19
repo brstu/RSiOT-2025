@@ -1,0 +1,9 @@
+---
+# Namespace РґР»СЏ РїСЂРёР»РѕР¶РµРЅРёСЏ
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app-as63-220016-v12
+  labels:
+    org.bstu.student.slug: "as63-220016-v12"
+    org.bstu.course: "RSiOT"

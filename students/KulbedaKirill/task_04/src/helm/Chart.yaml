@@ -1,0 +1,7 @@
+---
+apiVersion: v2
+name: app12-monitoring
+description: Basic Helm chart for monitoring application
+type: application
+version: 0.1.0
+appVersion: "1.0"

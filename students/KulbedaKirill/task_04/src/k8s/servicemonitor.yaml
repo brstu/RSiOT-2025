@@ -1,0 +1,18 @@
+---
+# ServiceMonitor РґР»СЏ СЃР±РѕСЂР° РјРµС‚СЂРёРє
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mon-as63-220016-v12-monitor
+  namespace: app-as63-220016-v12
+  labels:
+    app: mon-as63-220016-v12
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: mon-as63-220016-v12
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
