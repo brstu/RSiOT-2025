@@ -27,7 +27,7 @@
 
 ### Вариант №18
 
-db=redis, pvc=2Gi, storageClass=premium, schedule="*/25 * * * *"
+db=redis, pvc=2Gi, storageClass=premium, schedule="*/25
 
 ---
 
