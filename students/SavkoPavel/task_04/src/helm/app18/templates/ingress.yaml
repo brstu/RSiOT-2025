@@ -2,18 +2,16 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: chart-app18
-{{- if .Values.ingress.enabled }}
 spec:
-  ingressClassName: {{ .Values.ingress.className | quote }}
+  ingressClassName: nginx
   rules:
-  - host: {{ .Values.ingress.host | quote }}
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: chart-app18
-            port:
-              number: 80
-{{- end }}
+    - host: example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: chart-app18
+                port:
+                  number: 80
