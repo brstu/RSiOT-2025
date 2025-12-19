@@ -3,12 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: chart-app18
-  labels:
-    app: app18
-    org.bstu.student.fullname: "Savko Pavel Stanislavovich"
-    org.bstu.student.id: "2200023"
-    org.bstu.group: "AS-63"
-    org.bstu.variant: "18"
 spec:
   replicas: {{.Values.replicas}}
   selector:
@@ -25,11 +19,4 @@ spec:
           imagePullPolicy: {{.Values.image.pullPolicy}}
           ports:
             - containerPort: {{.Values.service.port}}
-          env:
-            - name: STU_ID
-              value: "2200023"
-            - name: STU_GROUP
-              value: "AS-63"
-            - name: STU_VARIANT
-              value: "18"
-          resources: {{ toYaml .Values.resources | nindent 12 }}
+          resources: {{toYaml .Values.resources | nindent 12}}
