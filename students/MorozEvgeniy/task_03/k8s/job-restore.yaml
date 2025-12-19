@@ -1,0 +1,33 @@
+﻿apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgres-restore
+  namespace: state-moroz-evgeniy-v15
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: restore
+          image: postgres:16
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+          command:
+            - /bin/sh
+            - -c
+            - |
+              psql \
+              -U postgres \
+              -h db-0.db.state-<slug>.svc.cluster.local \
+              postgres < /backup/backup-YYYY-MM-DD-HHMM.sql
+          volumeMounts:
+            - name: backup
+              mountPath: /backup
+      volumes:
+        - name: backup
+          persistentVolumeClaim:
+            claimName: backup-pvc

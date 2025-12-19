@@ -1,0 +1,13 @@
+﻿apiVersion: v1
+kind: Namespace
+metadata:
+  name: app15
+  labels:
+    app: web15
+    org.bstu.student.fullname: "Moroz_Evgeniy_Vasilevich"
+    org.bstu.student.id: "220019"
+    org.bstu.group: "AC-63"
+    org.bstu.variant: "15"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "EugeneFr0st"
+    org.bstu.student.slug: "as-63-220019-v15"

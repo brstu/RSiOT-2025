@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redis-restore
+  namespace: state01
+  labels:
+    org.bstu.job: redis-restore
+    org.bstu.student: Stelmashuk-I_A
+    org.bstu.group: AS-63
+    org.bstu.variant: v_20
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: restore
+          image: busybox
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              LATEST=$(ls -1 /backup/backup-*.rdb | sort | tail -n 1)
+              echo "Restoring $LATEST"
+              cp "$LATEST" /data/dump.rdb
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+            - name: backup
+              mountPath: /backup
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: data-redis-0
+        - name: backup
+          persistentVolumeClaim:
+            claimName: backup-storage

@@ -43,11 +43,11 @@ GET /health - Health check
 ## Student Metadata
 
 ```
-Full Name: Смердина Анастасия Валентиновна
+Full Name: Булавский Андрей Сергеевич
 Group: АС-64
-Student ID: 220053
-Email (Academic): AS006424@g.bstu.by
-GitHub Username: KotyaLapka
+Student ID: 220034
+Email (Academic): as006405@g.bstu.by
+GitHub Username: andrei1910bl
 Variant №: 41
 Completion Date: 13/11/2025
 Operating System: Windows 10 Pro 22H2, Ubuntu 22.04

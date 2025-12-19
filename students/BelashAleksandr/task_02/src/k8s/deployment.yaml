@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-as64-220031-v25
+  namespace: app25
+  labels:
+    app: web25
+    org.bstu.student.fullname: "Белаш Александр Олегович"
+    org.bstu.student.id: "220031"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "25"
+    org.bstu.course: "RSiOT"
+    org.bstu.owner: "went2smoke"
+    org.bstu.student.slug: "as64-220031-v25"
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: web25
+  template:
+    metadata:
+      labels:
+        app: web25
+    spec:
+      containers:
+      - name: web25
+        image: went2smoke/web25:latest
+        ports:
+        - containerPort: 8031
+        env:
+        - name: STU_ID
+          value: "220031"
+        - name: STU_GROUP
+          value: "АС-64"
+        - name: STU_VARIANT
+          value: "25"
+        resources:
+          requests:
+            cpu: "150m"
+            memory: "128Mi"
+          limits:
+            cpu: "150m"
+            memory: "128Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8031
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8031
+          initialDelaySeconds: 5
+          periodSeconds: 5
