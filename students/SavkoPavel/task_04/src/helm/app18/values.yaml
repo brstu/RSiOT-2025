@@ -9,7 +9,7 @@ service:
   port: 80
 
 resources: {}
-  
+
 ingress:
   enabled: false
   className: nginx
