@@ -1,0 +1,10 @@
+# k8s/configmap.yaml (конфиг для app, порт фиксирован в коде, но для примера)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web10-config
+  namespace: app10
+data:
+  PG_DB: "calc_history"
+  PG_HOST: "postgres-service"
+  PG_USER: "postgres"

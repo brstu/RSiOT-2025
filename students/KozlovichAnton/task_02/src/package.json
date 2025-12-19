@@ -1,0 +1,12 @@
+{
+  "name": "lr02-kozlovich",
+  "version": "0.1.0",
+  "description": "LR02 service for Kozlovich variant 7",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

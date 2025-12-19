@@ -35,32 +35,32 @@ db=redis, pvc=2Gi, storageClass=premium, schedule="*/25 * * * *"
 
 ### 1. Архитектура проекта
 
-- **Stateful-сервис:** Redis  
-- **PersistentVolumeClaim:** 2Gi  
-- **StorageClass:** premium  
-- **Headless Service:** для стабильных DNS-имен подов  
-- **Backup:** CronJob с расписанием `*/25 * * * *`  
-- **Restore:** Job для восстановления из backup  
+- ** Stateful-сервис: ** Redis
+- **PersistentVolumeClaim:** 2Gi
+- **StorageClass:** premium
+- **Headless Service:** для стабильных DNS-имен подов
+- **Backup:** CronJob с расписанием `*/25 * * * *`
+- **Restore:** Job для восстановления из backup
 
 ---
 
 ### 2. Использованные ресурсы Kubernetes
 
-- **Namespace:** state-as63  
-- **Secret:** redis-secret (пароль Redis)  
-- **StatefulSet:** redis-statefulset.yaml  
-- **Headless Service:** redis-service.yaml  
-- **StorageClass:** premium  
-- **CronJob:** backup-cronjob.yaml  
-- **Job:** restore-job.yaml  
+- **Namespace:** state-as63
+- **Secret:** redis-secret (пароль Redis)
+- **StatefulSet:** redis-statefulset.yaml
+- **Headless Service:** redis-service.yaml
+- **StorageClass:** premium
+- **CronJob:** backup-cronjob.yaml
+- **Job:** restore-job.yaml
 
 ---
 
 ### 3. Деплой и проверка
 
-1. Создан namespace: `kubectl apply -f src/manifests/namespace.yaml`  
-2. Создан StorageClass и PVC: `kubectl apply -f src/manifests/storageclass.yaml`  
-3. Создан Secret с паролем Redis: `kubectl apply -f src/manifests/redis-secret.yaml`  
+1. Создан namespace: `kubectl apply -f src/manifests/namespace.yaml`
+2. Создан StorageClass и PVC: `kubectl apply -f src/manifests/storageclass.yaml`
+3. Создан Secret с паролем Redis: `kubectl apply -f src/manifests/redis-secret.yaml`
 4. Развернут Headless Service и StatefulSet
 
    ```bash
@@ -72,7 +72,7 @@ db=redis, pvc=2Gi, storageClass=premium, schedule="*/25 * * * *"
 
 ---
 
-### 4. Проверка состояния:
+### 4. Проверка состояния
 
 ```bash
 

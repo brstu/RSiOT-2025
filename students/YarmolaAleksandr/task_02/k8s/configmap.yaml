@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-web23-config
+  namespace: app23
+  labels:
+    app: web23
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220028"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "23"
+    org.bstu.owner: "alexsandro007"
+    org.bstu.student.slug: "AS63-220028-v23"
+  annotations:
+    org.bstu.group: "АС-63"
+data:
+  APP_PORT: "8043"
+  STU_ID: "220028"
+  STU_GROUP: "АС-63"
+  STU_VARIANT: "23"
+  APP_ENV: "production"

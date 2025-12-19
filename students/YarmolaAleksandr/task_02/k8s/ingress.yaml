@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: net-web23
+  namespace: app23
+  labels:
+    app: web23
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220028"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "23"
+    org.bstu.owner: "alexsandro007"
+    org.bstu.student.slug: "AS63-220028-v23"
+  annotations:
+    org.bstu.student.fullname: "Ярмола Александр Олегович"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: web23.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: net-web23
+                port:
+                  number: 80

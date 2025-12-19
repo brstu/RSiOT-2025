@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: app23
+
+resources:
+- namespace.yaml
+- deployment.yaml
+- service.yaml
+- ingress.yaml
+
+configMapGenerator:
+- name: app-web23-config
+  literals:
+  - APP_PORT=8043
+  - STU_ID=220028
+  - STU_GROUP=АС-63
+  - STU_VARIANT=23
+  - APP_ENV=production
+
+commonLabels:
+  org.bstu.course: RSIOT
+  org.bstu.variant: "23"
+  org.bstu.student.slug: ac63-220028-v23
+
+images:
+- name: alexsandro007/rsiot-lab02
+  newTag: v1.0

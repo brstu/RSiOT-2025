@@ -1,0 +1,22 @@
+---
+apiVersion: v2
+name: web08
+description: Helm chart для web08 - Лабораторная работа №02
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - kubernetes
+  - rsiot
+  - lab02
+maintainers:
+  - name: Козловская Анна Геннадьевна
+    email: AS006309@g.bstu.by
+annotations:
+  org.bstu.student.fullname: "Козловская Анна Геннадьевна"
+  org.bstu.student.id: "220012"
+  org.bstu.group: "АС-63"
+  org.bstu.variant: "8"
+  org.bstu.course: "RSIOT"
+  org.bstu.owner: "annkrq"
+  org.bstu.student.slug: "as63-220012-v8"
