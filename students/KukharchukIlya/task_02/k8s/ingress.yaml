@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web13
+  namespace: app13
+  labels:
+    org.bstu.student.fullname: "Кухарчук Илья Николаевич"
+    org.bstu.student.id: "220017"
+    org.bstu.group: "АС-63"
+    org.bstu.variant: "13"
+    org.bstu.course: RSIOT
+    org.bstu.owner: "IlyaKukharchuk"
+    org.bstu.student.slug: "as-63-220017-v13"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: web13.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web13
+                port:
+                  number: 80
