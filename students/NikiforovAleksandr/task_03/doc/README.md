@@ -1,6 +1,6 @@
 # Лабораторная работа №03. Kubernetes: состояние и хранение  
 
-**Вариант 16** – db=redis, pvc=3Gi, storageClass=fast, schedule="*/12"
+**Вариант 16** – db=redis, pvc=3Gi, storageClass=fast, schedule=*/12
 
 ## Студент  
 
@@ -17,50 +17,50 @@
 
 ## Деплой приложения
 
-1.Создать namespace:
+Создать namespace:
 
 ```bash
 kubectl apply -f namespace.yaml
 ````
 
-2.Создать Secret для Redis пароля:
+Создать Secret для Redis пароля:
 
 ```bash
 kubectl apply -f redis-secret.yaml
 ```
 
-3.Создать StorageClass:
+Создать StorageClass:
 
 ```bash
 kubectl apply -f storageclass-fast.yaml
 ```
 
-4.Создать PVC для backup:
+Создать PVC для backup:
 
 ```bash
 kubectl apply -f redis-backup-pvc.yaml
 ```
 
-5.Создать ConfigMap с конфигурацией Redis:
+Создать ConfigMap с конфигурацией Redis:
 
 ```bash
 kubectl apply -f redis-config.yaml
 ```
 
-6.Создать Headless Service и Service:
+Создать Headless Service и Service:
 
 ```bash
 kubectl apply -f redis-headless.yaml
 kubectl apply -f redis-service.yaml
 ```
 
-7.Создать StatefulSet:
+Создать StatefulSet:
 
 ```bash
 kubectl apply -f redis-stateful.yaml
 ```
 
-8.Проверить состояние:
+Проверить состояние:
 
 ```bash
 kubectl get pods -n state01
