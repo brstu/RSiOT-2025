@@ -13,7 +13,6 @@ metadata:
     org.bstu.student.slug: "AS63-220039-v31"
   annotations:
     org.bstu.group: "АС-64"
-  annotations:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
