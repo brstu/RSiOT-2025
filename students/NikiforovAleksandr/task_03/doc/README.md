@@ -1,15 +1,15 @@
-# Лабораторная работа №03. Kubernetes: состояние и хранение  
+# Лабораторная работа №03. Kubernetes: состояние и хранение
 
 **Вариант 16** – db=redis, pvc=3Gi, storageClass=fast, schedule=*/12
 
-## Студент  
+## Студент
 
-- ФИО: Nikiforov-Alexandr  
-- Группа: AS-63  
-- StudentID: 220020  
-- Email: <woqhy@mail.ru>  
-- GitHub: woqhy  
-- Дата выполнения: 19.12.2025  
+- ФИО: Nikiforov-Alexandr
+- Группа: AS-63
+- StudentID: 220020
+- Email: <woqhy@mail.ru>
+- GitHub: woqhy
+- Дата выполнения: 19.12.2025
 
 ## Цель работы
 
@@ -106,13 +106,6 @@ kubectl apply -f redis-restore-job.yaml
 
 - После перезапуска пода данные сохраняются благодаря volumeClaimTemplates.
 - После восстановления из backup создаётся тестовый ключ `restore-test-<timestamp>`.
-
-## Kubernetes версии и окружение
-
-- ОС: <твоя ОС и версия>
-- Docker: <версия>
-- kubectl: <версия>
-- Minikube/Kind: <версия>
 
 ## Метаданные
 
