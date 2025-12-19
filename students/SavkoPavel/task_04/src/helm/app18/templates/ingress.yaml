@@ -3,8 +3,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: chart-app18
-spec:
 {{- if .Values.ingress.enabled }}
+spec:
   ingressClassName: {{ .Values.ingress.className }}
   rules:
     - host: {{ .Values.ingress.host }}
@@ -17,7 +17,4 @@ spec:
                 name: chart-app18
                 port:
                   number: 80
-{{- else }}
-  # Если ingress отключен, создаем пустой spec, чтобы YAML был валидным
-  rules: []
 {{- end }}
