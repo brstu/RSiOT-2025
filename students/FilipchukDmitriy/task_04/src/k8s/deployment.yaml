@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mon-as63-220027-v22
+  namespace: app-as63-220027-v22
+  labels:
+    app: mon-as63-220027-v22
+    org.bstu.student.fullname: "filipchuk-dmitriy-vasilevich"
+    org.bstu.student.id: "220027"
+    org.bstu.group: "as-63"
+    org.bstu.variant: "22"
+    org.bstu.course: "RSiOT"
+    org.bstu.owner: "kuddel11"
+    org.bstu.student.slug: "as63-220027-v22"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mon-as63-220027-v22
+  template:
+    metadata:
+      labels:
+        app: mon-as63-220027-v22
+        org.bstu.student.slug: "as63-220027-v22"
+    spec:
+      containers:
+        - name: app
+          image: kuddel11/app22-metrics:latest
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: STU_ID
+              value: "220027"
+            - name: STU_GROUP
+              value: "РђРЎ-63"
+            - name: STU_VARIANT
+              value: "22"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5

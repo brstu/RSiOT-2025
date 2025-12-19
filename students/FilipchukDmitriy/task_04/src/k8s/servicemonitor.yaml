@@ -1,0 +1,17 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mon-as63-220027-v22-monitor
+  namespace: app-as63-220027-v22
+  labels:
+    app: mon-as63-220027-v22
+    org.bstu.student.slug: "as63-220027-v22"
+spec:
+  selector:
+    matchLabels:
+      app: mon-as63-220027-v22
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s

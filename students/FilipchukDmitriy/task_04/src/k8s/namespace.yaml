@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app-as63-220027-v22
+  labels:
+    org.bstu.student.slug: "as63-220027-v22"
