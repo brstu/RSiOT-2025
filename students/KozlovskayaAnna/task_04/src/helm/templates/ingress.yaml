@@ -1,11 +1,11 @@
-{{- if .Values.ingress.enabled }}
+{{ if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "monitoring-app.fullname" . }}
   namespace: {{ include "monitoring-app.namespace" . }}
   labels:
-    {{- include "monitoring-app.labels" . | nindent 4 }}
+    {{ include "monitoring-app.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

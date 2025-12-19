@@ -1,11 +1,11 @@
-{{- if .Values.metrics.serviceMonitor.enabled }}
+{{ if .Values.metrics.serviceMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "monitoring-app.fullname" . }}
   namespace: {{ .Values.metrics.serviceMonitor.namespace }}
   labels:
-    {{- include "monitoring-app.labels" . | nindent 4 }}
+    {{ include "monitoring-app.labels" . | nindent 4 }}
     release: kube-prometheus-stack
   annotations:
     org.bstu.student.fullname: {{ .Values.student.fullname | quote }}

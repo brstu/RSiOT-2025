@@ -1,11 +1,11 @@
-{{- if .Values.prometheusRule.enabled }}
+{{ if .Values.prometheusRule.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: {{ include "monitoring-app.fullname" . }}
   namespace: {{ .Values.prometheusRule.namespace }}
   labels:
-    {{- include "monitoring-app.labels" . | nindent 4 }}
+    {{ include "monitoring-app.labels" . | nindent 4 }}
     {{- with .Values.prometheusRule.additionalLabels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}

@@ -4,7 +4,6 @@ metadata:
   name: {{ include "monitoring-app.namespace" . }}
   labels:
     {{ include "monitoring-app.labels" . | nindent 4 }}
-    name: {{ include "monitoring-app.namespace" . }}
   annotations:
     org.bstu.student.fullname: {{ .Values.student.fullname | quote }}
     org.bstu.student.id: {{ .Values.student.id | quote }}
