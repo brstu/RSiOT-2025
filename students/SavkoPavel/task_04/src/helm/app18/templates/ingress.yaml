@@ -5,9 +5,9 @@ metadata:
   name: chart-app18
 spec:
 {{- if .Values.ingress.enabled }}
-  ingressClassName: {{.Values.ingress.className}}
+  ingressClassName: {{ .Values.ingress.className }}
   rules:
-    - host: {{.Values.ingress.host}}
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
           - path: /
@@ -18,5 +18,6 @@ spec:
                 port:
                   number: 80
 {{- else }}
+  # Если ingress отключен, создаем пустой spec, чтобы YAML был валидным
   rules: []
 {{- end }}
