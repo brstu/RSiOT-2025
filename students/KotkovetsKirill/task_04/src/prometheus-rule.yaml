@@ -1,0 +1,31 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: alert-as64-220044-v35
+  namespace: monitoring
+  labels:
+    app: mon-as64-220044-v35
+    org.bstu.student.slug: "as64-220044-v35"
+    prometheus: kube-prometheus
+spec:
+  groups:
+    - name: app35-alerts
+      interval: 30s
+      rules:
+        - alert: High5xxErrorRate
+          expr: |
+            (
+              sum(rate(app35_requests_total{status="500"}[5m]))
+              /
+              sum(rate(app35_requests_total[5m]))
+            ) > 0.01
+          for: 5m
+          labels:
+            severity: warning
+            student: "as64-220044-v35"
+          annotations:
+            summary: "High 5xx error rate detected"
+            description: >-
+              5xx error rate is above 1% for 5 minutes
+              (variant 35: 5xx>1% Р·Р° 5Рј)
