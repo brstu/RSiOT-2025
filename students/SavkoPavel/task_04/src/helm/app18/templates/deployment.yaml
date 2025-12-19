@@ -32,4 +32,4 @@ spec:
             - name: STU_VARIANT
               value: "18"
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+{{ toYaml .Values.resources | indent 12 }}
