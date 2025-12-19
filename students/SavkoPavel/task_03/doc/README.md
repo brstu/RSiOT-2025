@@ -35,7 +35,7 @@ db=redis, pvc=2Gi, storageClass=premium, schedule="*/25 * * * *"
 
 ### 1. Архитектура проекта
 
-- ** Stateful-сервис: ** Redis
+- **Stateful-сервис:** Redis
 - **PersistentVolumeClaim:** 2Gi
 - **StorageClass:** premium
 - **Headless Service:** для стабильных DNS-имен подов
