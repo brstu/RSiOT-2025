@@ -1,0 +1,7 @@
+---
+apiVersion: v2
+name: mon-as64-220051-v38
+description: Monitoring app for variant 38
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
