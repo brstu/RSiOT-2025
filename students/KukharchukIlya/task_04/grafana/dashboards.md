@@ -241,25 +241,25 @@ sum(rate(app13_http_request_duration_seconds_bucket{job="app13-app", namespace="
 app13_http_requests_total
 ```
 
-2. **RPS (Requests Per Second):**
+1. **RPS (Requests Per Second):**
 
 ```promql
 rate(app13_http_requests_total[5m])
 ```
 
-3. **Задержка p95:**
+1. **Задержка p95:**
 
 ```promql
 histogram_quantile(0.95, rate(app13_http_request_duration_seconds_bucket[5m])) * 1000
 ```
 
-4. **Частота ошибок 5xx:**
+1. **Частота ошибок 5xx:**
 
 ```promql
 sum(rate(app13_http_requests_total{status=~"5.."}[10m])) / sum(rate(app13_http_requests_total[10m])) * 100
 ```
 
-5. **Доступность:**
+1. **Доступность:**
 
 ```promql
 avg_over_time(up{job="app13-app"}[5m]) * 100
