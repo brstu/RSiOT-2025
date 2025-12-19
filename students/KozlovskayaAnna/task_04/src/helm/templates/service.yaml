@@ -4,7 +4,7 @@ metadata:
   name: {{ include "monitoring-app.fullname" . }}
   namespace: {{ include "monitoring-app.namespace" . }}
   labels:
-    {{- include "monitoring-app.labels" . | nindent 4 }}
+    {{ include "monitoring-app.labels" . | nindent 4 }}
   {{- with .Values.service.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
