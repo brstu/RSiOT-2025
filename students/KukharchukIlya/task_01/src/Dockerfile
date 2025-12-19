@@ -15,9 +15,10 @@ COPY src/server.go ./
 RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o server server.go
 
 # Stage 2: Runtime
-FROM alpine:latest
+FROM alpine:3.19
 
 # Install ca-certificates, postgresql client libraries, and wget for healthcheck
+# hadolint ignore=DL3018
 RUN apk --no-cache add ca-certificates libc6-compat wget
 
 WORKDIR /app
