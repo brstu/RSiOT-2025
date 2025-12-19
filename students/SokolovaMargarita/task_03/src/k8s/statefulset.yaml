@@ -1,0 +1,97 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-postgres-as63-220024-v19
+  namespace: state-as63-220024-v19
+  labels:
+    app: postgres
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220024"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "19"
+    org.bstu.owner: "Ritkas33395553"
+    org.bstu.student.slug: "as-63-220024-v19"
+  annotations:
+    org.bstu.student.fullname: "Соколова Маргарита Александровна"
+spec:
+  serviceName: db-postgres-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        org.bstu.course: "RSIOT"
+        org.bstu.student.id: "220024"
+        org.bstu.group: "AS-63"
+        org.bstu.variant: "19"
+        org.bstu.owner: "Ritkas33395553"
+        org.bstu.student.slug: "as-63-220024-v19"
+      annotations:
+        org.bstu.student.fullname: "Соколова Маргарита Александровна"
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          envFrom:
+            - secretRef:
+                name: db-postgres-secret
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: STU_ID
+              value: "220024"
+            - name: STU_GROUP
+              value: "АС-63"
+            - name: STU_VARIANT
+              value: "19"
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - admin
+                - -d
+                - testdb
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - admin
+                - -d
+                - testdb
+            initialDelaySeconds: 5
+            periodSeconds: 5
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+        labels:
+          app: postgres
+          org.bstu.student.id: "220024"
+          org.bstu.variant: "19"
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard-storage
+        resources:
+          requests:
+            storage: 3Gi

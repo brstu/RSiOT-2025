@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: state-as63-220024-v19
+  labels:
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220024"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "19"
+    org.bstu.owner: "Ritkas33395553"
+    org.bstu.student.slug: "as-63-220024-v19"
+  annotations:
+    org.bstu.student.fullname: "Соколова Маргарита Александровна"
+    org.bstu.group.cyrillic: "АС-63"
