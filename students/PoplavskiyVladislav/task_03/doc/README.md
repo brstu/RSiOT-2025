@@ -29,7 +29,6 @@
 
 **db=postgres, pvc=1Gi, storageClass=premium, schedule="0 12 * * "*
 
-
 ---
 
 ## Ход выполнения работы
@@ -40,7 +39,7 @@
 - **PersistentVolumeClaim:** 1Gi
 - **StorageClass:** premium (с параметрами для SSD-дисков)
 - **Headless Service:** postgres-headless для стабильных DNS-имен подов (формат: pod-name.service-name.namespace.svc.cluster.local)
-- **Backup:** CronJob с расписанием 0 12 * * * (ежедневно в 12:00) *`
+- **Backup:** CronJob с расписанием
 - **Restore:** state-lab03 для изоляции ресурсов
 
 ---
