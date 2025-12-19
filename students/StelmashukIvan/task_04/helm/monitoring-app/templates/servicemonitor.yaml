@@ -14,8 +14,8 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: monitoring-app
-      app.kubernetes.io/instance: app20
+      {{ include "monitoring-app.selectorLabels" . | indent 6 }}
+
   endpoints:
     - port: http
       path: /metrics

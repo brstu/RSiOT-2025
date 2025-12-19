@@ -2,10 +2,10 @@
 
 replicaCount: 2
 
-namespace: app20-ns  # или default
+namespace: app20-ns
 
 image:
-  repository: app20  # замени на свой
+  repository: app20
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -15,7 +15,7 @@ service:
 
 ingress:
   enabled: true
-  className: nginx  # или твой ingressClass
+  className: nginx
   hosts:
     - host: app20.example.local
       paths:
@@ -31,7 +31,7 @@ resources:
     memory: "256Mi"
 
 metrics:
-  prefix: app20_  # префикс метрик
+  prefix: app20_
   serviceMonitor:
     enabled: true
     interval: 15s

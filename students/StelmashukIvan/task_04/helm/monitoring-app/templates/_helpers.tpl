@@ -25,6 +25,9 @@ app.kubernetes.io/name: {{ include "monitoring-app.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+org.bstu.lab: monitoring
+org.bstu.variant: app20
+org.bstu.slo: "99.5"
 {{- end }}
 
 {{- define "monitoring-app.selectorLabels" -}}
