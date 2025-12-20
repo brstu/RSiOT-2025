@@ -2,19 +2,19 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "app34.fullname" . }}-sm
+  name: {{include "app34.fullname" .}}
   labels:
     release: prometheus
 spec:
   selector:
     matchLabels:
-      app: {{ include "app34.name" . }}
+      app: {{include "app34.name" .}}
   endpoints:
     - port: http
-      path: {{ .Values.metrics.path }}
+      path: {{.Values.metrics.path}}
       interval: 15s
       scrapeTimeout: 10s
   namespaceSelector:
     any: false
     matchNames:
-      - {{ .Values.namespace }}
+      - {{.Values.namespace}}
