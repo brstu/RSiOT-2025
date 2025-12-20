@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redis-restore
+  namespace: app40
+  labels:
+    app: web40
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220022"
+    org.bstu.group: "AS-64"
+    org.bstu.variant: "40"
+    org.bstu.owner: "Zaharihnio"
+    org.bstu.student.slug: "AS64-220022-v40"
+  annotations:
+    org.bstu.group: "АС-64"
+spec:
+  template:
+    spec:
+      containers:
+        - name: restore
+          image: redis:7-alpine
+          command:
+            - sh
+            - -c
+            - |
+              cp /backup/dump-latest.rdb /data/dump.rdb
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+            - name: backup-pvc
+              mountPath: /backup
+      restartPolicy: OnFailure
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: data-redis-0
+        - name: backup-pvc
+          persistentVolumeClaim:
+            claimName: redis-backup-pvc

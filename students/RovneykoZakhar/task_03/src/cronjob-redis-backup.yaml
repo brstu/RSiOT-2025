@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup
+  namespace: app40
+  labels:
+    app: web40
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220022"
+    org.bstu.group: "AS-64"
+    org.bstu.variant: "40"
+    org.bstu.owner: "Zaharihnio"
+    org.bstu.student.slug: "AS64-220022-v40"
+  annotations:
+    org.bstu.group: "АС-64"
+spec:
+  schedule: "50 6 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: redis:7-alpine
+              command:
+                - sh
+                - -c
+                - |
+                  redis-cli -a $REDIS_PASSWORD SAVE
+                  cp /data/dump.rdb /backup/dump-$(date +%F-%H%M).rdb
+              env:
+                - name: REDIS_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: redis-secret
+                      key: REDIS_PASSWORD
+              volumeMounts:
+                - name: redis-data
+                  mountPath: /data
+                - name: backup-pvc
+                  mountPath: /backup
+          restartPolicy: OnFailure
+          volumes:
+            - name: redis-data
+              persistentVolumeClaim:
+                claimName: data-redis-0
+            - name: backup-pvc
+              persistentVolumeClaim:
+                claimName: redis-backup-pvc
