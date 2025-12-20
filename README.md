@@ -51,7 +51,7 @@
 
 | Вариант | Group | № | sub | Name | NameLatin | Directory | Github Username | #1 | #2 | #3 | #4 | Average |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | АС-63 | 1 | 2 | Ващук Анатолий | VashchukAnatoliy | [dir](./students/VashchukAnatoliy) | [skevet-avramuk](https://github.com/skevet-avramuk) | 100+10 | 87 | 94 |  |  |
+| 1 | АС-63 | 1 | 2 | Ващук Анатолий | VashchukAnatoliy | [dir](./students/VashchukAnatoliy) | [skevet-avramuk](https://github.com/skevet-avramuk) | 100+10 | 87 | 94 | 40 |  |
 | 2 | АС-63 | 2 | 1 | Выржемковский Даниил | VyrzhemkovskiyDaniil | [dir](./students/VyrzhemkovskiyDaniil) | [r0mb123](https://github.com/r0mb123) |  |  |  |  |  |
 | 3 | АС-63 | 3 | 1 | Грицук Дмитрий | GritsukDmitriy | [dir](./students/GritsukDmitriy) | [llayyz](https://github.com/llayyz) |  |  |  |  |  |
 | 4 | АС-63 | 4 | 1 | Грицук Павел | GritsukPavel | [dir](./students/GritsukPavel) | [momo-kitsune](https://github.com/momo-kitsune) | 62 | 66 |  |  |  |
@@ -66,18 +66,18 @@
 | 13 | АС-63 | 13 | 2 | Кухарчук Илья | KukharchukIlya | [dir](./students/KukharchukIlya) | [IlyaKukharchuk](https://github.com/IlyaKukharchuk) |  |  |  |  |  |
 | 14 | АС-63 | 14 | 1 | Логинов Глеб | LoginovGleb | [dir](./students/LoginovGleb) | [gleb7499](https://github.com/gleb7499) | 100+10 | 110 |  |  |  |
 | 15 | АС-63 | 15 | 2 | Мороз Евгений | MorozEvgeniy | [dir](./students/MorozEvgeniy) | [EugeneFr0st](https://github.com/EugeneFr0st) | 100+10 | 92 | 40 |  |  |
-| 16 | АС-63 | 16 | 2 | Никифоров Александр | NikiforovAleksandr | [dir](./students/NikiforovAleksandr) | [woQhy](https://github.com/woQhy) | 97 | 101 |  |  |  |
+| 16 | АС-63 | 16 | 2 | Никифоров Александр | NikiforovAleksandr | [dir](./students/NikiforovAleksandr) | [woQhy](https://github.com/woQhy) | 97 | 101 | 40 |  |  |
 | 17 | АС-63 | 17 | 2 | Поплавский Владислав | PoplavskiyVladislav | [dir](./students/PoplavskiyVladislav) | [ImRaDeR1](https://github.com/ImRaDeR1) | 100+10 | 74 |  |  |  |
-| 18 | АС-63 | 18 | 2 | Савко Павел | SavkoPavel | [dir](./students/SavkoPavel) | [1nsirius](https://github.com/1nsirius) | 100+10 | 82 |  |  |  |
+| 18 | АС-63 | 18 | 2 | Савко Павел | SavkoPavel | [dir](./students/SavkoPavel) | [1nsirius](https://github.com/1nsirius) | 100+10 | 82 | 40 | 50 |  |
 | 19 | АС-63 | 19 | 1 | Соколова Маргарита | SokolovaMargarita | [dir](./students/SokolovaMargarita) | [Ritkas33395553](https://github.com/Ritkas33395553) | 100+10 | 104 |  |  |  |
-| 20 | АС-63 | 20 | 2 | Стельмашук Иван | StelmashukIvan | [dir](./students/StelmashukIvan) | [KulibinI](https://github.com/KulibinI) | 100+10 | 105 | 92 |  |  |
+| 20 | АС-63 | 20 | 2 | Стельмашук Иван | StelmashukIvan | [dir](./students/StelmashukIvan) | [KulibinI](https://github.com/KulibinI) | 100+10 | 105 | 92 | 94 |  |
 | 21 | АС-63 | 21 | 2 | Тунчик Антон | TunchikAnton | [dir](./students/TunchikAnton) | [Stis25](https://github.com/Stis25) | 103 | 96 |  |  |  |
 | 22 | АС-63 | 22 | 2 | Филипчук Дмитрий | FilipchukDmitriy | [dir](./students/FilipchukDmitriy) | [kuddel11](https://github.com/kuddel11) | 70 | 58 |  |  |  |
-| 23 | АС-63 | 23 | 2 | Ярмола Александр | YarmolaAleksandr | [dir](./students/YarmolaAleksandr) | [alexsandro007](https://github.com/alexsandro007) | 100+10 | 110 | 117 |  |  |
-| 24 | АС-63 | 24 | 2 | Ярмолович Александр | YarmolovichAleksandr | [dir](./students/YarmolovichAleksandr) | [yarmolov](https://github.com/yarmolov) | 100+10 | 92 | 40 |  |  |
-| 25 | АС-64 | 1 | 1 | Белаш Александр | BelashAleksandr | [dir](./students/BelashAleksandr) | [went2smoke](https://github.com/went2smoke) | 103 | 88 |  |  |  |
+| 23 | АС-63 | 23 | 2 | Ярмола Александр | YarmolaAleksandr | [dir](./students/YarmolaAleksandr) | [alexsandro007](https://github.com/alexsandro007) | 100+10 | 110 | 117 | 110 |  |
+| 24 | АС-63 | 24 | 2 | Ярмолович Александр | YarmolovichAleksandr | [dir](./students/YarmolovichAleksandr) | [yarmolov](https://github.com/yarmolov) | 100+10 | 92 | 40 | 40 |  |
+| 25 | АС-64 | 1 | 1 | Белаш Александр | BelashAleksandr | [dir](./students/BelashAleksandr) | [went2smoke](https://github.com/went2smoke) | 103 | 88 | 40 | 40 |  |
 | 26 | АС-64 | 2 | 1 | Брызгалов Юрий | BryzgalovYuriy | [dir](./students/BryzgalovYuriy) | [Gena-Cidarmyan](https://github.com/Gena-Cidarmyan) |  |  |  |  |  |
-| 27 | АС-64 | 3 | 1 | Будник Анна | BudnikAnna | [dir](./students/BudnikAnna) | [annettebb](https://github.com/annettebb) |  |  |  |  |  |
+| 27 | АС-64 | 3 | 1 | Будник Анна | BudnikAnna | [dir](./students/BudnikAnna) | [annettebb](https://github.com/annettebb) | 87 | 74 | 40 | 40 |  |
 | 28 | АС-64 | 4 | 1 | Булавский Андрей | BulavskiyAndrey | [dir](./students/BulavskiyAndrey) | [andrei1910bl](https://github.com/andrei1910bl) | 108 |  | 110 |  |  |
 | 29 | АС-64 | 5 | 2 | Бурак Илья | BurakIlya | [dir](./students/BurakIlya) | [burakillya](https://github.com/burakillya) | 42 | 64 |  |  |  |
 | 30 | АС-64 | 6 | 1 | Горкавчук Никита | GorkavchukNikita | [dir](./students/GorkavchukNikita) | [Exage](https://github.com/Exage) | 100+10 |  |  |  |  |
@@ -87,10 +87,10 @@
 | 34 | АС-64 | 10 | 1 | Кашпир Дмитрий | KashpirDmitriy | [dir](./students/KashpirDmitriy) | [Dima-kashpir](https://github.com/Dima-kashpir) |  | 98 |  |  |  |
 | 35 | АС-64 | 11 | 1 | Котковец Кирилл | KotkovetsKirill | [dir](./students/KotkovetsKirill) | [Kirill-Kotkovets](https://github.com/Kirill-Kotkovets) | 101 | 71 |  |  |  |
 | 36 | АС-64 | 12 | 2 | Кужир Владислав | KuzhirVladislav | [dir](./students/KuzhirVladislav) | [XD-cods](https://github.com/XD-cods) | 100+10 |  |  |  |  |
-| 37 | АС-64 | 13 | 2 | Немирович Дмитрий | NemirovichDmitriy | [dir](./students/NemirovichDmitriy) | [goryachiy-ugolek](https://github.com/goryachiy-ugolek) | 91 | 76 |  |  |  |
-| 38 | АС-64 | 14 | 2 | Попов Алексей | PopovAleksey | [dir](./students/PopovAleksey) | [LexusxdsD](https://github.com/LexusxdsD) | 103 | 42 |  |  |  |
+| 37 | АС-64 | 13 | 2 | Немирович Дмитрий | NemirovichDmitriy | [dir](./students/NemirovichDmitriy) | [goryachiy-ugolek](https://github.com/goryachiy-ugolek) | 91 | 76 | 40 | 40 |  |
+| 38 | АС-64 | 14 | 2 | Попов Алексей | PopovAleksey | [dir](./students/PopovAleksey) | [LexusxdsD](https://github.com/LexusxdsD) | 103 | 42 | 40 | 40 |  |
 | 39 | АС-64 | 15 | 2 | Рабченя Максим | RabchenyaMaksim | [dir](./students/RabchenyaMaksim) | [benwer9q](https://github.com/benwer9q) |  |  |  |  |  |
-| 40 | АС-64 | 16 | 1 | Ровнейко Захар | RovneykoZakhar | [dir](./students/RovneykoZakhar) | [Zaharihnio](https://github.com/Zaharihnio) |  |  |  |  |  |
+| 40 | АС-64 | 16 | 1 | Ровнейко Захар | RovneykoZakhar | [dir](./students/RovneykoZakhar) | [Zaharihnio](https://github.com/Zaharihnio) | 40 | 40 | 40 |  |  |
 | 41 | АС-64 | 17 | 2 | Смердина Анастасия | SmerdinaAnastasiya | [dir](./students/SmerdinaAnastasiya) | [KotyaLapka](https://github.com/KotyaLapka) | 110 | 110 |  |  |  |
 | 42 | АС-64 | 18 | 2 | Хомич Виталий | KhomichVitaliy | [dir](./students/KhomichVitaliy) | [VitlyaNB](https://github.com/VitlyaNB) |  |  |  |  |  |
 | 43 | Test | 0 | 0 | Тестов Тест Тестович | TestovTestTestovich | [dir](./students/TestovTestTestovich) |  |  |  |  |  |  |
