@@ -1,9 +1,10 @@
-{{- if .Values.metrics.enabled }}
+---
+{{ -if .Values.metrics.enabled -}}
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: {{ .Chart.Name }}-rules
-  namespace: {{ .Values.namespace }}
+  name: {{.Chart.Name}}
+  namespace: {{.Values.namespace}}
   labels:
     release: monitoring
 spec:
@@ -33,4 +34,4 @@ spec:
           annotations:
             summary: "P95 latency > 200ms"
             description: "Latency is {{ $value }}ms"
-{{- end }}
+{{-end -}}
