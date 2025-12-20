@@ -1,0 +1,56 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: monitoring-app
+  namespace: monitoring-app
+  labels:
+    app: monitoring-app
+    app.kubernetes.io/name: monitoring-app
+    app.kubernetes.io/component: backend
+    release: monitoring
+spec:
+  groups:
+    - name: monitoring-app-alerts
+      interval: 30s
+      rules:
+        - alert: LowAvailability
+          expr: |
+            (sum(rate(app01_http_requests_total{status!~"5.."}[10m]))
+            / sum(rate(app01_http_requests_total[10m]))) * 100 < 99.0
+          for: 5m
+          labels:
+            severity: critical
+            variant: "1"
+          annotations:
+            summary: "Доступность ниже SLO 99.0%"
+            description: >
+              Доступность приложения ниже 99.0% за последние 10 минут
+
+        - alert: HighErrorRate5xx
+          expr: |
+            (sum(rate(app01_http_requests_total{status=~"5.."}[10m]))
+            / sum(rate(app01_http_requests_total[10m]))) * 100 > 2
+          for: 5m
+          labels:
+            severity: warning
+            variant: "1"
+          annotations:
+            summary: "Процент 5xx ошибок превышает 2%"
+            description: >
+              Доля HTTP 5xx ответов превышает 2% за последние 10 минут
+
+        - alert: HighLatencyP95
+          expr: |
+            histogram_quantile(
+              0.95,
+              sum(rate(app01_http_request_duration_seconds_bucket[10m]))
+              by (le)
+            ) > 0.3
+          for: 5m
+          labels:
+            severity: warning
+            variant: "1"
+          annotations:
+            summary: "p95 latency превышает 300ms"
+            description: >
+              95-й перцентиль задержки превышает 300ms за последние 10 минут
