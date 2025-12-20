@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web40
+  namespace: app40
+  labels:
+    app: web40
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220022"
+    org.bstu.group: "AS-64"
+    org.bstu.variant: "40"
+    org.bstu.owner: "Zaharihnio"
+    org.bstu.student.slug: "AS64-220022-v40"
+  annotations:
+    org.bstu.group: "АС-64"
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: web40
+  template:
+    metadata:
+      labels:
+        app: web40
+        org.bstu.course: "RSIOT"
+        org.bstu.student.id: "220022"
+        org.bstu.group: "AS-64"
+        org.bstu.variant: "40"
+        org.bstu.owner: "Zaharihnio"
+        org.bstu.student.slug: "AS64-220022-v40"
+  annotations:
+    org.bstu.group: "АС-64"
+    spec:
+      containers:
+        - name: web40
+          image: web40:v40
+          ports:
+            - name: http
+              containerPort: 8004
+          envFrom:
+            - configMapRef:
+                name: web40-config
+            - secretRef:
+                name: web40-secret
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          securityContext:
+            runAsUser: 10001
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
