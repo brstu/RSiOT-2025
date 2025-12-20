@@ -20,20 +20,20 @@ spec:
         app: {{.Chart.Name}}
         release: monitoring
     spec:
-      containers:
-      - name: {{.Chart.Name}}
-        image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
-        env:
-        - name: STU_ID
-          value: "220015"
-        - name: STU_GROUP
-          value: "as-63"
-        - name: STU_VARIANT
-          value: "11"
-        ports:
-        - containerPort: {{.Values.service.port}}
-          name: http
-        resources:
+       containers:
+        - name: {{.Chart.Name}}
+          image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+          env:
+          - name: STU_ID
+            value: "220015"
+          - name: STU_GROUP
+            value: "as-63"
+          - name: STU_VARIANT
+            value: "11"
+          ports:
+          - containerPort: {{.Values.service.port}}
+            name: http
+          resources:
           requests:
             cpu: 100m
             memory: 128Mi

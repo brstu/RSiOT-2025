@@ -11,27 +11,27 @@ spec:
   groups:
   - name: app11.slo.alerts
     rules:
-    - alert: App11HighErrorRate
-      expr: |
-        sum(rate(app11_http_requests_total{status=~"5.."}[5m]))
-        / sum(rate(app11_http_requests_total[5m]))
-        * 100 > 1
-      for: 5m
-      labels:
+      - alert: App11HighErrorRate
+        expr: |
+         sum(rate(app11_http_requests_total{status=~"5.."}[5m]))
+         / sum(rate(app11_http_requests_total[5m]))
+         * 100 > 1
+        for: 5m
+        labels:
         severity: warning
         variant: "11"
-      annotations:
+        annotations:
         summary: "5xx error rate > 1%"
         description: "Error rate is {{ $value }}%"
-    - alert: App11HighLatency
-      expr: |
-        histogram_quantile(0.95,
+      - alert: App11HighLatency
+        expr: |
+         histogram_quantile(0.95,
           rate(app11_http_request_duration_seconds_bucket[5m])
-        ) * 1000 > 200
-      for: 2m
-      labels:
+         ) * 1000 > 200
+        for: 2m
+        labels:
         severity: warning
-      annotations:
+        annotations:
         summary: "P95 latency > 200ms"
         description: "Latency is {{ $value }}ms"
 {{- end -}}
