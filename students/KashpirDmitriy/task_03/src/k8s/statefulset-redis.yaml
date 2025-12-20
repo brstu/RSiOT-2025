@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: state01
+spec:
+  serviceName: redis
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.0
+          ports:
+            - containerPort: 6379
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: password
+          command: ["/bin/sh","-c"]
+          # Entrypoint starts redis with requirepass
+          # Use a small wrapper to set requirepass at runtime
+          args: ["sed -i \"s/^# requirepass .*$/requirepass $REDIS_PASSWORD/\" /usr/local/etc/redis/redis.conf 2>/dev/null || true; redis-server --appendonly yes --requirepass $REDIS_PASSWORD --dir /data"]
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      securityContext:
+        fsGroup: 1000
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: fast
+        resources:
+          requests:
+            storage: 3Gi
