@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup-cron
+  namespace: state01
+spec:
+  schedule: "*/12 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: redis:7.2-alpine
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                echo "=== Backup started ==="
+                TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+                redis-cli -h redis-stateful-0.redis-headless -a redis-password-2025 SAVE
+                sleep 2
+                cp /data/dump.rdb /backup/backup-$TIMESTAMP.rdb
+                echo "Backup created: backup-$TIMESTAMP.rdb"
+            volumeMounts:
+            - name: data
+              mountPath: /data
+              readOnly: true
+            - name: backup
+              mountPath: /backup
+          restartPolicy: OnFailure
+          volumes:
+          - name: data
+            persistentVolumeClaim:
+              claimName: redis-data-redis-stateful-0
+          - name: backup
+            persistentVolumeClaim:
+              claimName: redis-backup-pvc
