@@ -1,0 +1,23 @@
+# yamllint disable-file
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "monitoring-app.fullname" . }}
+  namespace: {{ .Values.namespace | default "default" }}
+  labels:
+    fullname: "Stelmashuk_I_A"
+    group: "AS-63"
+    studentId: "220025"
+    email: "AS006322@g.bstu.by"
+    variant: "20"
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: 5000
+      protocol: TCP
+  selector:
+    {{ include "monitoring-app.selectorLabels" . | indent 4 }}
