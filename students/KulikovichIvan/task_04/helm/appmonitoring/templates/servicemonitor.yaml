@@ -2,21 +2,16 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "app11-monitoring.name" . }}-monitor
+  name: {{ .Chart.Name }}-monitor
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "app11-monitoring.labels" . | nindent 4 }}
     release: monitoring
 spec:
   selector:
     matchLabels:
-      {{- include "app11-monitoring.selectorLabels" . | nindent 6 }}
+      app: {{ .Chart.Name }}
   endpoints:
-    - port: {{ .Values.service.name }}
-      path: {{ .Values.metrics.path }}
-      interval: {{ .Values.metrics.scrapeInterval }}
-      scrapeTimeout: 10s
-  namespaceSelector:
-    matchNames:
-      - {{ .Values.namespace }}
+  - port: http
+    path: /metrics
+    interval: 30s
 {{- end }}

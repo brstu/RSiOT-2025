@@ -1,13 +1,5 @@
 apiVersion: v2
-name: app11-monitoring
-description: Helm chart for App11 monitoring variant
-type: application
+name: appmonitoring
+description: App11 Monitoring Helm Chart
 version: 1.0.0
 appVersion: "1.0"
-
-annotations:
-  org.bstu.student.fullname: "Куликович Иван Сергеевич"
-  org.bstu.student.id: "220015"
-  org.bstu.group: "as-63"
-  org.bstu.variant: "11"
-  org.bstu.course: "RSIOT"
