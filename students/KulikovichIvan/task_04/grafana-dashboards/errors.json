@@ -1,0 +1,64 @@
+{
+  "dashboard": {
+    "title": "App11 - Error Rate Dashboard",
+    "tags": ["app11", "errors", "5xx"],
+    "panels": [
+      {
+        "id": 1,
+        "title": "5xx Error Rate % (Alert > 1%)",
+        "type": "timeseries",
+        "targets": [{
+          "expr": "sum(rate(app11_http_requests_total{status=~\"5..\"}[5m])) / sum(rate(app11_http_requests_total[5m])) * 100",
+          "legendFormat": "Error Rate"
+        }],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 2,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"},
+                {"value": 1, "color": "red"}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "5xx Errors Count",
+        "type": "stat",
+        "targets": [{
+          "expr": "sum(app11_http_requests_total{status=~\"5..\"})",
+          "legendFormat": "Total 5xx Errors"
+        }],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 3,
+        "title": "Active Connections",
+        "type": "gauge",
+        "targets": [{
+          "expr": "app11_active_connections",
+          "legendFormat": "Connections"
+        }],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "steps": [
+                {"value": null, "color": "green"},
+                {"value": 50, "color": "yellow"},
+                {"value": 80, "color": "red"}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      }
+    ]
+  }
+}

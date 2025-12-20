@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app11-monitoring-app
+  namespace: argocd
+  labels:
+    org.bstu.student.id: "220015"
+    org.bstu.group: "as-63"
+    org.bstu.variant: "11"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/your-username/lr04-observe-app11.git
+    targetRevision: HEAD
+    path: helm/app11-monitoring
+    helm:
+      valueFiles:
+        - values.yaml
+      parameters:
+        - name: metadata.student.fullname
+          value: "Куликович Иван Сергеевич"
+        - name: metadata.student.id
+          value: "220015"
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app-monitoring
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    
+  info:
+    - name: Description
+      value: "App11 Monitoring Application for Student 220015"

@@ -1,0 +1,65 @@
+{{- if .Values.metrics.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "app11-monitoring.name" . }}-rules
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "app11-monitoring.labels" . | nindent 4 }}
+    release: monitoring
+spec:
+  groups:
+    - name: app11.slo.alerts
+      interval: 30s
+      rules:
+        - alert: App11HighErrorRate
+          expr: |
+            sum(rate({{ .Values.metrics.prefix }}http_requests_total{status=~"5.."}[5m]))
+            / sum(rate({{ .Values.metrics.prefix }}http_requests_total[5m]))
+            * 100 > {{ .Values.slo.errorRateThreshold }}
+          for: 5m
+          labels:
+            severity: warning
+            variant: "{{ .Values.metadata.student.variant }}"
+            student_id: "{{ .Values.metadata.student.id }}"
+          annotations:
+            summary: "High 5xx error rate detected ({{ .Values.slo.errorRateThreshold }}% SLO)"
+            description: |
+              Error rate is {{ $value | humanizePercentage }}.
+              Student: {{ .Values.metadata.student.fullname }}
+              Group: {{ .Values.metadata.student.group }}
+              Variant: {{ .Values.metadata.student.variant }}
+        
+        - alert: App11HighLatency
+          expr: |
+            histogram_quantile(0.95,
+              rate({{ .Values.metrics.prefix }}http_request_duration_seconds_bucket[5m])
+            ) * 1000 > {{ .Values.slo.p95LatencyMs }}
+          for: 2m
+          labels:
+            severity: warning
+            variant: "{{ .Values.metadata.student.variant }}"
+          annotations:
+            summary: "P95 latency exceeds {{ .Values.slo.p95LatencyMs }}ms"
+            description: "Current P95 latency is {{ $value }}ms (SLO: {{ .Values.slo.p95LatencyMs }}ms)"
+        
+        - alert: App11LowAvailability
+          expr: |
+            (
+              sum(rate({{ .Values.metrics.prefix }}http_requests_total{status!~"5.."}[10m]))
+              / sum(rate({{ .Values.metrics.prefix }}http_requests_total[10m]))
+            ) * 100 < {{ .Values.slo.availability }}
+          for: 5m
+          labels:
+            severity: critical
+            variant: "{{ .Values.metadata.student.variant }}"
+          annotations:
+            summary: "Availability below {{ .Values.slo.availability }}% SLO"
+            description: "Current availability is {{ $value }}%"
+        
+        - record: app11:http_requests:rate5m
+          expr: sum(rate({{ .Values.metrics.prefix }}http_requests_total[5m]))
+        
+        - record: app11:http_errors:rate5m
+          expr: sum(rate({{ .Values.metrics.prefix }}http_requests_total{status=~"5.."}[5m]))
+{{- end }}

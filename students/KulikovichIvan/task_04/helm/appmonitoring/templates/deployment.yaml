@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app11-monitoring.name" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "app11-monitoring.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "app11-monitoring.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "app11-monitoring.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: web
+        release: monitoring
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "{{ .Values.metrics.path }}"
+        prometheus.io/port: "{{ .Values.metrics.port | toString }}"
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: STU_ID
+              value: "{{ .Values.metadata.student.id }}"
+            - name: STU_GROUP
+              value: "{{ .Values.metadata.student.group }}"
+            - name: STU_VARIANT
+              value: "{{ .Values.metadata.student.variant }}"
+            - name: METRICS_PREFIX
+              value: "{{ .Values.metrics.prefix }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

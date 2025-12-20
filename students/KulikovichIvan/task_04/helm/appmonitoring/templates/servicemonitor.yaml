@@ -1,0 +1,22 @@
+{{- if .Values.metrics.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "app11-monitoring.name" . }}-monitor
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "app11-monitoring.labels" . | nindent 4 }}
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      {{- include "app11-monitoring.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: {{ .Values.service.name }}
+      path: {{ .Values.metrics.path }}
+      interval: {{ .Values.metrics.scrapeInterval }}
+      scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.namespace }}
+{{- end }}

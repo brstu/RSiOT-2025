@@ -1,0 +1,46 @@
+namespace: app-monitoring
+replicaCount: 2
+
+image:
+  repository: kulikovich/app11-app
+  tag: v1.0.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+  name: http
+
+metrics:
+  prefix: "app11_"
+  enabled: true
+  path: "/metrics"
+  port: 8080
+  scrapeInterval: 30s
+
+slo:
+  availability: 99.5
+  p95LatencyMs: 200
+  errorRateThreshold: 1.0
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+ingress:
+  enabled: false
+
+metadata:
+  student:
+    fullname: "Куликович Иван Сергеевич"
+    id: "220015"
+    group: "as-63"
+    variant: "11"
+  labels:
+    owner: "kulikovich"
+    slug: "as-63--v11"
