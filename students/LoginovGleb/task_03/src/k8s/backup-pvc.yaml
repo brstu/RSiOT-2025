@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-storage-as63-220018-v14
+  namespace: state-as63-220018-v14
+  labels:
+    org.bstu.student.fullname: "Loginov-Gleb-Olegovich"
+    org.bstu.student.id: "220018"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "14"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "gleb7499"
+    org.bstu.student.slug: "AS-63-220018-v14"
+spec:
+  accessModes:
+  - ReadWriteOnce  # ReadWriteOnce используется для совместимости со standard StorageClass
+                    # Для одновременного доступа backup/restore используйте StorageClass с поддержкой ReadWriteMany
+                    # Взаимное исключение обеспечивается через:
+                    # 1. CronJob с concurrencyPolicy: Forbid (предотвращает параллельные backup)
+                    # 2. Restore Job выполняется вручную, когда backup не активен
+  storageClassName: storage-as63-220018-v14
+  resources:
+    requests:
+      storage: 2Gi

@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backup-scripts-s3-as63-220018-v14
+  namespace: state-as63-220018-v14
+  labels:
+    org.bstu.student.fullname: "Loginov-Gleb-Olegovich"
+    org.bstu.student.id: "220018"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "14"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "gleb7499"
+    org.bstu.student.slug: "AS-63-220018-v14"
+data:
+  backup-s3.sh: |
+    #!/bin/sh
+    set -e
+
+    echo "=== Redis Backup Script with S3 Support ==="
+    echo "Student: Loginov Gleb Olegovich (220018)"
+    echo "Group: AS-63, Variant: 14"
+    echo "Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
+
+    REDIS_HOST="${REDIS_HOST:-db-as63-220018-v14-0.redis-headless-as63-220018-v14.state-as63-220018-v14.svc.cluster.local}"
+    REDIS_PORT="${REDIS_PORT:-6379}"
+    BACKUP_DIR="${BACKUP_DIR:-/backup}"
+    TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+    BACKUP_FILE="${BACKUP_DIR}/redis_backup_${TIMESTAMP}.rdb"
+
+    # S3 configuration
+    S3_ENABLED="${S3_ENABLED:-true}"
+    S3_ENDPOINT="${S3_ENDPOINT:-http://minio-service-as63-220018-v14.state-as63-220018-v14.svc.cluster.local:9000}"
+    S3_BUCKET="${S3_BUCKET:-redis-backups}"
+    S3_ACCESS_KEY="${MINIO_ROOT_USER:-minioadmin}"
+    S3_SECRET_KEY="${MINIO_ROOT_PASSWORD:-minioadmin123}"
+
+    echo "Connecting to Redis: ${REDIS_HOST}:${REDIS_PORT}"
+    echo "S3 Backup enabled: ${S3_ENABLED}"
+
+    # Использовать переменную окружения для пароля
+    export REDISCLI_AUTH="$REDIS_PASSWORD"
+
+    # Выполнить BGSAVE
+    echo "Executing BGSAVE..."
+    LAST_SAVE_BEFORE=$(redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" LASTSAVE)
+    redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" BGSAVE
+
+    # Подождать завершения BGSAVE
+    echo "Waiting for BGSAVE to complete..."
+    TIMEOUT=60
+    ELAPSED=0
+    while [ $ELAPSED -lt $TIMEOUT ]; do
+      LAST_SAVE_CURRENT=$(redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" LASTSAVE)
+      if [ "$LAST_SAVE_CURRENT" != "$LAST_SAVE_BEFORE" ]; then
+        echo "BGSAVE completed successfully"
+        break
+      fi
+      sleep 1
+      ELAPSED=$((ELAPSED + 1))
+    done
+
+    if [ $ELAPSED -ge $TIMEOUT ]; then
+      echo "Warning: BGSAVE timeout, proceeding anyway..."
+    fi
+
+    # Получить dump.rdb
+    echo "Copying dump.rdb to backup location..."
+    redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" --rdb "${BACKUP_FILE}"
+
+    echo "Local backup completed: $BACKUP_FILE"
+    if [ -f "$BACKUP_FILE" ]; then
+      echo "Backup size: $(du -h "$BACKUP_FILE" | cut -f1)"
+    else
+      echo "ERROR: Backup file not found"
+      exit 1
+    fi
+
+    # Загрузить в S3
+    if [ "$S3_ENABLED" = "true" ]; then
+      echo ""
+      echo "=== Uploading backup to S3 (MinIO) ==="
+      
+      mc alias set myminio "$S3_ENDPOINT" "$S3_ACCESS_KEY" "$S3_SECRET_KEY" || {
+        echo "Warning: Failed to configure MinIO client"
+      }
+      
+      if mc alias list | grep -q myminio; then
+        if ! mc ls myminio/$S3_BUCKET >/dev/null 2>&1; then
+          echo "Creating bucket $S3_BUCKET..."
+          mc mb myminio/$S3_BUCKET || echo "Warning: Failed to create bucket"
+        fi
+        
+        echo "Uploading to s3://${S3_BUCKET}/redis_backup_${TIMESTAMP}.rdb"
+        if mc cp "$BACKUP_FILE" "myminio/$S3_BUCKET/redis_backup_${TIMESTAMP}.rdb"; then
+          echo "✓ Successfully uploaded to S3"
+          
+          echo ""
+          echo "S3 Backup list (last 5):"
+          mc ls myminio/$S3_BUCKET | tail -n 5 || true
+        else
+          echo "Warning: Failed to upload to S3"
+        fi
+      fi
+    fi
+
+    # Очистка локальных backup
+    echo ""
+    echo "Cleaning local old backups (keeping 10 newest)..."
+    ls -t ${BACKUP_DIR}/redis_backup_*.rdb 2>/dev/null | tail -n +11 | xargs -r rm -f
+
+    echo ""
+    echo "=== Backup completed successfully ==="
+    exit 0

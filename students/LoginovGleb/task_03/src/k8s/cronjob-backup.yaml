@@ -1,0 +1,74 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-as63-220018-v14
+  namespace: state-as63-220018-v14
+  labels:
+    org.bstu.student.fullname: "Loginov-Gleb-Olegovich"
+    org.bstu.student.id: "220018"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "14"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "gleb7499"
+    org.bstu.student.slug: "AS-63-220018-v14"
+spec:
+  schedule: "*/30 * * * *"  # Каждые 30 минут согласно варианту 14
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    metadata:
+      labels:
+        org.bstu.student.fullname: "Loginov-Gleb-Olegovich"
+        org.bstu.student.id: "220018"
+        org.bstu.group: "AS-63"
+        org.bstu.variant: "14"
+        org.bstu.course: "RSIOT"
+        org.bstu.owner: "gleb7499"
+        org.bstu.student.slug: "AS-63-220018-v14"
+        app: redis-backup
+    spec:
+      template:
+        metadata:
+          labels:
+            org.bstu.student.fullname: "Loginov-Gleb-Olegovich"
+            org.bstu.student.id: "220018"
+            org.bstu.group: "AS-63"
+            org.bstu.variant: "14"
+            org.bstu.course: "RSIOT"
+            org.bstu.owner: "gleb7499"
+            org.bstu.student.slug: "AS-63-220018-v14"
+            app: redis-backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: redis-backup
+            image: redis:7.2-alpine
+            command: ["/bin/sh", "/scripts/backup.sh"]
+            env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret-as63-220018-v14
+                  key: redis-password
+            - name: REDIS_HOST
+              value: "db-as63-220018-v14-0.redis-headless-as63-220018-v14.state-as63-220018-v14.svc.cluster.local"
+            - name: STU_ID
+              value: "220018"
+            - name: STU_GROUP
+              value: "AS-63"
+            - name: STU_VARIANT
+              value: "14"
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /backup
+            - name: backup-scripts
+              mountPath: /scripts
+          volumes:
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: backup-storage-as63-220018-v14
+          - name: backup-scripts
+            configMap:
+              name: backup-scripts-as63-220018-v14
+              defaultMode: 0755

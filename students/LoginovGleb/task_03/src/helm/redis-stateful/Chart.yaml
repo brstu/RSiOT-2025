@@ -1,0 +1,15 @@
+apiVersion: v2
+name: redis-stateful-as63-220018-v14
+description: StatefulSet Redis with backup/restore for Lab 03
+type: application
+version: 1.0.0
+appVersion: "7.2"
+maintainers:
+- name: Loginov Gleb Olegovich
+  email: as006315@g.bstu.by
+keywords:
+  - redis
+  - statefulset
+  - kubernetes
+  - backup
+  - restore

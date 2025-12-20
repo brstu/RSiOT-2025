@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: restore-scripts-s3-as63-220018-v14
+  namespace: state-as63-220018-v14
+  labels:
+    org.bstu.student.fullname: "Loginov-Gleb-Olegovich"
+    org.bstu.student.id: "220018"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "14"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "gleb7499"
+    org.bstu.student.slug: "AS-63-220018-v14"
+data:
+  restore-s3.sh: |
+    #!/bin/sh
+    set -e
+
+    echo "=== Redis Restore Script with S3 Support ==="
+    echo "Student: Loginov Gleb Olegovich (220018)"
+    echo "Group: AS-63, Variant: 14"
+    echo "Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
+
+    REDIS_NAMESPACE="${REDIS_NAMESPACE:-state-as63-220018-v14}"
+    REDIS_POD="${REDIS_POD:-db-as63-220018-v14-0}"
+    BACKUP_DIR="${BACKUP_DIR:-/backup}"
+    RESTORE_SOURCE="${RESTORE_SOURCE:-s3}"
+
+    S3_ENDPOINT="${S3_ENDPOINT:-http://minio-service-as63-220018-v14.state-as63-220018-v14.svc.cluster.local:9000}"
+    S3_BUCKET="${S3_BUCKET:-redis-backups}"
+    S3_ACCESS_KEY="${MINIO_ROOT_USER:-minioadmin}"
+    S3_SECRET_KEY="${MINIO_ROOT_PASSWORD:-minioadmin123}"
+
+    echo "Restore source: ${RESTORE_SOURCE}"
+
+    if [ "$RESTORE_SOURCE" = "s3" ]; then
+      echo ""
+      echo "=== Downloading latest backup from S3 ==="
+      
+      mc alias set myminio "$S3_ENDPOINT" "$S3_ACCESS_KEY" "$S3_SECRET_KEY" || {
+        echo "ERROR: Failed to configure MinIO"
+        exit 1
+      }
+      
+      LATEST_S3_BACKUP=$(mc ls myminio/$S3_BUCKET | grep redis_backup_ | tail -n 1 | awk '{print $NF}')
+      
+      if [ -z "$LATEST_S3_BACKUP" ]; then
+        echo "ERROR: No backups found in S3"
+        exit 1
+      fi
+      
+      echo "Found: $LATEST_S3_BACKUP"
+      
+      LATEST_BACKUP="${BACKUP_DIR}/${LATEST_S3_BACKUP}"
+      
+      if ! mc cp "myminio/$S3_BUCKET/$LATEST_S3_BACKUP" "$LATEST_BACKUP"; then
+        echo "ERROR: Download failed"
+        exit 1
+      fi
+      
+      echo "✓ Downloaded from S3"
+    else
+      LATEST_BACKUP=$(ls -t ${BACKUP_DIR}/redis_backup_*.rdb 2>/dev/null | head -n 1)
+      
+      if [ -z "$LATEST_BACKUP" ]; then
+        echo "ERROR: No local backups found"
+        exit 1
+      fi
+    fi
+
+    echo "Backup: $LATEST_BACKUP ($(du -h "$LATEST_BACKUP" | cut -f1))"
+
+    if command -v kubectl >/dev/null 2>&1; then
+      echo ""
+      echo "=== Restoring to Redis ==="
+      
+      kubectl exec -n "$REDIS_NAMESPACE" "$REDIS_POD" -- redis-cli -a "$REDIS_PASSWORD" SHUTDOWN NOSAVE || true
+      sleep 5
+      
+      kubectl cp "$LATEST_BACKUP" "${REDIS_NAMESPACE}/${REDIS_POD}:/data/dump.rdb"
+      
+      kubectl delete pod -n "$REDIS_NAMESPACE" "$REDIS_POD"
+      kubectl wait --for=condition=ready pod/"$REDIS_POD" -n "$REDIS_NAMESPACE" --timeout=120s
+      
+      echo "✓ Restore completed"
+    else
+      echo "Manual restore required - kubectl not available"
+    fi
+
+    exit 0
