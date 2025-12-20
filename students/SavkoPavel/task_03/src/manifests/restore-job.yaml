@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: restore-redis
+  namespace: state-as63
+spec:
+  template:
+    spec:
+      containers:
+      - name: restore
+        image: redis:7.0
+        command: ["/bin/sh","-c","redis-cli -a $REDIS_PASSWORD --rdb /backup/dump.rdb"]
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: redis-password
+        volumeMounts:
+        - name: backup-volume
+          mountPath: /backup
+      restartPolicy: OnFailure
+      volumes:
+      - name: backup-volume
+        persistentVolumeClaim:
+          claimName: redis-data
