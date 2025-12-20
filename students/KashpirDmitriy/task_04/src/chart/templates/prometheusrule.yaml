@@ -1,0 +1,42 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "app34.fullname" . }}-rules
+  labels:
+    prometheus: k8s
+    role: alert-rules
+spec:
+  groups:
+    - name: app34.rules
+      rules:
+        - alert: HighErrorRate
+          expr: |
+            (sum(rate({{ .Values.metrics.prefix }}http_requests_total{code=~"5.."}[5m]))
+             / sum(rate({{ .Values.metrics.prefix }}http_requests_total[5m]))) > 0.015
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High 5xx error rate for {{ .Values.metrics.prefix }} (>{{ .Values.alert_threshold | default "1.5%" }})"
+            description: "5xx error ratio is above 1.5% for more than 5 minutes."
+
+        - alert: ServiceAvailabilityLow
+          expr: |
+            (1 - (sum(rate({{ .Values.metrics.prefix }}http_requests_total{code=~"5.."}[5m]))
+                  / sum(rate({{ .Values.metrics.prefix }}http_requests_total[5m])))) < 0.99
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Service availability below 99% for {{ .Values.metrics.prefix }}"
+            description: "Availability (1 - 5xx ratio) dropped below 99% for 5 minutes."
+
+        - alert: HighLatencyP95
+          expr: |
+            histogram_quantile(0.95, sum(rate({{ .Values.metrics.prefix }}http_request_duration_seconds_bucket[5m])) by (le)) > 0.25
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High p95 latency (>250ms) for {{ .Values.metrics.prefix }}"
+            description: "p95 latency exceeded 250ms for more than 5 minutes."

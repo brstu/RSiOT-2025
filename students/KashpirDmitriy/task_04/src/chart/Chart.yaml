@@ -1,0 +1,5 @@
+apiVersion: v2
+name: app34
+description: Helm chart for Variant 34 (Lab 04)
+version: 0.1.0
+appVersion: "0.1.0"
