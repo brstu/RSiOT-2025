@@ -1,0 +1,5 @@
+# Helm templates содержат Go template синтаксис {{- }}
+# который не является валидным YAML до рендеринга
+# Поэтому исключаем их из проверки yamllint
+
+src/helm/monitoring-app/templates/*.yaml
