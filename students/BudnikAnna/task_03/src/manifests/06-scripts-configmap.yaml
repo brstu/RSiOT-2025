@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-backup-scripts
+  namespace: state01
+  labels:
+    org.bstu.course: RSIOT
+    org.bstu.student.fullname: "<ФИО>"
+    org.bstu.student.id: "<StudentID>"
+    org.bstu.group: "<Группа>"
+    org.bstu.variant: "<Вариант>"
+data:
+  backup.sh: |
+    #!/bin/sh
+    set -eu
+
+    TS="$(date +%Y%m%d-%H%M%S)"
+    OUT="/backup/backup-${TS}.sql"
+
+    echo "[backup] starting at ${TS}"
+    echo "[backup] target=${OUT}"
+
+    pg_dump -U postgres -h db-0.db.state01.svc.cluster.local -d postgres > "${OUT}"
+
+    echo "[backup] done: $(ls -lh "${OUT}")"
+  restore.sh: |
+    #!/bin/sh
+    set -eu
+
+    echo "[restore] searching latest backup..."
+    LATEST="$(ls -1 /backup/*.sql 2>/dev/null | sort | tail -n 1 || true)"
+
+    if [ -z "${LATEST}" ]; then
+      echo "[restore] ERROR: no backups found in /backup"
+      exit 1
+    fi
+
+    echo "[restore] latest=${LATEST}"
+    echo "[restore] cleaning public schema..."
+    psql -U postgres -h db-0.db.state01.svc.cluster.local -d postgres -v ON_ERROR_STOP=1 \
+      -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+
+    echo "[restore] applying dump..."
+    psql -U postgres -h db-0.db.state01.svc.cluster.local -d postgres -v ON_ERROR_STOP=1 \
+      -f "${LATEST}"
+
+    echo "[restore] success"
