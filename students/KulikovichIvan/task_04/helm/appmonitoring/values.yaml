@@ -1,3 +1,4 @@
+---
 namespace: app-monitoring
 replicaCount: 2
 
