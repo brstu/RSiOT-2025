@@ -1,0 +1,18 @@
+apiVersion: v2
+name: app14-monitoring
+description: Monitoring application for Lab 04 Variant 14 with Prometheus metrics
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+maintainers:
+  - name: Логинов Глеб Олегович
+    email: as006315@g.bstu.by
+keywords:
+  - monitoring
+  - prometheus
+  - grafana
+  - observability
+  - rsiot
+home: https://github.com/gleb7499/RSiOT-2025-Loginov/tree/main/task_04
+sources:
+  - https://github.com/gleb7499/RSiOT-2025-Loginov
