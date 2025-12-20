@@ -1,0 +1,12 @@
+﻿---
+# Значения для развертывания
+replicaCount: 1
+
+image:
+  repository: mon-app-v38
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
