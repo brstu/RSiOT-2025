@@ -1,3 +1,4 @@
+---
 replicaCount: 1
 image:
   repository: nginx
@@ -12,7 +13,7 @@ metrics:
   path: /metrics
   port: 8080
   prefix: "app34_" # important for variant 34
-resources: {}
-nodeSelector: {}
-tolerations: []
-affinity: {}
+resources: { }
+nodeSelector: { }
+tolerations: [ ]
+affinity: { }

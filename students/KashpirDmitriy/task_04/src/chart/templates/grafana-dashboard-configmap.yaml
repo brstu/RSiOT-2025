@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -13,21 +14,35 @@ data:
           "type": "graph",
           "title": "p95 latency (s)",
           "targets": [
-            {"expr": "histogram_quantile(0.95, sum(rate({{ .Values.metrics.prefix }}http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p95"}
+            {
+              "expr": "histogram_quantile(0.95, sum(rate({{ .Values.metrics.prefix
+                }}http_request_duration_seconds_bucket[5m])) by (le))",
+              "legendFormat": "p95"
+            }
           ]
         },
         {
           "type": "graph",
           "title": "5xx error rate (%)",
           "targets": [
-            {"expr": "(sum(rate({{ .Values.metrics.prefix }}http_requests_total{code=~\"5..\"}[5m])) / sum(rate({{ .Values.metrics.prefix }}http_requests_total[5m]))) * 100", "legendFormat": "5xx%"}
+            {
+              "expr": "(sum(rate({{ .Values.metrics.prefix
+                }}http_requests_total{code=~\"5..\"}[5m])) / sum(rate({{
+                .Values.metrics.prefix }}http_requests_total[5m]))) * 100",
+              "legendFormat": "5xx%"
+            }
           ]
         },
         {
           "type": "graph",
           "title": "Availability (%)",
           "targets": [
-            {"expr": "(1 - (sum(rate({{ .Values.metrics.prefix }}http_requests_total{code=~\"5..\"}[5m])) / sum(rate({{ .Values.metrics.prefix }}http_requests_total[5m])))) * 100", "legendFormat": "availability%"}
+            {
+              "expr": "(1 - (sum(rate({{ .Values.metrics.prefix
+                }}http_requests_total{code=~\"5..\"}[5m])) / sum(rate({{
+                .Values.metrics.prefix }}http_requests_total[5m])))) * 100",
+              "legendFormat": "availability%"
+            }
           ]
         }
       ]

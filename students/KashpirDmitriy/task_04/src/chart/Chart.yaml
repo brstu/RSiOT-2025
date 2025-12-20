@@ -1,3 +1,4 @@
+---
 apiVersion: v2
 name: app34
 description: Helm chart for Variant 34 (Lab 04)
