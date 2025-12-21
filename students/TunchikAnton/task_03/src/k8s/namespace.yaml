@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: postgres-stateful
+  labels:
+    name: postgres-stateful
+    org.bstu.course: RSIOT
+    org.bstu.variant: "21"
+    slug: ac-63--v21
