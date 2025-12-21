@@ -1,0 +1,12 @@
+apiVersion: v2
+name: app10
+description: A Helm chart for app10 application with Prometheus monitoring
+type: application
+version: 1.0.0
+appVersion: 1.0.0
+home: https://github.com/example/app10
+sources:
+  - https://github.com/example/app10
+maintainers:
+  - name: DevOps Team
+    email: devops@example.com

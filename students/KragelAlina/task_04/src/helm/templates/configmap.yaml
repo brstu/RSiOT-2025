@@ -1,0 +1,135 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app10-code
+  namespace: {{ .Values.namespace }}
+data:
+  app.js: |
+    const express = require('express');
+    const client = require('prom-client');
+    const app = express();
+    const port = process.env.PORT || 8072;
+    const metricsPrefix = process.env.METRICS_PREFIX || 'app10_';
+
+    const register = new client.Registry();
+    client.collectDefaultMetrics({ register });
+
+    const httpRequestDuration = new client.Histogram({
+      name: metricsPrefix + 'http_request_duration_seconds',
+      help: 'Duration of HTTP requests in seconds',
+      labelNames: ['method', 'route', 'status'],
+      buckets: [0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5],
+      registers: [register]
+    });
+
+    const httpRequestTotal = new client.Counter({
+      name: metricsPrefix + 'http_requests_total',
+      help: 'Total number of HTTP requests',
+      labelNames: ['method', 'route', 'status'],
+      registers: [register]
+    });
+
+    const httpErrorsTotal = new client.Counter({
+      name: metricsPrefix + 'http_errors_total',
+      help: 'Total number of HTTP errors by status code',
+      labelNames: ['status', 'route'],
+      registers: [register]
+    });
+
+    app.use((req, res, next) => {
+      const start = Date.now();
+
+      res.on('finish', () => {
+        const duration = (Date.now() - start) / 1000;
+        const route = req.route ? req.route.path : req.path;
+        const status = res.statusCode;
+
+        httpRequestDuration.observe(
+          { method: req.method, route, status },
+          duration
+        );
+
+        httpRequestTotal.inc({
+          method: req.method,
+          route,
+          status
+        });
+
+        if (status >= 500) {
+          httpErrorsTotal.inc({
+            status,
+            route
+          });
+        }
+      });
+
+      next();
+    });
+
+    app.get('/ping', (req, res) => {
+      res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+    });
+
+    app.get('/health', (req, res) => {
+      res.status(200).json({ health: 'ok', uptime: process.uptime() });
+    });
+
+    app.get('/ready', (req, res) => {
+      res.status(200).json({ ready: true });
+    });
+
+    app.get('/api/hello', (req, res) => {
+      res.status(200).json({ message: 'Hello from app10!', version: '1.0.0' });
+    });
+
+    app.get('/api/data', (req, res) => {
+      res.status(200).json({
+        data: [
+          { id: 1, name: 'Item 1' },
+          { id: 2, name: 'Item 2' },
+          { id: 3, name: 'Item 3' }
+        ]
+      });
+    });
+
+    app.get('/api/error', (req, res) => {
+      res.status(500).json({ error: 'Internal Server Error' });
+    });
+
+    app.get('/metrics', async (req, res) => {
+      try {
+        res.set('Content-Type', register.contentType);
+        res.end(await register.metrics());
+      } catch (error) {
+        res.status(500).end(error);
+      }
+    });
+
+    const server = app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+      console.log(`Metrics available at http://localhost:${port}/metrics`);
+    });
+
+    process.on('SIGTERM', () => {
+      console.log('SIGTERM received, shutting down gracefully');
+      server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+      });
+    });
+
+  package.json: |
+    {
+      "name": "app10",
+      "version": "1.0.0",
+      "description": "App10 with Prometheus metrics",
+      "main": "app.js",
+      "scripts": {
+        "start": "node app.js",
+        "test": "echo 'No tests defined'"
+      },
+      "dependencies": {
+        "express": "^4.18.2",
+        "prom-client": "^15.0.0"
+      }
+    }
