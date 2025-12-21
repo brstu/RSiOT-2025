@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup
+  namespace: state01
+spec:
+  schedule: "45 * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          serviceAccountName: redis-backup
+          containers:
+            - name: backup
+              image: redis:7-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  BACKUP_DIR="/data/backups"
+                  REDIS_HOST="redis.state01.svc.cluster.local"
+                  REDIS_PORT="6379"
+                  TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+                  BACKUP_FILE="${BACKUP_DIR}/redis_backup_${TIMESTAMP}.rdb"
+                  
+                  mkdir -p "${BACKUP_DIR}"
+                  
+                  echo "Starting Redis backup at $(date)"
+                  
+                  redis-cli -h "${REDIS_HOST}" -p "${REDIS_PORT}" BGSAVE
+                  
+                  sleep 5
+                  
+                  if [ -f /data/dump.rdb ]; then
+                    cp /data/dump.rdb "${BACKUP_FILE}"
+                    echo "Backup completed: ${BACKUP_FILE}"
+                    
+                    find "${BACKUP_DIR}" -name "redis_backup_*.rdb" -mtime +7 -delete
+                    echo "Cleaned up backups older than 7 days"
+                  else
+                    echo "Error: dump.rdb not found"
+                    exit 1
+                  fi
+                  
+                  echo "Backup finished at $(date)"
+              volumeMounts:
+                - name: data
+                  mountPath: /data
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: data-redis-0
+          restartPolicy: OnFailure
