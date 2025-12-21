@@ -51,6 +51,7 @@ spec:
         - name: app-code
           configMap:
             name: app10-code
+      {{- if .Values.autoscaling.enabled }}
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -63,3 +64,4 @@ spec:
                       values:
                         - app10
                 topologyKey: kubernetes.io/hostname
+      {{- end }}
