@@ -39,11 +39,8 @@ spec:
             - name: NODE_ENV
               value: production
           livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: app-code
               mountPath: /app
