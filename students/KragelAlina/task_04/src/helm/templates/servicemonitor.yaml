@@ -13,8 +13,8 @@ spec:
   endpoints:
     - port: http
       path: /metrics
-      interval: {{ .Values.serviceMonitor.interval }}
-      scrapeTimeout: {{ .Values.serviceMonitor.scrapeTimeout }}
+      interval: {{ .Values.serviceMonitor.interval | default "30s" }}
+      scrapeTimeout: {{ .Values.serviceMonitor.scrapeTimeout | default "10s" }}
       relabelings:
         - sourceLabels: [__meta_kubernetes_pod_name]
           targetLabel: pod

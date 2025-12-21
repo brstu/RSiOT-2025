@@ -70,15 +70,15 @@ spec:
 
         - alert: App10HighCPUUsage
           expr: |
-            rate(container_cpu_usage_seconds_total{namespace="{{ .Values.namespace }}", pod=~"app10.*"}[5m]) /
-            container_spec_cpu_quota{namespace="{{ .Values.namespace }}", pod=~"app10.*"} / 100000 > 0.8
+            rate(container_cpu_usage_seconds_total{namespace="{{ .Values.namespace }}", pod=~"app10.*"}[5m]) > 0.8 * 
+            (container_spec_cpu_quota{namespace="{{ .Values.namespace }}", pod=~"app10.*"} / 100000)
           for: 5m
           labels:
             severity: warning
             service: app10
           annotations:
             summary: "High CPU usage (> 80%)"
-            description: "Pod {{ $labels.pod }} CPU usage is {{ $value | humanizePercentage }}"
+            description: "Pod {{ $labels.pod }} CPU usage is high"
 
         - record: app10:http_availability:5m
           expr: |
