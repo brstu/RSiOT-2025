@@ -1,3 +1,4 @@
+---
 replicaCount: 1
 
 image:
@@ -11,12 +12,12 @@ service:
 
 metricsPrefix: app09_
 
-resources: {}
+resources: { }
 
 ingress:
   enabled: false
-  annotations: {}
-  hosts: []
+  annotations: { }
+  hosts: [ ]
 
 serviceMonitor:
   enabled: true
