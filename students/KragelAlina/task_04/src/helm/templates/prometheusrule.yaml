@@ -47,7 +47,7 @@ spec:
             description: "app10 availability is {{ $value | humanizePercentage }}"
 
         - alert: App10PodNotReady
-          expr: kube_pod_status_ready{namespace="{{ .Values.namespace }}", condition="false"} == 1
+          expr: kube_pod_status_ready{namespace="{{ .Values.namespace }}", pod=~"app10.*", condition="false"} == 1
           for: 2m
           labels:
             severity: warning
@@ -59,7 +59,7 @@ spec:
         - alert: App10HighMemoryUsage
           expr: |
             container_memory_usage_bytes{namespace="{{ .Values.namespace }}", pod=~"app10.*"} /
-            container_spec_memory_limit_bytes > 0.8
+            container_spec_memory_limit_bytes{namespace="{{ .Values.namespace }}", pod=~"app10.*"} > 0.8
           for: 5m
           labels:
             severity: warning
@@ -70,24 +70,24 @@ spec:
 
         - alert: App10HighCPUUsage
           expr: |
-            sum(rate(container_cpu_usage_seconds_total{namespace="{{ .Values.namespace }}", pod=~"app10.*"}[5m])) by (pod) /
-            sum(container_spec_cpu_quota{namespace="{{ .Values.namespace }}", pod=~"app10.*"} / container_spec_cpu_period_seconds{namespace="{{ .Values.namespace }}", pod=~"app10.*"}) by (pod) > 0.8
+            rate(container_cpu_usage_seconds_total{namespace="{{ .Values.namespace }}", pod=~"app10.*"}[5m]) /
+            container_spec_cpu_quota{namespace="{{ .Values.namespace }}", pod=~"app10.*"} / 100000 > 0.8
           for: 5m
           labels:
             severity: warning
             service: app10
           annotations:
             summary: "High CPU usage (> 80%)"
-            description: "Pod {{ $labels.pod }} CPU usage is high"
+            description: "Pod {{ $labels.pod }} CPU usage is {{ $value | humanizePercentage }}"
 
         - record: app10:http_availability:5m
           expr: |
-            sum(rate(app10_http_requests_total{status=~"2.."}[5m])) by (job) /
+            sum(rate(app10_http_requests_total{status=~"2..|3.."}[5m])) by (job) /
             sum(rate(app10_http_requests_total[5m])) by (job)
 
         - record: app10:http_error_rate:5m
           expr: |
-            sum(rate(app10_http_errors_total[5m])) by (job) /
+            sum(rate(app10_http_errors_total{status=~"5.."}[5m])) by (job) /
             sum(rate(app10_http_requests_total[5m])) by (job)
 
         - record: app10:http_p95_latency:5m
