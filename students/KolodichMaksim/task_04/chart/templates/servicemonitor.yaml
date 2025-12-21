@@ -15,4 +15,3 @@ spec:
       path: /metrics
       interval: 15s
       honorLabels: true
-{{- end }}

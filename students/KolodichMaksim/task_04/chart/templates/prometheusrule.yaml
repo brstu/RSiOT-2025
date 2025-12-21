@@ -50,4 +50,4 @@ spec:
           annotations:
             summary: "P95 latency exceeded (app09)"
             description: "p95(latency) > 300ms over 5m"
-{{- end }}
+            
