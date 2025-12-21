@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-restore
+  namespace: state36
+spec:
+  template:
+    spec:
+      containers:
+        - name: restore
+          image: redis:7
+          command:
+            - /bin/sh
+            - -c
+            - |
+              cp /backup/latest.rdb /data/dump.rdb  
+              chown -R 999:999 /data
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: backup
+              mountPath: /backup
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-db-0
+        - name: backup
+          persistentVolumeClaim:
+            claimName: backup-pvc
+      restartPolicy: OnFailure

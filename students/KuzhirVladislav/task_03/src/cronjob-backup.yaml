@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup
+  namespace: state36
+spec:
+  schedule: "55 1 * * *" # каждый день в 01:55
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: redis:7-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  redis-cli -h db-0.db.state36.svc.cluster.local -a $REDIS_PASSWORD SAVE && \
+                  cp /data/dump.rdb /backup/redis-backup-$(date +%Y%m%d-%H%M%S).rdb && \
+                  echo "Backup saved: $(ls -la /backup)"
+              env:
+                - name: REDIS_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-secret
+                      key: password
+              volumeMounts:
+                - name: data
+                  mountPath: /data
+                  readOnly: true
+                - name: backup
+                  mountPath: /backup
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: data-db-0
+            - name: backup
+              persistentVolumeClaim:
+                claimName: backup-pvc
