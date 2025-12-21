@@ -1,0 +1,96 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redis-restore-job
+  namespace: state01
+  labels:
+    app: redis
+    variant: "16"
+    purpose: restore
+spec:
+  template:
+    spec:
+      containers:
+      - name: restore
+        image: redis:7.2-alpine
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo "=== Starting Redis Restore ==="
+            echo "Time: $(date)"
+            echo "Student: 220020, Variant: 16"
+            
+            # Находим последний бэкап
+            LATEST_BACKUP=$(ls -t /backup/*.rdb.gz 2>/dev/null | head -1)
+            
+            if [ -z "$LATEST_BACKUP" ]; then
+                echo "ERROR: No backup files found!"
+                exit 1
+            fi
+            
+            echo "Latest backup: $LATEST_BACKUP"
+            
+            # Распаковываем бэкап
+            gunzip -c "$LATEST_BACKUP" > /tmp/restore.rdb
+            
+            # Останавливаем Redis для восстановления (в production лучше использовать репликацию)
+            echo "Stopping Redis for restore..."
+            redis-cli -h redis-stateful-0.redis-headless.state01.svc.cluster.local \
+                      -p 6379 \
+                      -a "$(cat /etc/redis-pass/password)" \
+                      --no-auth-warning \
+                      SHUTDOWN SAVE || true
+            
+            # Ждем остановки
+            sleep 5
+            
+            # Копируем файл данных
+            echo "Copying backup to Redis data directory..."
+            cp /tmp/restore.rdb /data/dump.rdb
+            
+            # Проверяем файл
+            if [ -f "/data/dump.rdb" ]; then
+                echo "Restore completed successfully!"
+                echo "Restored file size: $(du -h /data/dump.rdb | cut -f1)"
+                
+                # Создаем тестовый ключ для проверки
+                echo "Creating test key to verify restore..."
+                redis-cli -h redis-stateful-0.redis-headless.state01.svc.cluster.local \
+                          -p 6379 \
+                          -a "$(cat /etc/redis-pass/password)" \
+                          --no-auth-warning \
+                          SET restore-test-$(date +%s) "success"
+            else
+                echo "ERROR: Restore failed!"
+                exit 1
+            fi
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: password
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        - name: backup-storage
+          mountPath: /backup
+          readOnly: true
+        - name: redis-password
+          mountPath: /etc/redis-pass
+          readOnly: true
+      restartPolicy: OnFailure
+      volumes:
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: redis-data
+      - name: backup-storage
+        persistentVolumeClaim:
+          claimName: redis-backup-pvc
+      - name: redis-password
+        secret:
+          secretName: redis-secret
+          items:
+          - key: password
+            path: password
+  backoffLimit: 2

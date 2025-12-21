@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-restore
+  namespace: state01
+  labels:
+    app: db-restore
+    org.bstu.course: RSIOT
+    org.bstu.student.fullname: "<ФИО>"
+    org.bstu.student.id: "<StudentID>"
+    org.bstu.group: "<Группа>"
+    org.bstu.variant: "<Вариант>"
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        app: db-restore
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: restore
+          image: postgres:16
+          command: ["sh", "-c", "chmod +x /scripts/restore.sh && /scripts/restore.sh"]
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+          volumeMounts:
+            - name: backup
+              mountPath: /backup
+            - name: scripts
+              mountPath: /scripts
+      volumes:
+        - name: backup
+          persistentVolumeClaim:
+            claimName: backup-pvc
+        - name: scripts
+          configMap:
+            name: db-backup-scripts
+            defaultMode: 0777

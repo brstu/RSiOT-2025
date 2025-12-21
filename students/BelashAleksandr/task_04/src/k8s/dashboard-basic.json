@@ -1,0 +1,17 @@
+{
+  "dashboard": {
+    "title": "Lab04 Basic Dashboard",
+    "panels": [
+      {
+        "title": "Total Requests",
+        "targets": [
+          {
+            "expr": "app25_requests_total"
+          }
+        ],
+        "type": "graph"
+      }
+    ],
+    "version": 1
+  }
+}

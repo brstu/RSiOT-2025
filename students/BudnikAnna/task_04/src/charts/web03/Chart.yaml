@@ -1,0 +1,6 @@
+apiVersion: v2
+name: web03
+description: web03 app with Prometheus metrics, ServiceMonitor and PrometheusRule
+type: application
+version: 0.1.0
+appVersion: "lab04"

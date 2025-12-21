@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-as64-220050-v37
+  namespace: state-as64-220050-v37
+  labels:
+    org.bstu.student.fullname: "Немирович Дмитрий Александрович"
+    org.bstu.student.id: "220050"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "37"
+    org.bstu.course: "RSiOT"
+    org.bstu.owner: "goryachiy-ugolek"
+spec:
+  serviceName: db-as64-220050-v37-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-db
+  template:
+    metadata:
+      labels:
+        app: postgres-db
+        org.bstu.student.id: "220050"
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "testdb"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-as64-220050-v37-secret
+                  key: POSTGRES_PASSWORD
+            - name: STU_ID
+              value: "220050"
+            - name: STU_GROUP
+              value: "АС-64"
+            - name: STU_VARIANT
+              value: "37"
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-storage
+        labels:
+          org.bstu.student.id: "220050"
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 3Gi

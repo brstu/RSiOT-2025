@@ -1,0 +1,50 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: web03-slo
+  namespace: {{ .Values.namespace }}
+  labels:
+    release: {{ .Values.monitoring.releaseLabel }}
+    {{- include "web03.labels" . | nindent 4 }}
+spec:
+  groups:
+    - name: web03-slo-alerts
+      interval: 30s
+      rules:
+        - alert: High5xxErrorRate
+          expr: |
+            sum(rate(app03_http_requests_total{status=~"5.."}[{{ .Values.slo.errorWindow }}]))
+            /
+            sum(rate(app03_http_requests_total[{{ .Values.slo.errorWindow }}]))
+            > {{ .Values.slo.errorRateThreshold }}
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High 5xx error rate (SLO breach)"
+            description: "5xx error rate over {{ .Values.slo.errorWindow }} is {{`{{ $value | humanizePercentage }}`}} (threshold {{ mul .Values.slo.errorRateThreshold 100 }}%)"
+
+        - alert: HighP95Latency
+          expr: |
+            histogram_quantile(0.95, rate(app03_http_request_duration_seconds_bucket[5m]))
+            > {{ .Values.slo.p95LatencySeconds }}
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "P95 latency exceeded SLO"
+            description: "P95 latency is {{`{{ $value }}`}}s (threshold {{ .Values.slo.p95LatencySeconds }}s)"
+
+        - alert: LowAvailability
+          expr: |
+            (
+              sum(rate(app03_http_requests_total{status!~"5.."}[5m]))
+              /
+              sum(rate(app03_http_requests_total[5m]))
+            ) < {{ div .Values.slo.availability 100.0 }}
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Availability below SLO"
+            description: "Availability is {{`{{ $value | humanizePercentage }}`}} (SLO {{ .Values.slo.availability }}%)"

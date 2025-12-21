@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monitoring-app
+  namespace: default
+  labels:
+    app: app24
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app24
+  template:
+    metadata:
+      labels:
+        app: app24
+        monitoring: "true"
+    spec:
+      containers:
+        - name: monitoring-app
+          image: "myrepo/monitoring-app:1.0.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: STUDENT_ID
+              value: "220029"
+            - name: STUDENT_GROUP
+              value: "AC-63"
+            - name: VARIANT
+              value: "24"
+            - name: PORT
+              value: "8080"
+            - name: METRICS_PREFIX
+              value: "app24_"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"

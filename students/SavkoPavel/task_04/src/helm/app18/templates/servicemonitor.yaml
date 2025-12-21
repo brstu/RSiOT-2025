@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mon-app18
+  namespace: monitoring
+  labels:
+    release: mon-kps
+spec:
+  selector:
+    matchLabels:
+      app: app18
+  namespaceSelector:
+    matchNames:
+      - app18
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
