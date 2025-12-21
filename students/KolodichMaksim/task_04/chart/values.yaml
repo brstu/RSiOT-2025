@@ -1,0 +1,27 @@
+replicaCount: 1
+
+image:
+  repository: lab04-app09
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+metricsPrefix: app09_
+
+resources: {}
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts: []
+
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+
+prometheusRule:
+  enabled: true
+  namespace: monitoring

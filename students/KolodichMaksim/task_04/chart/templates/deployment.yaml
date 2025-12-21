@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app09.fullname" . }}
+  labels:
+    app: {{ include "app09.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "app09.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "app09.name" . }}
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "--metrics-prefix={{ .Values.metricsPrefix }}"
+            - "--port={{ .Values.service.port }}"
+          ports:
+            - name: http-metrics
+              containerPort: {{ .Values.service.port }}

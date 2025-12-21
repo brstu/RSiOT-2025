@@ -1,0 +1,6 @@
+apiVersion: v2
+name: app09
+description: Helm chart for lab04 variant 9
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
