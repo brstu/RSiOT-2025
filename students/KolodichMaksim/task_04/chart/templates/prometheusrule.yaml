@@ -1,12 +1,12 @@
----
 {{- if .Values.prometheusRule.enabled }}
+---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: '{{ include "app09.fullname" . }}-rules'
-  namespace: '{{ .Values.prometheusRule.namespace }}'
+  name: '{{include "app09.fullname" .}}-rules'
+  namespace: '{{.Values.prometheusRule.namespace}}'
   labels:
-    app: '{{ include "app09.name" . }}'
+    app: '{{include "app09.name" .}}'
 spec:
   groups:
     - name: app09.rules
@@ -14,9 +14,17 @@ spec:
         - alert: App09High5xxRate
           expr: |
             (
-              sum(rate({{ .Values.metricsPrefix }}http_requests_total{code=~"5.."}[5m]))
+              sum(
+                rate(
+                  {{.Values.metricsPrefix}}http_requests_total{code=~"5.."}[5m]
+                )
+              )
               /
-              sum(rate({{ .Values.metricsPrefix }}http_requests_total[5m]))
+              sum(
+                rate(
+                  {{.Values.metricsPrefix}}http_requests_total[5m]
+                )
+              )
             )
             > 0.02
           for: 5m
@@ -30,7 +38,10 @@ spec:
             histogram_quantile(
               0.95,
               sum(
-                rate({{ .Values.metricsPrefix }}http_request_duration_seconds_bucket[5m])
+                rate(
+                  {{.Values.metricsPrefix}}http_request_duration_seconds_bucket
+                  [5m]
+                )
               ) by (le)
             )
             > 0.3
