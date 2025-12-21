@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgres-restore
+  namespace: state05
+  labels:
+    app: postgres-restore
+    org.bstu.student.id: "220008"
+spec:
+  template:
+    spec:
+      containers:
+      - name: restore
+        image: postgres:16-alpine
+        command:
+        - /bin/sh
+        - -c
+        - |
+          LATEST_BACKUP=$(ls -t /backup/*.sql | head -1)
+          PGPASSWORD=$(cat /etc/postgres-secret/password) psql \
+            -h postgres.state05.svc.cluster.local \
+            -U $(cat /etc/postgres-secret/user) \
+            -d $(cat /etc/postgres-secret/db) \
+            < $LATEST_BACKUP
+          echo "Restored from $LATEST_BACKUP at $(date)"
+        volumeMounts:
+        - name: postgres-secret
+          mountPath: /etc/postgres-secret
+          readOnly: true
+        - name: backup-volume
+          mountPath: /backup
+      volumes:
+      - name: postgres-secret
+        secret:
+          secretName: postgres-secret
+      - name: backup-volume
+        persistentVolumeClaim:
+          claimName: postgres-backup-pvc
+      restartPolicy: OnFailure
