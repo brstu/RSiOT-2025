@@ -26,7 +26,7 @@
 
 ---
 
-### Вариант №4
+### Вариант №36
 
 ## Ход выполнения работы
 
@@ -68,7 +68,7 @@
 #### 1.2 Headless Service (redis)
 
 - clusterIP: None для прямого доступа к pod'ам
-- DNS запись: redis-0.redis.state24.svc.cluster.local
+- DNS запись: redis-0.redis.state36.svc.cluster.local
 
 #### 1.3 Secret (redis-secret)
 
