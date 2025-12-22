@@ -1,0 +1,36 @@
+# Application configuration
+replicaCount: 2
+
+image:
+  repository: app-monitoring
+  tag: v1.0.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  metricsPort: 8080
+
+metrics:
+  prefix: "app21_"
+  path: "/metrics"
+  port: "metrics"
+  interval: "30s"
+
+alerts:
+  errorRateThreshold: 2.0    # percentage
+  latencyThreshold: 0.3      # 300ms in seconds
+  availabilityThreshold: 99.9 # percentage
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "500m"
+
+# Prometheus stack integration
+prometheus:
+  namespace: monitoring
+  release: kube-prometheus-stack

@@ -1,0 +1,13 @@
+apiVersion: v2
+name: app-monitoring
+description: App with monitoring for variant 21
+version: 1.0.0
+appVersion: "1.0.0"
+
+annotations:
+  org.bstu.course: RSIOT
+  org.bstu.variant: "21"
+  org.bstu.student.fullname: Tunchik Anton Dmitrievich
+  org.bstu.student.id: "006326"
+  org.bstu.group: AC-63
+  slug: ac-63--v21

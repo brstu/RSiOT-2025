@@ -1,0 +1,95 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Chart.Name }}-alerts
+  namespace: {{ .Release.Namespace | default "default" }}
+  labels:
+    app: {{ .Chart.Name }}
+    release: kube-prometheus-stack
+    org.bstu.course: RSIOT
+    org.bstu.variant: "21"
+    org.bstu.student.fullname: Tunchik Anton Dmitrievich
+    org.bstu.student.id: "006326"
+    org.bstu.group: AC-63
+    slug: ac-63--v21
+spec:
+  groups:
+  - name: {{ .Chart.Name }}-slo
+    rules:
+    # Alert 1: High Error Rate (>2% за 5 минут) - ИСПРАВЛЕНО
+    - alert: App21HighErrorRate
+      expr: |
+        (
+          sum(rate(app21_errors_total[5m]))
+          / 
+          sum(rate(app21_requests_total[5m]))
+        ) * 100 > 2
+      for: 1m
+      labels:
+        severity: warning
+        variant: "21"
+      annotations:
+        summary: "High error rate detected"
+        description: "Error rate is {{ $value | humanizePercentage }} (threshold: 2%)"
+        student: "Tunchik Anton Dmitrievich"
+    
+    # Alert 2: P95 Latency > 300ms
+    - alert: App21HighLatency
+      expr: |
+        histogram_quantile(0.95,
+          rate(app21_request_duration_seconds_bucket[5m])
+        ) > 0.3
+      for: 2m
+      labels:
+        severity: warning
+        variant: "21"
+      annotations:
+        summary: "High latency detected"
+        description: "P95 latency is {{ $value | humanizeDuration }} (threshold: 300ms)"
+        student: "Tunchik Anton Dmitrievich"
+    
+    # Alert 3: Availability < 99.9% - ИСПРАВЛЕНО
+    - alert: App21LowAvailability
+      expr: |
+        (
+          (
+            sum(rate(app21_requests_total{status_code=~"2..|3..|4.."}[5m]))
+            -
+            sum(rate(app21_errors_total[5m]))
+          )
+          /
+          sum(rate(app21_requests_total[5m]))
+        ) * 100 < 99.9
+      for: 3m
+      labels:
+        severity: critical
+        variant: "21"
+      annotations:
+        summary: "Low availability detected"
+        description: "Availability is {{ $value | humanize }}% (SLO: 99.9%)"
+        student: "Tunchik Anton Dmitrievich"
+    
+    # Recording rules для дашбордов
+    - record: app21:error_rate:5m
+      expr: |
+        sum(rate(app21_errors_total[5m]))
+        /
+        sum(rate(app21_requests_total[5m]))
+        * 100
+    
+    - record: app21:availability:5m
+      expr: |
+        (
+          sum(rate(app21_requests_total{status_code=~"2..|3..|4.."}[5m]))
+          -
+          sum(rate(app21_errors_total[5m]))
+        )
+        /
+        sum(rate(app21_requests_total[5m]))
+        * 100
+    
+    - record: app21:latency_p95:5m
+      expr: |
+        histogram_quantile(0.95,
+          rate(app21_request_duration_seconds_bucket[5m])
+        )

@@ -1,0 +1,28 @@
+{
+  "dashboard": {
+    "title": "App Monitoring - Overview",
+    "tags": ["app21", "monitoring"],
+    "panels": [
+      {
+        "title": "Availability",
+        "type": "stat",
+        "targets": [{
+          "expr": "100 - (sum(rate(app21_errors_total[5m])) / sum(rate(app21_requests_total[5m])) * 100)",
+          "legendFormat": "Availability"
+        }],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 99.9},
+                {"color": "green", "value": 99.95}
+              ]
+            },
+            "unit": "percent"
+          }
+        }
+      }
+    ]
+  }
+}
