@@ -1,0 +1,56 @@
+{{- if .Values.prometheus.rules.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: app31-slo-rules
+  namespace: {{ .Values.prometheus.rules.namespace }}
+  labels:
+    app: app31
+spec:
+  groups:
+    - name: app31-slo
+      rules:
+        - alert: App31AvailabilitySLOViolation
+          expr: |
+            (
+              sum(rate(app31_http_requests_total{status_code=~"2..|3.."}[{{ .Values.slo.window }}]))
+              /
+              sum(rate(app31_http_requests_total[{{ .Values.slo.window }}]))
+            ) * 100 < {{ .Values.slo.availability }}
+          for: 5m
+          labels:
+            severity: warning
+            team: rsiot
+          annotations:
+            summary: "App31 availability below {{ .Values.slo.availability }}%"
+            description: "Success ratio fell below SLO over {{ .Values.slo.window }}."
+
+        - alert: App31LatencyP95High
+          expr: |
+            histogram_quantile(
+              0.95,
+              sum by (le) (rate(app31_http_request_duration_seconds_bucket[{{ .Values.slo.window }}]))
+            ) > {{ div .Values.slo.latencyP95Ms 1000.0 }}
+          for: 10m
+          labels:
+            severity: critical
+            team: rsiot
+          annotations:
+            summary: "App31 p95 latency above {{ .Values.slo.latencyP95Ms }} ms"
+            description: "95th percentile latency exceeds target over {{ .Values.slo.window }}."
+
+        - alert: App31ErrorRate5xxHigh
+          expr: |
+            (
+              sum(rate(app31_http_requests_total{status_code=~"5.."}[{{ .Values.slo.window }}]))
+              /
+              sum(rate(app31_http_requests_total[{{ .Values.slo.window }}]))
+            ) * 100 > {{ .Values.slo.errorRate5xxPercentThreshold }}
+          for: 10m
+          labels:
+            severity: critical
+            team: rsiot
+          annotations:
+            summary: "App31 5xx error rate above {{ .Values.slo.errorRate5xxPercentThreshold }}%"
+            description: "5xx exceeds threshold over {{ .Values.slo.window }}."
+{{- end }}

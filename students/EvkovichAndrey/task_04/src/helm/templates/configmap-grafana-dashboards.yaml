@@ -1,0 +1,88 @@
+{{- if .Values.grafana.dashboards.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app31-grafana-dashboards
+  namespace: {{ .Values.grafana.dashboards.namespace }}
+  labels:
+    {{- range $k, $v := .Values.grafana.dashboards.labels }}
+    {{ $k }}: "{{ $v }}"
+    {{- end }}
+data:
+  app31-availability.json: |
+    {
+      "title": "App31 - Availability",
+      "editable": true,
+      "schemaVersion": 38,
+      "panels": [
+        {
+          "type": "stat",
+          "title": "Availability (%)",
+          "targets": [
+            {
+              "expr": "(sum(rate(app31_http_requests_total{status_code=~\"2..|3..\"}[10m])) / sum(rate(app31_http_requests_total[10m]))) * 100"
+            }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "Success vs Total",
+          "targets": [
+            { "expr": "sum(rate(app31_http_requests_total{status_code=~\"2..|3..\"}[5m]))" },
+            { "expr": "sum(rate(app31_http_requests_total[5m]))" }
+          ]
+        }
+      ]
+    }
+  app31-latency.json: |
+    {
+      "title": "App31 - Latency p95/p99",
+      "editable": true,
+      "schemaVersion": 38,
+      "panels": [
+        {
+          "type": "timeseries",
+          "title": "p95 latency (s)",
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum by (le) (rate(app31_http_request_duration_seconds_bucket[5m])))"
+            }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "p99 latency (s)",
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, sum by (le) (rate(app31_http_request_duration_seconds_bucket[5m])))"
+            }
+          ]
+        }
+      ]
+    }
+  app31-errors.json: |
+    {
+      "title": "App31 - 5xx error rate",
+      "editable": true,
+      "schemaVersion": 38,
+      "panels": [
+        {
+          "type": "stat",
+          "title": "5xx error rate (%)",
+          "targets": [
+            {
+              "expr": "(sum(rate(app31_http_requests_total{status_code=~\"5..\"}[10m])) / sum(rate(app31_http_requests_total[10m]))) * 100"
+            }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "5xx vs Total",
+          "targets": [
+            { "expr": "sum(rate(app31_http_requests_total{status_code=~\"5..\"}[5m]))" },
+            { "expr": "sum(rate(app31_http_requests_total[5m]))" }
+          ]
+        }
+      ]
+    }
+{{- end }}
