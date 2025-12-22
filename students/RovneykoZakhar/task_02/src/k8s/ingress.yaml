@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web40
+  namespace: app40
+  labels:
+    app: web40
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220022"
+    org.bstu.group: "AS-64"
+    org.bstu.variant: "40"
+    org.bstu.owner: "Zaharihnio"
+    org.bstu.student.slug: "AS64-220022-v40"
+  annotations:
+    org.bstu.group: "АС-64"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: web40.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web40
+                port:
+                  number: 8004

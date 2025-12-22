@@ -1,0 +1,37 @@
+---
+
+replicaCount: 2
+
+namespace: app20-ns
+
+image:
+  repository: app20
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5000
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: app20.example.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+  requests:
+    cpu: "200m"
+    memory: "256Mi"
+
+metrics:
+  prefix: app20_
+  serviceMonitor:
+    enabled: true
+    interval: 15s

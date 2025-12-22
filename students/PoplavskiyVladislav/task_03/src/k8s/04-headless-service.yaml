@@ -6,10 +6,13 @@ metadata:
   labels:
     org.bstu.course: "RSIOT"
     org.bstu.variant: "17"
+    app: postgres
 spec:
-  clusterIP: None # Важно для Headless Service
+  clusterIP: None
   selector:
     app: postgres
   ports:
   - port: 5432
+    targetPort: 5432
     name: postgresql
+  publishNotReadyAddresses: true

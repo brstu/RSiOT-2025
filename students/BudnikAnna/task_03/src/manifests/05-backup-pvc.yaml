@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-pvc
+  namespace: state01
+  labels:
+    app: db-backup
+    org.bstu.course: RSIOT
+    org.bstu.student.fullname: "<ФИО>"
+    org.bstu.student.id: "<StudentID>"
+    org.bstu.group: "<Группа>"
+    org.bstu.variant: "<Вариант>"
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: fast
+  resources:
+    requests:
+      storage: 2Gi

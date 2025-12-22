@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app03-config
+  namespace: app03
+  labels:
+    app: web03
+    org.bstu.student.fullname: "Грицук Дмитрий Юрьевич"
+    org.bstu.student.id: "220006"
+    org.bstu.group: "АС-63"
+    org.bstu.variant: "03"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "GritsukDmitriy"
+    org.bstu.student.slug: "ac-63-220006-v03"
+data:
+  PORT: "8083"
+  STU_ID: "220006"
+  STU_GROUP: "АС-63"
+  STU_VARIANT: "03"
+  STU_FULLNAME: "Грицук Дмитрий Юрьевич"

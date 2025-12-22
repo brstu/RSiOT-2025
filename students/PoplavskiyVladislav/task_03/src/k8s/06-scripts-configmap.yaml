@@ -1,0 +1,163 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backup-scripts
+  namespace: state-lab03
+  labels:
+    org.bstu.course: "RSIOT"
+    org.bstu.variant: "17"
+data:
+  backup.sh: |
+    #!/bin/bash
+    set -e
+    
+    echo "=== Начало backup ==="
+    echo "Время: $(date)"
+    echo "STU_ID: $STU_ID"
+    echo "STU_GROUP: $STU_GROUP"
+    echo "STU_VARIANT: $STU_VARIANT"
+    
+    # Параметры подключения
+    PGHOST="db-postgres-0.postgres-headless.state-lab03.svc.cluster.local"
+    PGUSER="$POSTGRES_USER"
+    PGPASSWORD="$POSTGRES_PASSWORD"
+    PGDATABASE="$POSTGRES_DB"
+    BACKUP_DIR="/backup"
+    TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+    BACKUP_FILE="$BACKUP_DIR/backup-$TIMESTAMP.sql"
+    
+    # Проверка директории
+    mkdir -p $BACKUP_DIR
+    
+    # Проверка подключения к PostgreSQL
+    echo "Проверка подключения к PostgreSQL на $PGHOST..."
+    until pg_isready -h $PGHOST -U $PGUSER -d $PGDATABASE -t 5; do
+        echo "Ожидание PostgreSQL... ($(date))"
+        sleep 5
+    done
+    
+    # Создание backup
+    echo "Создание backup базы $PGDATABASE..."
+    PGPASSWORD=$PGPASSWORD pg_dump \
+        -h $PGHOST \
+        -U $PGUSER \
+        -d $PGDATABASE \
+        --clean \
+        --if-exists \
+        --no-owner \
+        --no-privileges \
+        > $BACKUP_FILE
+    
+    # Проверка успешности
+    if [ $? -eq 0 ] && [ -s $BACKUP_FILE ]; then
+        BACKUP_SIZE=$(du -h $BACKUP_FILE | cut -f1)
+        BACKUP_LINES=$(wc -l < $BACKUP_FILE)
+        echo "✅ Backup успешно создан!"
+        echo "   Файл: $BACKUP_FILE"
+        echo "   Размер: $BACKUP_SIZE"
+        echo "   Строк: $BACKUP_LINES"
+        
+        # Список существующих бэкапов
+        echo "Существующие бэкапы:"
+        ls -lh $BACKUP_DIR/backup-*.sql 2>/dev/null || echo "   (пока нет бэкапов)"
+        
+        # Удаление старых бэкапов (оставляем последние 5)
+        BACKUP_COUNT=$(ls -1 $BACKUP_DIR/backup-*.sql 2>/dev/null | wc -l || echo "0")
+        if [ $BACKUP_COUNT -gt 5 ]; then
+            echo "Удаление старых бэкапов (оставляем 5 последних)..."
+            ls -t $BACKUP_DIR/backup-*.sql | tail -n +6 | xargs rm -f
+        fi
+        
+        # Создание файла с метаданными
+        META_FILE="$BACKUP_DIR/backup-$TIMESTAMP.meta"
+        echo "student_id: $STU_ID" > $META_FILE
+        echo "group: $STU_GROUP" >> $META_FILE
+        echo "variant: $STU_VARIANT" >> $META_FILE
+        echo "backup_time: $(date)" >> $META_FILE
+        echo "database: $PGDATABASE" >> $META_FILE
+        
+    else
+        echo "❌ Ошибка при создании backup!"
+        echo "Проверка:"
+        echo "  Файл существует: $([ -f $BACKUP_FILE ] && echo 'да' || echo 'нет')"
+        echo "  Размер файла: $(du -h $BACKUP_FILE 2>/dev/null || echo '0')"
+        exit 1
+    fi
+    
+    echo "=== Завершение backup ==="
+    
+  restore.sh: |
+    #!/bin/bash
+    set -e
+    
+    echo "=== Начало восстановления ==="
+    echo "Время: $(date)"
+    echo "STU_ID: $STU_ID"
+    echo "STU_GROUP: $STU_GROUP"
+    echo "STU_VARIANT: $STU_VARIANT"
+    
+    # Параметры
+    PGHOST="db-postgres-0.postgres-headless.state-lab03.svc.cluster.local"
+    PGUSER="$POSTGRES_USER"
+    PGPASSWORD="$POSTGRES_PASSWORD"
+    PGDATABASE="$POSTGRES_DB"
+    BACKUP_DIR="/backup"
+    
+    # Проверка директории
+    if [ ! -d "$BACKUP_DIR" ]; then
+        echo "❌ Директория backup не существует: $BACKUP_DIR"
+        exit 1
+    fi
+    
+    # Поиск последнего backup файла
+    LATEST_BACKUP=$(ls -t $BACKUP_DIR/backup-*.sql 2>/dev/null | head -1)
+    
+    if [ -z "$LATEST_BACKUP" ]; then
+        echo "❌ Не найдены файлы backup!"
+        echo "Доступные файлы в $BACKUP_DIR:"
+        ls -la $BACKUP_DIR/ 2>/dev/null || echo "   (директория пуста)"
+        exit 1
+    fi
+    
+    echo "Найден backup: $LATEST_BACKUP"
+    echo "Размер: $(du -h $LATEST_BACKUP | cut -f1)"
+    
+    # Проверка подключения к PostgreSQL
+    echo "Проверка подключения к PostgreSQL..."
+    until pg_isready -h $PGHOST -U $PGUSER -d $PGDATABASE -t 5; do
+        echo "Ожидание PostgreSQL... ($(date))"
+        sleep 5
+    done
+    
+    # Восстановление
+    echo "Восстановление базы $PGDATABASE из $LATEST_BACKUP..."
+    
+    # Временно отключаем подключения (для production нужно аккуратнее)
+    PGPASSWORD=$PGPASSWORD psql -h $PGHOST -U $PGUSER -d $PGDATABASE \
+        -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$PGDATABASE' AND pid <> pg_backend_pid();" 2>/dev/null || true
+    
+    # Восстановление
+    echo "Выполняю восстановление..."
+    if PGPASSWORD=$PGPASSWORD psql -h $PGHOST -U $PGUSER -d $PGDATABASE < $LATEST_BACKUP; then
+        echo "✅ Восстановление успешно завершено!"
+        
+        # Проверка восстановленных данных
+        echo "Проверка восстановленных таблиц..."
+        TABLES=$(PGPASSWORD=$PGPASSWORD psql -h $PGHOST -U $PGUSER -d $PGDATABASE -t \
+            -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';")
+        echo "Количество таблиц в схеме public: $TABLES"
+        
+        # Если есть тестовая таблица - покажем данные
+        if PGPASSWORD=$PGPASSWORD psql -h $PGHOST -U $PGUSER -d $PGDATABASE -t \
+            -c "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'lab_test');" | grep -q "t"; then
+            echo "Данные в таблице lab_test:"
+            PGPASSWORD=$PGPASSWORD psql -h $PGHOST -U $PGUSER -d $PGDATABASE \
+                -c "SELECT * FROM lab_test ORDER BY id LIMIT 10;"
+        fi
+        
+    else
+        echo "❌ Ошибка при восстановлении!"
+        exit 1
+    fi
+    
+    echo "=== Завершение восстановления ==="

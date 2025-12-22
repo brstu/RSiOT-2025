@@ -1,0 +1,101 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: restore-postgres-demo
+  namespace: state-lab03
+  labels:
+    org.bstu.course: "RSIOT"
+    org.bstu.variant: "17"
+    app: restore
+    purpose: "demonstration"
+spec:
+  template:
+    metadata:
+      labels:
+        app: restore
+        org.bstu.variant: "17"
+        job-type: "restore-demo"
+    spec:
+      containers:
+      - name: restore
+        image: postgres:15-alpine
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-password
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-user
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-db
+        - name: STU_ID
+          value: "12345678"
+        - name: STU_GROUP
+          value: "FICT-123"
+        - name: STU_VARIANT
+          value: "17"
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            echo "=== ДЕМОНСТРАЦИЯ ВОССТАНОВЛЕНИЯ ==="
+            echo "1. Проверка наличия backup файлов..."
+            ls -lh /backup/ || echo "Директория backup не смонтирована"
+            
+            echo ""
+            echo "2. Копирование скрипта восстановления..."
+            cp /scripts/restore.sh /tmp/restore.sh
+            chmod +x /tmp/restore.sh
+            
+            echo ""
+            echo "3. Запуск восстановления..."
+            if /tmp/restore.sh; then
+              echo ""
+              echo "✅ Восстановление успешно завершено!"
+              echo ""
+              echo "4. Финальная проверка данных..."
+              PGPASSWORD=$POSTGRES_PASSWORD psql \
+                -h db-postgres-0.postgres-headless.state-lab03.svc.cluster.local \
+                -U $POSTGRES_USER \
+                -d $POSTGRES_DB \
+                -c "SELECT 'Таблицы в БД:', COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'; \
+                    SELECT 'Данные в lab_test:', COUNT(*) as records FROM lab_test; \
+                    SELECT * FROM lab_test ORDER BY id DESC LIMIT 3;"
+            else
+              echo "❌ Восстановление не удалось!"
+              exit 1
+            fi
+            
+            echo ""
+            echo "=== ДЕМОНСТРАЦИЯ ЗАВЕРШЕНА ==="
+        volumeMounts:
+        - name: backup-volume
+          mountPath: /backup
+        - name: scripts-volume
+          mountPath: /scripts
+          readOnly: true
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      restartPolicy: OnFailure
+      volumes:
+      - name: backup-volume
+        persistentVolumeClaim:
+          claimName: backup-pvc
+      - name: scripts-volume
+        configMap:
+          name: backup-scripts
+          defaultMode: 0744
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 3600

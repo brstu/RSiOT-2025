@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-backup-pvc
+  namespace: app40
+  labels:
+    app: web40
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220022"
+    org.bstu.group: "AS-64"
+    org.bstu.variant: "40"
+    org.bstu.owner: "Zaharihnio"
+    org.bstu.student.slug: "AS64-220022-v40"
+  annotations:
+    org.bstu.group: "АС-64"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: fast
+  resources:
+    requests:
+      storage: 3Gi

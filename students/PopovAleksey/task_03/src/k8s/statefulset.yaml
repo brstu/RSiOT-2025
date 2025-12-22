@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-as64-220051-v38
+  namespace: state-as64-220051-v38
+  labels:
+    org.bstu.student.fullname: "РџРѕРїРѕРІ РђР»РµРєСЃРµР№ РЎРµСЂРіРµРµРІРёС‡"
+    org.bstu.student.id: "220051"
+    org.bstu.group: "РђРЎ-64"
+    org.bstu.variant: "38"
+    org.bstu.course: "RSiOT"
+    org.bstu.owner: "LexusxdsD"
+    org.bstu.student.slug: "as64-220051-v38"
+spec:
+  serviceName: db-as64-220051-v38
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        org.bstu.student.id: "220051"
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+              name: redis
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-as64-220051-v38-secret
+                  key: redis-password
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: storage-as64-220051-v38

@@ -1,0 +1,14 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast
+  labels:
+    org.bstu.course: RSIOT
+    org.bstu.student.fullname: "<ФИО>"
+    org.bstu.student.id: "<StudentID>"
+    org.bstu.group: "<Группа>"
+    org.bstu.variant: "<Вариант>"
+provisioner: k8s.io/minikube-hostpath
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true

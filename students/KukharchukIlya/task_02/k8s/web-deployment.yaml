@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web13
+  namespace: app13
+  labels:
+    app: web13
+    org.bstu.student.fullname: "Кухарчук Илья Николаевич"
+    org.bstu.student.id: "220017"
+    org.bstu.group: "АС-63"
+    org.bstu.variant: "13"
+    org.bstu.course: RSIOT
+    org.bstu.owner: "IlyaKukharchuk"
+    org.bstu.student.slug: "as-63-220017-v13"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web13
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: web13
+    spec:
+      containers:
+        - name: web
+          image: web13:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8061
+          env:
+            - name: PORT
+              value: "8061"
+            - name: STU_ID
+              value: "220017"
+            - name: STU_GROUP
+              value: "АС-63"
+            - name: STU_VARIANT
+              value: "13"
+            - name: DB_HOST
+              value: "db"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              value: "postgres"
+            - name: DB_PASSWORD
+              value: "postgres"
+            - name: DB_NAME
+              value: "appdb"
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8061
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8061
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "150m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"

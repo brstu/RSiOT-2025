@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-stateful
+  namespace: state01
+  labels:
+    app: redis
+    variant: "16"
+    org.bstu.student.slug: as-63-220020-v16
+spec:
+  serviceName: redis-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        variant: "16"
+    spec:
+      containers:
+      - name: redis
+        image: redis:7.2-alpine
+        ports:
+        - containerPort: 6379
+          name: redis
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: password
+        command: ["sh", "-c"]
+        args:
+          - |
+            echo "Starting Redis for student: 220020, variant: 16"
+            exec redis-server --requirepass "$(REDIS_PASSWORD)" --appendonly yes
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        - name: backup-storage
+          mountPath: /backup
+        livenessProbe:
+          tcpSocket:
+            port: 6379
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 6379
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: "fast" 
+      resources:
+        requests:
+          storage: 3Gi
+    volumes:
+      - name: backup-storage
+        persistentVolumeClaim:
+          claimName: redis-backup-pv

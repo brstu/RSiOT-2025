@@ -5,8 +5,9 @@ metadata:
   labels:
     org.bstu.course: "RSIOT"
     org.bstu.variant: "17"
-provisioner: kubernetes.io/no-provisioner # Для Minikube. Для облака укажите реальный, например: kubernetes.io/gce-pd
+provisioner: k8s.io/minikube-hostpath
 volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
 parameters:
-  type: pd-ssd # Пример параметра для "премиумного" SSD-диска
+  type: ssd
+  fsType: ext4

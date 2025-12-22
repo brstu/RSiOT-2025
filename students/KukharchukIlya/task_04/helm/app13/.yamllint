@@ -1,0 +1,13 @@
+extends: default
+
+rules:
+  braces:
+    level: off
+  brackets:
+    level: off
+  document-start:
+    level: off
+  line-length:
+    level: off
+  empty-lines:
+    level: off
