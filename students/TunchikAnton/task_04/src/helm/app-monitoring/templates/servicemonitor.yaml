@@ -2,7 +2,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ .Chart.Name }} -monitor
+  name: {{ .Chart.Name }}
   namespace: {{ .Release.Namespace | default "default" }}
   labels:
     app: {{ .Chart.Name }}
