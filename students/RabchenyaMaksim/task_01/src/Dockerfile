@@ -18,6 +18,6 @@ COPY --from=build /app/app /app/app
 EXPOSE 8003
 
 HEALTHCHECK --interval=30s --timeout=3s \
-  CMD ["/app/app", "-healthcheck"] || exit 1
+  CMD ["/app/app", "-healthcheck"]
 
 ENTRYPOINT ["/app/app"]
