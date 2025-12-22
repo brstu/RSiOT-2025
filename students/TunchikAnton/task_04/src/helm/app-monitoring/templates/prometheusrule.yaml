@@ -15,7 +15,7 @@ metadata:
     slug: "ac-63--v21"
 spec:
   groups:
-  - name: {{ .Chart.Name }}-slo
+  - name: {{ .Chart.Name }}
     rules:
     - alert: App21HighErrorRate
       expr: |
