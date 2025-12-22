@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web42-config
+  namespace: app42
+data:
+  APP_PORT: "7992"
+  APP_MESSAGE: "Hello from web42 in Kubernetes!"

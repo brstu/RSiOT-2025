@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web42
+  namespace: app42
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web42
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+
+  template:
+    metadata:
+      labels:
+        app: web42
+    spec:
+      securityContext:
+        runAsUser: 10001
+        runAsNonRoot: true
+
+      containers:
+        - name: web42
+          image: minigo:v42
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 7992
+
+          envFrom:
+            - configMapRef:
+                name: web42-config
+            - secretRef:
+                name: web42-secret
+
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "192Mi"
+            limits:
+              cpu: "200m"
+              memory: "192Mi"
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 7992
+            initialDelaySeconds: 2
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: 7992
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: web42-pvc
