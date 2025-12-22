@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web31-ingress
+  namespace: app31
+  labels:
+    app: web31
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220039"
+    org.bstu.group: "AS-64"
+    org.bstu.variant: "31"
+    org.bstu.owner: "Andrei21005"
+    org.bstu.student.slug: "AS63-220039-v31"
+  annotations:
+    org.bstu.group: "АС-64"
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: web31.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web31
+                port:
+                  number: 8023
