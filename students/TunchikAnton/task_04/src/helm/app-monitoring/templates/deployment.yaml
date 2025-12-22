@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,8 +24,8 @@ spec:
         org.bstu.variant: "21"
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/path: "{{ .Values.metrics.path }}"
-        prometheus.io/port: "{{ .Values.service.metricsPort }}"
+        prometheus.io/path: {{ .Values.metrics.path }}
+        prometheus.io/port: {{ .Values.service.metricsPort | quote }}
     spec:
       containers:
       - name: app
@@ -41,7 +42,7 @@ spec:
         - name: PORT
           value: "{{ .Values.service.port }}"
         resources:
-          {{- toYaml .Values.resources | nindent 10 }}
+{{ toYaml .Values.resources | indent 10 }}
         livenessProbe:
           httpGet:
             path: /health
