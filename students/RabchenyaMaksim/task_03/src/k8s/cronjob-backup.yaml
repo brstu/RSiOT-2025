@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: state39
+spec:
+  schedule: "35 6 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: postgres:16
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: pg-secret
+                      key: password
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  pg_dump -h postgres-0.postgres.state39.svc.cluster.local \
+                          -U postgres postgres \
+                          > /backup/backup_$(date +%F).sql
+              volumeMounts:
+                - name: data
+                  mountPath: /backup
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: data-postgres-0
