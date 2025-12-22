@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data-v08
+  namespace: app08
+  labels:
+    org.bstu.student.fullname: "Ivanyuk_Ivan_Aleksandrovich"
+    org.bstu.student.id: "220041"
+    org.bstu.group: "AS-64"
+    org.bstu.variant: "08"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "JonF1re"
+    org.bstu.student.slug: "as-64-220041-v08"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
