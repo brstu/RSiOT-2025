@@ -4,9 +4,7 @@ metadata:
   name: app31-grafana-dashboards
   namespace: {{ .Values.grafana.dashboards.namespace }}
   labels:
-    {{range $k, $v := .Values.grafana.dashboards.labels }}
-    {{ $k }}: "{{ $v }}"
-    {{ end }}
+    {{- toYaml .Values.grafana.dashboards.labels | nindent 4 }}
 data:
   app31-availability.json: |
     {
