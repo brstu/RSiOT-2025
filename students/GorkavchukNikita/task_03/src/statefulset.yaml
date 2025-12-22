@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: state24
+  labels:
+    app: redis
+    org.bstu.course: RSIOT
+    org.bstu.variant: "6"
+    org.bstu.fullname: "Gorkavchuk_Nikita_Mikhailovich"
+    org.bstu.student.id: "220038"
+    org.bstu.group: "AS-64"
+    org.bstu.owner: "GorkavchukNikita"
+    org.bstu.student.slug: "AS-64-220038-v6"
+spec:
+  serviceName: redis
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: redis
+
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: REDIS_PASSWORD
+
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - |
+              redis-server \
+                --requirepass "$REDIS_PASSWORD" \
+                --dir /data \
+                --appendonly yes
+
+          ports:
+            - containerPort: 6379
+
+          volumeMounts:
+            - name: data
+              mountPath: /data
+
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: premium
+        resources:
+          requests:
+            storage: 2Gi
