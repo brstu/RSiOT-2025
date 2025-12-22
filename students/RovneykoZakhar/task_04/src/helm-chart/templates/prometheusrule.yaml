@@ -3,7 +3,6 @@ kind: PrometheusRule
 metadata:
   name: {{ .Values.name }}-slo-rules
   namespace: {{ .Values.prometheusRule.namespace }}
-  labels:
 spec:
   groups:
     - name: {{ .Values.name }}.slo

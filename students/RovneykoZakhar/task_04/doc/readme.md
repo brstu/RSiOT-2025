@@ -5,7 +5,7 @@
 В рамках ЛР04 развернута система мониторинга Kubernetes-приложения с использованием kube-prometheus-stack (Prometheus, Grafana, Alertmanager). Приложение — простейший HTTP-сервис на Go (root handler + `/metrics`), инструментировано клиентской библиотекой Prometheus и экспонирует endpoint `/metrics`. Метрики автоматически собираются через ServiceMonitor, для которых в Helm-чарте включены `serviceMonitor` и `prometheusRule`. В Grafana ожидаются дашборды по availability/latency/errors. Настроены алерты в `PrometheusRule` и проверено их срабатывание локальными нагрузочными запросами.
 
 ## 2) Метаданные
-- 
+
 - **ФИО:** Ровнейко Захар Сергеевич
 - **Группа:** АС-64
 - **StudentID:** 220022
@@ -29,6 +29,7 @@ Health/endpoints & тестовые маршруты:
 ## 4) Установка и проверка
 
 Поднять окружение (minikube / k8s cluster):
+
 ```bash
 minikube start
 
