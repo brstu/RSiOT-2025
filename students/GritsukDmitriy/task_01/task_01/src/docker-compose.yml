@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: variant-3-app
+    ports:
+      - "8083:8083"
+    environment:
+      - PORT=8083
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - data_v3:/app/data
+    depends_on:
+      - redis
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: variant-3-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  data_v3:
+    name: data_v3
+  redis_data:
+    name: variant-3-redis-data
