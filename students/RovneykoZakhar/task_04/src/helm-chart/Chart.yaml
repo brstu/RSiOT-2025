@@ -1,0 +1,6 @@
+apiVersion: v2
+name: app42-chart
+description: Js app with Prometheus metrics and SLO alerts
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
