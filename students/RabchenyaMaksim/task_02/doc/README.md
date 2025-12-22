@@ -10,10 +10,10 @@
 
 <p align="right"><strong>Выполнил:</strong></p>
 <p align="right">Студент 4 курса</p>
-<p align="right">Группы АС-63</p>
+<p align="right">Группы АС-64</p>
 <p align="right">Рабченя Максим</p>
 <p align="right"><strong>Проверил:</strong></p>
-<p align="right">(ФИО преподавателя)</p>
+<p align="right">Несюк А.Н.</p>
 
 <p align="center"><strong>Брест 2025</strong></p>
 
@@ -84,14 +84,14 @@ HEALTHCHECK: проверка `/ping` через `curl`.
 - контейнер: `app-as-63-<STUDENT_ID>-v15`
 - порты: `8063:8063`
 - depends_on: `[redis]`
-- env: `APP_PORT=8063`, `REDIS_ADDR=redis:6379`, `STU_ID=<STUDENT_ID>`, `STU_GROUP=АС-63`, `STU_VARIANT=15`
+- env: `APP_PORT=8063`, `REDIS_ADDR=redis:6379`, `STU_ID=<STUDENT_ID>`, `STU_GROUP=АС-64`, `STU_VARIANT=39`
 
 Redis:
 
 - образ: `redis:7-alpine`
-- контейнер: `redis-as-63-<STUDENT_ID>-v15`
-- volume: `data-as-63-<STUDENT_ID>-v15:/data`
-- сеть: `net-as-63-<STUDENT_ID>-v15`
+- контейнер: `redis-as-64-<STUDENT_ID>-v39`
+- volume: `data-as-64-<STUDENT_ID>-v39:/data`
+- сеть: `net-as-64-<STUDENT_ID>-v39`
 
 ### 4. Graceful shutdown
 
@@ -146,13 +146,13 @@ curl http://localhost:8063/
 | Поле | Значение |
 |------|-----------|
 | **ФИО** | Рабченя Максим |
-| **Группа** | АС-63 |
+| **Группа** | АС-64 |
 | **StudentID** | <YOUR_STUDENT_ID> |
 | **Email (учебный)** | <your_email@example.com> |
 | **GitHub username** | <your_github> |
-| **Вариант** | 15 |
+| **Вариант** | 39 |
 | **ОС / Docker** | (например: W10, Docker Desktop) |
-| **Slug** | as-63-<YOUR_STUDENT_ID>-v15 |
+| **Slug** | as-64-<YOUR_STUDENT_ID>-v39 |
 
 ---
 
@@ -161,5 +161,3 @@ curl http://localhost:8063/
 - Собран контейнеризированный Go-сервис с multi-stage build.
 - Настроены `redis`, volume и сеть в `docker-compose`.
 - Реализован graceful shutdown и healthcheck.
-
-Замените плейсхолдеры в разделе «Метаданные студента», и я обновлю файл под ваши реальные данные.
