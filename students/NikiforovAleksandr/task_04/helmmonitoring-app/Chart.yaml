@@ -1,3 +1,4 @@
+---
 apiVersion: v2
 name: monitoring-app
 description: Helm chart for Memes Gallery application with monitoring
