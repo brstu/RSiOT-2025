@@ -1,17 +1,17 @@
-{{- if .Values.alerts.enabled }}
+---
+{{- if .Values.alerts.enabled}}
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: {{ include "monitoring-app.fullname" . }}-prometheusrule
-  namespace: {{ .Values.namespace }}
+  name: {{include "monitoring-app.fullname" .}}-prometheusrule
+  namespace: {{.Values.namespace}}
   labels:
-    {{- include "monitoring-app.labels" . | nindent 4 }}
+    {{- include "monitoring-app.labels" . | nindent 4}}
     release: prometheus-stack
 spec:
   groups:
     - name: memes-gallery-slo
       rules:
-        # SLO: Доступность 99.9%
         - alert: MemesGalleryHighErrorRate
           expr: |
             rate(memes_gallery_http_requests_total{status=~"5.."}[5m])
@@ -22,14 +22,9 @@ spec:
           labels:
             severity: critical
             service: memes-gallery
-            variant: "{{ .Values.metadata.variant }}"
           annotations:
             summary: "Высокий уровень ошибок в галерее мемов"
-            description: |
-              Уровень ошибок 5xx превышает 0.1% за последние 5 минут.
-              Текущее значение: {{ $value }}
-        
-        # SLO: Задержка P95 < 1s
+            description: "Уровень ошибок 5xx превышает 0.1%"
         - alert: MemesGalleryHighLatency
           expr: |
             histogram_quantile(0.95,
@@ -39,17 +34,12 @@ spec:
           labels:
             severity: warning
             service: memes-gallery
-            variant: "{{ .Values.metadata.variant }}"
           annotations:
             summary: "Высокая задержка в галерее мемов"
-            description: |
-              P95 задержка превышает 1 секунду за последние 5 минут.
-              Текущее значение: {{ $value }}s
-        
-        # Дополнительный алерт для низкой доступности
+            description: "P95 задержка превышает 1 секунду"
         - alert: MemesGalleryLowAvailability
           expr: |
-            up{job="{{ include "monitoring-app.fullname" . }}"} == 0
+            up{job="{{include "monitoring-app.fullname" .}}"} == 0
           for: 1m
           labels:
             severity: critical
@@ -57,4 +47,4 @@ spec:
           annotations:
             summary: "Галерея мемов недоступна"
             description: "Сервис не отвечает более 1 минуты"
-{{- end }}
+{{- end}}
