@@ -1,0 +1,19 @@
+---
+replicaCount: 1
+image:
+  repository: nginx
+  tag: stable
+  pullPolicy: IfNotPresent
+nameOverride: "app39"
+namespace: default
+service:
+  port: 8080
+metrics:
+  enabled: true
+  path: /metrics
+  port: 8080
+  prefix: "app39_" # important for variant 39
+resources: { }
+nodeSelector: { }
+tolerations: [ ]
+affinity: { }

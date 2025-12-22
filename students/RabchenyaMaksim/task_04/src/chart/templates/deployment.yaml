@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{include "app39.fullname" .}}
+  labels:
+    app: {{include "app39.name" .}}
+spec:
+  replicas: {{ .Values.replicaCount}}
+  selector:
+    matchLabels:
+      app: {{include "app39.name" .}}
+  template:
+    metadata:
+      labels:
+        app: {{include "app39.name" .}}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{.Values.metrics.port}}"
+        prometheus.io/path: "{{.Values.metrics.path}}"
+    spec:
+      containers:
+        - name: {{include "app39.name" .}}
+          image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+          ports:
+            - containerPort: {{.Values.service.port}}
+          env:
+            - name: METRICS_PREFIX
+              value: "{{.Values.metrics.prefix}}"
