@@ -2,7 +2,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: {{ .Chart.Name }}-alerts
+  name: {{ .Chart.Name }} -alerts
   namespace: {{ .Release.Namespace | default "default" }}
   labels:
     app: {{ .Chart.Name }}
