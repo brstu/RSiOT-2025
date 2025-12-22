@@ -7,12 +7,12 @@ metadata:
   labels:
     app: {{ .Chart.Name }}
     release: {{ .Values.prometheus.release }}
-    org.bstu.course: "RSIOT"
+    org.bstu.course: RSIOT
     org.bstu.variant: "21"
-    org.bstu.student.fullname: "Tunchik Anton Dmitrievich"
+    org.bstu.student.fullname: Tunchik_Anton_Dmitrievich
     org.bstu.student.id: "006326"
-    org.bstu.group: "AC-63"
-    slug: "ac-63--v21"
+    org.bstu.group: AC-63
+    slug: ac-63--v21
 spec:
   selector:
     matchLabels:

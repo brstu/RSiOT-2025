@@ -8,7 +8,7 @@ metadata:
     app: {{ .Chart.Name }}
     org.bstu.course: RSIOT
     org.bstu.variant: "21"
-    org.bstu.student.fullname: Tunchik Anton Dmitrievich
+    org.bstu.student.fullname: Tunchik_Anton_Dmitrievich
     org.bstu.student.id: "006326"
     org.bstu.group: AC-63
     slug: ac-63--v21
@@ -24,8 +24,8 @@ spec:
         org.bstu.variant: "21"
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/path: {{ .Values.metrics.path }}
-        prometheus.io/port: {{ .Values.service.metricsPort | quote }}
+        prometheus.io.path: {{ .Values.metrics.path }}
+        prometheus.io.port: {{ .Values.service.metricsPort | quote }}
     spec:
       containers:
       - name: app
@@ -38,9 +38,9 @@ spec:
           containerPort: {{ .Values.service.metricsPort }}
         env:
         - name: METRICS_PREFIX
-          value: "{{ .Values.metrics.prefix }}"
+          value: {{ .Values.metrics.prefix | quote }}
         - name: PORT
-          value: "{{ .Values.service.port }}"
+          value: {{ .Values.service.port | quote }}
         resources:
 {{ toYaml .Values.resources | indent 10 }}
         livenessProbe:
