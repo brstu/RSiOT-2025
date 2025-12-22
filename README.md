@@ -53,17 +53,17 @@
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | АС-63 | 1 | 2 | Ващук Анатолий | VashchukAnatoliy | [dir](./students/VashchukAnatoliy) | [skevet-avramuk](https://github.com/skevet-avramuk) | 100+10 | 87 | 94 | 40 |  |
 | 2 | АС-63 | 2 | 1 | Выржемковский Даниил | VyrzhemkovskiyDaniil | [dir](./students/VyrzhemkovskiyDaniil) | [r0mb123](https://github.com/r0mb123) |  |  |  |  |  |
-| 3 | АС-63 | 3 | 1 | Грицук Дмитрий | GritsukDmitriy | [dir](./students/GritsukDmitriy) | [llayyz](https://github.com/llayyz) |  |  |  |  |  |
+| 3 | АС-63 | 3 | 1 | Грицук Дмитрий | GritsukDmitriy | [dir](./students/GritsukDmitriy) | [llayyz](https://github.com/llayyz) | 70 | 42 |  |  |  |
 | 4 | АС-63 | 4 | 1 | Грицук Павел | GritsukPavel | [dir](./students/GritsukPavel) | [momo-kitsune](https://github.com/momo-kitsune) | 62 | 66 |  |  |  |
 | 5 | АС-63 | 5 | 1 | Казаренко Павел | KazarenkoPavel | [dir](./students/KazarenkoPavel) | [Catsker](https://github.com/Catsker) | 84 | 98 | 50 |  |  |
-| 6 | АС-63 | 6 | 1 | Карпеш Никита | KarpeshNikita | [dir](./students/KarpeshNikita) | [Frosyka](https://github.com/Frosyka) | 100+10 |  |  |  |  |
+| 6 | АС-63 | 6 | 1 | Карпеш Никита | KarpeshNikita | [dir](./students/KarpeshNikita) | [Frosyka](https://github.com/Frosyka) | 100+10 | 110 | 108 | 110 |  |
 | 7 | АС-63 | 7 | 1 | Козлович Антон | KozlovichAnton | [dir](./students/KozlovichAnton) | [Anton777kozlovich](https://github.com/Anton777kozlovich) | 88 | 66 |  |  |  |
 | 8 | АС-63 | 8 | 1 | Козловская Анна | KozlovskayaAnna | [dir](./students/KozlovskayaAnna) | [annkrq](https://github.com/annkrq) | 95 | 110 |  |  |  |
 | 9 | АС-63 | 9 | 1 | Колодич Максим | KolodichMaksim | [dir](./students/KolodichMaksim) | [proxladno](https://github.com/proxladno) | 89 | 75 | 40 |  |  |
 | 10 | АС-63 | 10 | 1 | Крагель Алина | KragelAlina | [dir](./students/KragelAlina) | [Alina529](https://github.com/Alina529) | 100+10 | 92 |  |  |  |
-| 11 | АС-63 | 11 | 2 | Куликович Иван | KulikovichIvan | [dir](./students/KulikovichIvan) | [teenage717](https://github.com/teenage717) | 94 | 105 |  |  |  |
+| 11 | АС-63 | 11 | 2 | Куликович Иван | KulikovichIvan | [dir](./students/KulikovichIvan) | [teenage717](https://github.com/teenage717) | 94 | 105 | 40 |  |  |
 | 12 | АС-63 | 12 | 2 | Кульбеда Кирилл | KulbedaKirill | [dir](./students/KulbedaKirill) | [fr0ogi](https://github.com/fr0ogi) | 77 |  |  |  |  |
-| 13 | АС-63 | 13 | 2 | Кухарчук Илья | KukharchukIlya | [dir](./students/KukharchukIlya) | [IlyaKukharchuk](https://github.com/IlyaKukharchuk) |  |  |  |  |  |
+| 13 | АС-63 | 13 | 2 | Кухарчук Илья | KukharchukIlya | [dir](./students/KukharchukIlya) | [IlyaKukharchuk](https://github.com/IlyaKukharchuk) | 100 | 100 | 105 | 110 |  |
 | 14 | АС-63 | 14 | 1 | Логинов Глеб | LoginovGleb | [dir](./students/LoginovGleb) | [gleb7499](https://github.com/gleb7499) | 100+10 | 110 |  |  |  |
 | 15 | АС-63 | 15 | 2 | Мороз Евгений | MorozEvgeniy | [dir](./students/MorozEvgeniy) | [EugeneFr0st](https://github.com/EugeneFr0st) | 100+10 | 92 | 40 |  |  |
 | 16 | АС-63 | 16 | 2 | Никифоров Александр | NikiforovAleksandr | [dir](./students/NikiforovAleksandr) | [woQhy](https://github.com/woQhy) | 97 | 101 | 40 |  |  |
@@ -80,13 +80,13 @@
 | 27 | АС-64 | 3 | 1 | Будник Анна | BudnikAnna | [dir](./students/BudnikAnna) | [annettebb](https://github.com/annettebb) | 87 | 74 | 40 | 40 |  |
 | 28 | АС-64 | 4 | 1 | Булавский Андрей | BulavskiyAndrey | [dir](./students/BulavskiyAndrey) | [andrei1910bl](https://github.com/andrei1910bl) | 108 |  | 110 |  |  |
 | 29 | АС-64 | 5 | 2 | Бурак Илья | BurakIlya | [dir](./students/BurakIlya) | [burakillya](https://github.com/burakillya) | 42 | 64 |  |  |  |
-| 30 | АС-64 | 6 | 1 | Горкавчук Никита | GorkavchukNikita | [dir](./students/GorkavchukNikita) | [Exage](https://github.com/Exage) | 100+10 |  |  |  |  |
-| 31 | АС-64 | 7 | 1 | Евкович Андрей | EvkovichAndrey | [dir](./students/EvkovichAndrey) | [Andrei21005](https://github.com/Andrei21005) |  |  |  |  |  |
-| 32 | АС-64 | 8 | 1 | Иванюк Иван | IvanyukIvan | [dir](./students/IvanyukIvan) | [JonF1re](https://github.com/JonF1re) | 79 |  |  |  |  |
-| 33 | АС-64 | 9 | 1 | Игнаткевич Кирилл | IgnatkevichKirill | [dir](./students/IgnatkevichKirill) | [pyrokekw](https://github.com/pyrokekw) | 100+10 | 102 | 110 |  |  |
+| 30 | АС-64 | 6 | 1 | Горкавчук Никита | GorkavchukNikita | [dir](./students/GorkavchukNikita) | [Exage](https://github.com/Exage) | 100+10 | 108 | 110 |  |  |
+| 31 | АС-64 | 7 | 1 | Евкович Андрей | EvkovichAndrey | [dir](./students/EvkovichAndrey) | [Andrei21005](https://github.com/Andrei21005) | 86 | 78 |  |  |  |
+| 32 | АС-64 | 8 | 1 | Иванюк Иван | IvanyukIvan | [dir](./students/IvanyukIvan) | [JonF1re](https://github.com/JonF1re) | 79 | 75 |  |  |  |
+| 33 | АС-64 | 9 | 1 | Игнаткевич Кирилл | IgnatkevichKirill | [dir](./students/IgnatkevichKirill) | [pyrokekw](https://github.com/pyrokekw) | 100+10 | 102 | 110 | 110 |  |
 | 34 | АС-64 | 10 | 1 | Кашпир Дмитрий | KashpirDmitriy | [dir](./students/KashpirDmitriy) | [Dima-kashpir](https://github.com/Dima-kashpir) |  | 98 |  |  |  |
 | 35 | АС-64 | 11 | 1 | Котковец Кирилл | KotkovetsKirill | [dir](./students/KotkovetsKirill) | [Kirill-Kotkovets](https://github.com/Kirill-Kotkovets) | 101 | 71 |  |  |  |
-| 36 | АС-64 | 12 | 2 | Кужир Владислав | KuzhirVladislav | [dir](./students/KuzhirVladislav) | [XD-cods](https://github.com/XD-cods) | 100+10 |  |  |  |  |
+| 36 | АС-64 | 12 | 2 | Кужир Владислав | KuzhirVladislav | [dir](./students/KuzhirVladislav) | [XD-cods](https://github.com/XD-cods) | 100+10 | 71 |  |  |  |
 | 37 | АС-64 | 13 | 2 | Немирович Дмитрий | NemirovichDmitriy | [dir](./students/NemirovichDmitriy) | [goryachiy-ugolek](https://github.com/goryachiy-ugolek) | 91 | 76 | 40 | 40 |  |
 | 38 | АС-64 | 14 | 2 | Попов Алексей | PopovAleksey | [dir](./students/PopovAleksey) | [LexusxdsD](https://github.com/LexusxdsD) | 103 | 42 | 40 | 40 |  |
 | 39 | АС-64 | 15 | 2 | Рабченя Максим | RabchenyaMaksim | [dir](./students/RabchenyaMaksim) | [benwer9q](https://github.com/benwer9q) |  |  |  |  |  |
