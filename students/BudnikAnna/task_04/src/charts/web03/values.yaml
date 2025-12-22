@@ -1,0 +1,65 @@
+namespace: app03
+
+replicaCount: 2
+
+image:
+  repository: YOUR_REGISTRY/YOUR_USER/web03
+  tag: "lab04"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8083
+
+ingress:
+  enabled: true
+  className: nginx
+  host: web03.local
+  path: /
+  pathType: Prefix
+
+resources:
+  requests:
+    cpu: 150m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi
+
+redis:
+  enabled: true
+  image: redis:7-alpine
+  port: 6379
+
+env:
+  APP_ENV: "prod"
+  PORT: "8083"
+  REDIS_DB: "0"
+  SHUTDOWN_TIMEOUT: "10s"
+  REDIS_ADDR: "web03-redis:6379"
+
+metrics:
+  enabled: true
+  prefix: "app03_"
+  path: /metrics
+  interval: 30s
+  scrapeTimeout: 10s
+
+monitoring:
+  releaseLabel: monitoring
+
+slo:
+  availability: 99.9
+  p95LatencySeconds: 0.2
+  errorRateThreshold: 0.01
+  errorWindow: 10m
+
+studentMeta:
+  fullname: "Будник Анна"
+  studentId: "220033"
+  group: "АС-64"
+  variant: "3"
+  course: "RSIOT"
+  owner: "annettebb"
+  slug: "as-64-220033-v03"

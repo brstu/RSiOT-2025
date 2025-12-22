@@ -1,0 +1,18 @@
+apiVersion: v2
+name: app24
+description: Flask приложение с метриками Prometheus и алертами (ЛР04, вариант 24)
+type: application
+
+version: 1.0.0
+appVersion: "1.0"
+
+keywords:
+  - monitoring
+  - prometheus
+  - observability
+  - helm
+  - kubernetes
+
+maintainers:
+  - name: Ярмолович Александр Сергеевич
+    email: as220029@g.bstu.by

@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: stateful-lab
+  labels:
+    org.bstu.student.fullname: "Куликович Иван Сергеевич"
+    org.bstu.group: "as-63"
+    org.bstu.variant: "11"
+spec:
+  schedule: "0 */3 * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: postgres:16-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  export PGPASSWORD=${PGPASSWORD}
+                  BACKUP_FILE="/backup/backup-$(date +%Y%m%d-%H%M%S).sql"
+                  echo "Starting backup at $(date)" > /backup/backup.log
+                  pg_dump -h postgres-0.postgres.stateful-lab.svc.cluster.local -U postgres mydb > ${BACKUP_FILE} 2>> /backup/backup.log
+                  if [ $? -eq 0 ]; then
+                    echo "Backup completed successfully: ${BACKUP_FILE}" >> /backup/backup.log
+                    echo "Backup file size:" >> /backup/backup.log
+                    ls -lh ${BACKUP_FILE} >> /backup/backup.log
+                  else
+                    echo "Backup failed!" >> /backup/backup.log
+                    exit 1
+                  fi
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret
+                      key: pgpassword
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backup
+          volumes:
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: backup-pvc
+          restartPolicy: OnFailure

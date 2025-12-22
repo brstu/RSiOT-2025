@@ -1,0 +1,166 @@
+---
+# Default values for monitoring-app
+# Параметры для варианта 23
+
+# Реплики приложения
+replicaCount: 2
+
+# Образ приложения
+image:
+  repository: monitoring-app
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+# Namespace
+namespace: monitoring-app
+
+# Метаданные студента
+student:
+  id: "220028"
+  fullname: "Ярмола Александр Олегович"
+  group: "АС-63"
+  variant: "23"
+  course: "RSIOT"
+  owner: "alexsandro007"
+  slug: "AS63-220028-v23"
+
+# Метрики
+metrics:
+  enabled: true
+  prefix: "app23_"  # Префикс метрик для варианта 23
+  port: 8080
+  path: /metrics
+  
+  # SLO для варианта 23
+  slo:
+    availability: 99.5  # 99.5%
+    latencyP95: 0.2      # 200ms
+    errorRate5xx: 1      # 1% за 5 минут
+
+# Service
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+  annotations: { }
+  labels:
+    app: monitoring-app
+    monitoring: "true"
+
+# Ingress
+ingress:
+  enabled: false
+  className: nginx
+  annotations: { }
+  hosts:
+    - host: monitoring-app.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: [ ]
+
+# Ресурсы
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+# Probes
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# ServiceMonitor для Prometheus
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  scrapeTimeout: 10s
+  labels:
+    release: monitoring  # Важно для kube-prometheus-stack
+
+# PrometheusRule - алерты
+prometheusRule:
+  enabled: true
+  labels:
+    release: monitoring  # Важно для kube-prometheus-stack
+  groups:
+    - name: monitoring-app-alerts
+      interval: 30s
+      rules:
+        # Alert: доступность ниже 99.5%
+        - alert: LowAvailability
+          expr: |
+            (sum(rate(app23_http_requests_total{status!~"5.."}[5m]))
+            / sum(rate(app23_http_requests_total[5m]))) * 100 < 99.5
+          for: 5m
+          labels:
+            severity: critical
+            variant: "23"
+          annotations:
+            summary: "Доступность ниже SLO 99.5%"
+            description: >
+              Текущая доступность {{ $value }}%
+              (требуется ≥99.5%)
+
+        # Alert: 5xx ошибок больше 1% за 5 минут
+        - alert: HighErrorRate5xx
+          expr: |
+            (sum(rate(app23_http_requests_total{status=~"5.."}[5m]))
+            / sum(rate(app23_http_requests_total[5m]))) * 100 > 1
+          for: 5m
+          labels:
+            severity: warning
+            variant: "23"
+          annotations:
+            summary: "Процент 5xx ошибок превышает 1%"
+            description: >
+              5xx ошибок: {{ $value }}% за последние 5 минут
+              (порог >1%)
+
+        # Alert: p95 latency превышает 200ms
+        - alert: HighLatencyP95
+          expr: |
+            histogram_quantile(0.95,
+            sum(rate(app23_http_request_duration_seconds_bucket[5m]))
+            by (le)) > 0.2
+          for: 5m
+          labels:
+            severity: warning
+            variant: "23"
+          annotations:
+            summary: "p95 latency превышает 200ms"
+            description: >
+              p95 latency: {{ $value }}s (требуется ≤0.2s)
+
+# Autoscaling
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+# Node selector
+nodeSelector: { }
+
+# Tolerations
+tolerations: [ ]
+
+# Affinity
+affinity: { }

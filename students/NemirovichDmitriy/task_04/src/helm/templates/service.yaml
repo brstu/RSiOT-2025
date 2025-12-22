@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mon-as64-220050-v37-service
+  namespace: {{.Values.namespace}}
+  labels:
+    org.bstu.student.id: {{.Values.metadata.studentId | quote}}
+    org.bstu.group: {{.Values.metadata.group | quote}}
+spec:
+  type: {{.Values.service.type}}
+  ports:
+    - port: {{.Values.service.port}}
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: mon-as64-220050-v37

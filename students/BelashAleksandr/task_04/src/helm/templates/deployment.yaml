@@ -1,0 +1,38 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mon-as64-220031-v25
+  namespace: app-as64-220031-v25
+  labels:
+    app: mon-as64-220031-v25
+    org.bstu.student.fullname: "Р‘РµР»Р°С€ РђР»РµРєСЃР°РЅРґСЂ РћР»РµРіРѕРІРёС‡"
+    org.bstu.student.id: "220031"
+    org.bstu.group: "РђРЎ-64"
+    org.bstu.variant: "25"
+    org.bstu.course: "RSiOT"
+    org.bstu.owner: "went2smoke"
+    org.bstu.student.slug: "as64-220031-v25"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mon-as64-220031-v25
+  template:
+    metadata:
+      labels:
+        app: mon-as64-220031-v25
+    spec:
+      containers:
+        - name: app
+          image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+          imagePullPolicy: "{{.Values.image.pullPolicy}}"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: STU_ID
+              value: "220031"
+            - name: STU_GROUP
+              value: "РђРЎ-64"
+            - name: STU_VARIANT
+              value: "25"

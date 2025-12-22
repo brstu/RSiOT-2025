@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web03-service
+  namespace: app03
+  labels:
+    app: web03
+    org.bstu.student.fullname: "Иванов Иван Иванович"
+    org.bstu.student.id: "123456"
+    org.bstu.group: "FEIS-41"
+    org.bstu.variant: "03"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "githubusername"
+    org.bstu.student.slug: "feis-41-123456-v03"
+spec:
+  selector:
+    app: web03
+  ports:
+  - port: 80
+    targetPort: 8083
+    protocol: TCP
+    name: http
+  type: ClusterIP

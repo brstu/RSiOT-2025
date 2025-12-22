@@ -1,0 +1,200 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: state-as64-220031-v25
+  labels:
+    org.bstu.student.fullname: "Белаш Александр Олегович"
+    org.bstu.student.id: "220031"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "25"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "went2smoke"
+    org.bstu.student.slug: "as64-220031-v25"
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard
+  labels:
+    org.bstu.student.fullname: "Белаш Александр Олегович"
+    org.bstu.student.id: "220031"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "25"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "went2smoke"
+    org.bstu.student.slug: "as64-220031-v25"
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: db-as64-220031-v25-pv
+  labels:
+    org.bstu.student.fullname: "Белаш Александр Олегович"
+    org.bstu.student.id: "220031"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "25"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "went2smoke"
+    org.bstu.student.slug: "as64-220031-v25"
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  hostPath:
+    path: "/var/lib/k8s/db-as64-220031-v25"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: backup-as64-220031-v25-pv
+  labels:
+    org.bstu.student.fullname: "Белаш Александр Олегович"
+    org.bstu.student.id: "220031"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "25"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "went2smoke"
+    org.bstu.student.slug: "as64-220031-v25"
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  hostPath:
+    path: "/var/lib/k8s/backup-as64-220031-v25"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-as64-220031-v25-pvc
+  namespace: state-as64-220031-v25
+  labels:
+    org.bstu.student.fullname: "Белаш Александр Олегович"
+    org.bstu.student.id: "220031"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "25"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "went2smoke"
+    org.bstu.student.slug: "as64-220031-v25"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-as64-220031-v25-secret
+  namespace: state-as64-220031-v25
+  labels:
+    org.bstu.student.fullname: "Белаш Александр Олегович"
+    org.bstu.student.id: "220031"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "25"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "went2smoke"
+    org.bstu.student.slug: "as64-220031-v25"
+type: Opaque
+data:
+  POSTGRES_USER: dXNlcjI1
+  POSTGRES_PASSWORD: cGFzczI1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-as64-220031-v25-headless
+  namespace: state-as64-220031-v25
+  labels:
+    org.bstu.student.fullname: "Белаш Александр Олегович"
+    org.bstu.student.id: "220031"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "25"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "went2smoke"
+    org.bstu.student.slug: "as64-220031-v25"
+spec:
+  clusterIP: None
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+  selector:
+    app: db-as64-220031-v25
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-as64-220031-v25
+  namespace: state-as64-220031-v25
+  labels:
+    org.bstu.student.fullname: "Белаш Александр Олегович"
+    org.bstu.student.id: "220031"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "25"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "went2smoke"
+    org.bstu.student.slug: "as64-220031-v25"
+spec:
+  serviceName: db-as64-220031-v25-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-as64-220031-v25
+  template:
+    metadata:
+      labels:
+        app: db-as64-220031-v25
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-as64-220031-v25-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-as64-220031-v25-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              value: postgres
+            - name: STU_ID
+              value: "220031"
+            - name: STU_GROUP
+              value: "АС-64"
+            - name: STU_VARIANT
+              value: "25"
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "[START] STU_ID=$STU_ID";
+              echo "STU_GROUP=$STU_GROUP STU_VARIANT=$STU_VARIANT";
+              exec docker-entrypoint.sh postgres
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+      terminationGracePeriodSeconds: 10
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 1Gi

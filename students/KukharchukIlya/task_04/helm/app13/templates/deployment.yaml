@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: { { .Values.app.name } }
+  namespace: { { .Values.namespace } }
+  labels:
+    app: { { .Values.app.name } }
+    org.bstu.student.fullname: { { .Values.student.fullname | quote } }
+    org.bstu.student.id: { { .Values.student.id | quote } }
+    org.bstu.group: { { .Values.student.group | quote } }
+    org.bstu.variant: { { .Values.student.variant | quote } }
+    org.bstu.course: RSIOT
+    org.bstu.owner: { { .Values.student.owner | quote } }
+    org.bstu.student.slug: { { .Values.student.slug | quote } }
+spec:
+  replicas: { { .Values.app.replicas } }
+  selector:
+    matchLabels:
+      app: { { .Values.app.name } }
+  template:
+    metadata:
+      labels:
+        app: { { .Values.app.name } }
+        org.bstu.student.slug: { { .Values.student.slug | quote } }
+    spec:
+      containers:
+        - name: { { .Values.app.name } }
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          imagePullPolicy: { { .Values.app.image.pullPolicy } }
+          ports:
+            - name: http
+              containerPort: { { .Values.app.port } }
+              protocol: TCP
+          env:
+            - name: PORT
+              value: { { .Values.app.port | quote } }
+            - name: STU_ID
+              value: { { .Values.student.id | quote } }
+            - name: STU_GROUP
+              value: { { .Values.student.group | quote } }
+            - name: STU_VARIANT
+              value: { { .Values.student.variant | quote } }
+            - name: METRICS_PREFIX
+              value: { { .Values.metrics.prefix | quote } }
+          resources: { { - toYaml .Values.app.resources | nindent 12 } }
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5

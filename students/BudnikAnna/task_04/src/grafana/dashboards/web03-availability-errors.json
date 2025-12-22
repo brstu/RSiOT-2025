@@ -1,0 +1,33 @@
+{
+  "title": "web03 — Availability & Errors",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Availability (%)",
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "targets": [
+        {
+          "expr": "100 * (sum(rate(app03_http_requests_total{status!~\"5..\"}[5m])) / sum(rate(app03_http_requests_total[5m])))",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 8 }
+    },
+    {
+      "type": "timeseries",
+      "title": "5xx Error Rate (%)",
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "targets": [
+        {
+          "expr": "100 * (sum(rate(app03_http_requests_total{status=~\"5..\"}[5m])) / sum(rate(app03_http_requests_total[5m])))",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 8, "w": 24, "h": 8 }
+    }
+  ]
+}

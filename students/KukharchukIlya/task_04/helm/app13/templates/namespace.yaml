@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: { { .Values.namespace } }
+  labels:
+    org.bstu.student.fullname: { { .Values.student.fullname | quote } }
+    org.bstu.student.id: { { .Values.student.id | quote } }
+    org.bstu.group: { { .Values.student.group | quote } }
+    org.bstu.variant: { { .Values.student.variant | quote } }
+    org.bstu.course: RSIOT
+    org.bstu.owner: { { .Values.student.owner | quote } }
+    org.bstu.student.slug: { { .Values.student.slug | quote } }

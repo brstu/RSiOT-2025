@@ -1,0 +1,51 @@
+# Default values for app13
+app:
+  name: app13-app
+  image:
+    repository: go-server
+    tag: stu-220017-v13
+    pullPolicy: IfNotPresent
+  port: 8061
+  replicas: 2
+  resources:
+    requests:
+      cpu: 150m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+metrics:
+  prefix: app13_
+  enabled: true
+  path: /metrics
+  port: 8061
+
+ingress:
+  enabled: false
+  className: nginx
+  host: app13.local
+  annotations: {}
+
+namespace: app-as-63-220017-v13
+
+# Student metadata
+student:
+  fullname: "Кухарчук Илья Николаевич"
+  id: "220017"
+  group: "АС-63"
+  variant: "13"
+  owner: "IlyaKukharchuk"
+  slug: "as-63-220017-v13"
+
+# SLO parameters
+slo:
+  availability: 99.0
+  latency_p95_ms: 300
+  error_rate_5xx_percent: 2.0
+  error_rate_window_minutes: 10
+
+# Monitoring
+monitoring:
+  enabled: true
+  release: monitoring

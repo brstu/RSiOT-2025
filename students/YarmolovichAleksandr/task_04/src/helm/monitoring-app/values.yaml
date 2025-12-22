@@ -1,0 +1,151 @@
+replicaCount: 2
+
+image:
+  repository: app24
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+namespace: app24
+
+student:
+  id: "220029"
+  fullname: "Ярмолович Александр Сергеевич"
+  group: "AC-63"
+  variant: "24"
+  course: "RSIOT"
+  owner: "yarmolov"
+  slug: "AC63-220029-v24"
+
+metrics:
+  enabled: true
+  prefix: "app24_"
+  port: 8080
+  path: /metrics
+
+  slo:
+    availability: 99.9    
+    latencyP95: 0.35      
+    errorRate5xx: 2.5     
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+  annotations: { }
+  labels:
+    app: app24
+    monitoring: "true"
+
+ingress:
+  enabled: false
+  className: nginx
+  annotations: { }
+  hosts:
+    - host: app24.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: [ ]
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  scrapeTimeout: 10s
+  labels:
+    release: monitoring
+
+monitoring:
+  release: monitoring
+  scrapeInterval: 30s
+  scrapeTimeout: 10s
+
+prometheusRule:
+  enabled: true
+  labels:
+    release: monitoring
+  groups:
+    - name: app24-alerts
+      interval: 30s
+      rules:
+
+        - alert: App24LowAvailability
+          expr: |
+            (sum(rate(app24_http_requests_total{status!~"5.."}[10m]))
+            / sum(rate(app24_http_requests_total[10m]))) * 100 < 99.9
+          for: 5m
+          labels:
+            severity: critical
+            variant: "24"
+          annotations:
+            summary: "Доступность ниже SLO 99.9%"
+            description: >
+              Текущая доступность {{ $value }}%
+              (требуется ≥99.9%)
+
+        - alert: App24HighErrorRate5xx
+          expr: |
+            (sum(rate(app24_http_requests_total{status=~"5.."}[10m]))
+            / sum(rate(app24_http_requests_total[10m]))) * 100 > 2.5
+          for: 5m
+          labels:
+            severity: warning
+            variant: "24"
+          annotations:
+            summary: "Процент 5xx ошибок превышает 2.5%"
+            description: >
+              5xx ошибок: {{ $value }}% за последние 10 минут
+              (порог >2.5%)
+
+        - alert: App24HighLatencyP95
+          expr: |
+            histogram_quantile(
+              0.95,
+              sum(rate(app24_http_request_duration_seconds_bucket[10m]))
+              by (le)
+            ) > 0.35
+          for: 5m
+          labels:
+            severity: warning
+            variant: "24"
+          annotations:
+            summary: "p95 latency превышает 350ms"
+            description: >
+              p95 latency: {{ $value }}s (требуется ≤0.35s)
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: { }
+
+tolerations: [ ]
+
+affinity: { }

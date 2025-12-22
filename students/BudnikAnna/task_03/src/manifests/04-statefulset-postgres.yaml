@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+  namespace: state01
+  labels:
+    app: db
+    org.bstu.course: RSIOT
+    org.bstu.student.fullname: "<ФИО>"
+    org.bstu.student.id: "<StudentID>"
+    org.bstu.group: "<Группа>"
+    org.bstu.variant: "<Вариант>"
+spec:
+  serviceName: db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+        org.bstu.course: RSIOT
+        org.bstu.student.fullname: "<ФИО>"
+        org.bstu.student.id: "<StudentID>"
+        org.bstu.group: "<Группа>"
+        org.bstu.variant: "<Вариант>"
+    spec:
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        fsGroup: 999
+      containers:
+        - name: postgres
+          image: postgres:16
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U postgres -h 127.0.0.1 -p 5432"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 6
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U postgres -h 127.0.0.1 -p 5432"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app: db
+          org.bstu.course: RSIOT
+          org.bstu.student.fullname: "<ФИО>"
+          org.bstu.student.id: "<StudentID>"
+          org.bstu.group: "<Группа>"
+          org.bstu.variant: "<Вариант>"
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: fast
+        resources:
+          requests:
+            storage: 2Gi

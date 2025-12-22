@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web31
+  namespace: app31
+  labels:
+    app: web31
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220039"
+    org.bstu.group: "AS-64"
+    org.bstu.variant: "31"
+    org.bstu.owner: "Andrei21005"
+    org.bstu.student.slug: "AS63-220039-v31"
+  annotations:
+    org.bstu.group: "АС-64"
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: web31
+  template:
+    metadata:
+      labels:
+        app: web31
+        org.bstu.course: "RSIOT"
+        org.bstu.student.id: "220039"
+        org.bstu.group: "AS-64"
+        org.bstu.variant: "31"
+        org.bstu.owner: "Andrei21005"
+        org.bstu.student.slug: "AS63-220039-v31"
+  annotations:
+    org.bstu.group: "АС-63"
+    spec:
+      containers:
+        - name: web31
+          image: myapp:v31   
+          ports:
+            - containerPort: 8023
+          resources:
+            requests:
+              cpu: "150m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+          envFrom:
+            - configMapRef:
+                name: web31-config
+            - secretRef:
+                name: web31-secret
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8023
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8023
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - name: data-v31
+              mountPath: /data
+      volumes:
+        - name: data-v31
+          persistentVolumeClaim:
+            claimName: pvc-v31
+      securityContext:
+        runAsUser: 65532
+        runAsGroup: 65532
+        allowPrivilegeEscalation: false

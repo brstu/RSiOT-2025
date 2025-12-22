@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: state24
+  labels:
+    org.bstu.course: RSIOT
+    org.bstu.variant: "24"
+    org.bstu.student.fullname: "Gorkavchuk_Nikita_Mikhailovich"
+    org.bstu.student.id: "220038"
+    org.bstu.group: "AS-64"
+    org.bstu.owner: "GorkavchukNikita"
+    org.bstu.student.slug: "AS-64-220038-v6"

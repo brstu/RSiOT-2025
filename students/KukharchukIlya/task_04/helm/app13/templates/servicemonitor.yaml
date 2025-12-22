@@ -1,0 +1,27 @@
+{{- if .Values.monitoring.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Values.app.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.app.name }}
+    release: {{ .Values.monitoring.release }}
+    org.bstu.student.fullname: {{ .Values.student.fullname | quote }}
+    org.bstu.student.id: {{ .Values.student.id | quote }}
+    org.bstu.group: {{ .Values.student.group | quote }}
+    org.bstu.variant: {{ .Values.student.variant | quote }}
+    org.bstu.course: RSIOT
+    org.bstu.owner: {{ .Values.student.owner | quote }}
+    org.bstu.student.slug: {{ .Values.student.slug | quote }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.app.name }}
+  endpoints:
+    - port: http
+      path: {{ .Values.metrics.path }}
+      interval: 30s
+      scrapeTimeout: 10s
+{{- end }}
+
