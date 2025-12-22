@@ -15,7 +15,8 @@ COPY . .
 RUN go build -o main .
 
 # Создаем минимальный образ для запуска
-FROM alpine:latest
+# Используем конкретную версию Alpine вместо latest
+FROM alpine:3.19
 
 # Устанавливаем рабочего пользователя с UID 65532
 RUN adduser -D -u 65532 appuser
