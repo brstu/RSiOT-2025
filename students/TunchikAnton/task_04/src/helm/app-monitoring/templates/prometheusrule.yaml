@@ -1,11 +1,12 @@
+---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: {{ .Chart.Name }}-alerts
-  namespace: {{ .Release.Namespace | default "default" }}
+  name: {{.Chart.Name}}-alerts
+  namespace: {{.Release.Namespace | default "default"}}
   labels:
-    app: {{ .Chart.Name }}
-    release: kube-prometheus-stack
+    app: {{.Chart.Name}}
+    release: {{.Values.prometheus.release}}
     org.bstu.course: RSIOT
     org.bstu.variant: "21"
     org.bstu.student.fullname: Tunchik Anton Dmitrievich
@@ -14,9 +15,9 @@ metadata:
     slug: ac-63--v21
 spec:
   groups:
-  - name: {{ .Chart.Name }}-slo
+  - name: {{.Chart.Name}}-slo
     rules:
-    # Alert 1: High Error Rate (>2% за 5 минут) - ИСПРАВЛЕНО
+    # Alert 1: High Error Rate (>2% за 5 минут)
     - alert: App21HighErrorRate
       expr: |
         (
@@ -30,7 +31,7 @@ spec:
         variant: "21"
       annotations:
         summary: "High error rate detected"
-        description: "Error rate is {{ $value | humanizePercentage }} (threshold: 2%)"
+        description: "Error rate is {{ $value }}% (threshold: 2%)"
         student: "Tunchik Anton Dmitrievich"
     
     # Alert 2: P95 Latency > 300ms
@@ -45,10 +46,10 @@ spec:
         variant: "21"
       annotations:
         summary: "High latency detected"
-        description: "P95 latency is {{ $value | humanizeDuration }} (threshold: 300ms)"
+        description: "P95 latency is {{ $value }}s (threshold: 300ms)"
         student: "Tunchik Anton Dmitrievich"
     
-    # Alert 3: Availability < 99.9% - ИСПРАВЛЕНО
+    # Alert 3: Availability < 99.9%
     - alert: App21LowAvailability
       expr: |
         (
@@ -66,7 +67,7 @@ spec:
         variant: "21"
       annotations:
         summary: "Low availability detected"
-        description: "Availability is {{ $value | humanize }}% (SLO: 99.9%)"
+        description: "Availability is {{ $value }}% (SLO: 99.9%)"
         student: "Tunchik Anton Dmitrievich"
     
     # Recording rules для дашбордов
