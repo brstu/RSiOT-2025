@@ -39,7 +39,7 @@
 - **PersistentVolumeClaim:** 1Gi
 - **StorageClass:** premium с параметрами для SSD-дисков, provisioner: k8s.io/minikube-hostpath
 - **Headless Service:** postgres-headless для стабильных DNS-имен подов
-- **Резервное копирование:** CronJob с расписанием "0 12 * * *" (ежедневно в 12:00)
+- **Резервное копирование:** CronJob с расписанием "0 12" (ежедневно в 12:00)
 - **Восстановление:** Job для демонстрации восстановления из backup
 - **Namespace:** state-lab03 для изоляции ресурсов
 
