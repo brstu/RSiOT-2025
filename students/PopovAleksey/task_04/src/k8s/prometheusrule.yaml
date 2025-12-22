@@ -1,0 +1,29 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: alert-as64-220051-v38
+  namespace: monitoring
+  labels:
+    prometheus: kube-prometheus
+spec:
+  groups:
+    - name: app38-alerts
+      interval: 30s
+      rules:
+        - alert: HighErrorRate
+          expr: rate(app38_http_requests_errors[5m]) > 0.015
+          for: 10m
+          labels:
+            severity: warning
+            variant: "38"
+          annotations:
+            summary: "High 5xx error rate detected"
+            description: "Error rate is above 1.5% for 10 minutes"
+        - alert: HighLatency
+          expr: app38_response_time_seconds > 0.3
+          for: 5m
+          labels:
+            severity: info
+          annotations:
+            summary: "Response time is high"

@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app-as64-220031-v25
+  labels:
+    org.bstu.student.slug: "as64-220031-v25"

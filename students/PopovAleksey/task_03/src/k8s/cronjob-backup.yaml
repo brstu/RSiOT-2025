@@ -1,0 +1,32 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-as64-220051-v38
+  namespace: state-as64-220051-v38
+  labels:
+    org.bstu.student.fullname: "РџРѕРїРѕРІ РђР»РµРєСЃРµР№ РЎРµСЂРіРµРµРІРёС‡"
+    org.bstu.student.id: "220051"
+    org.bstu.group: "РђРЎ-64"
+    org.bstu.variant: "38"
+    org.bstu.course: "RSiOT"
+spec:
+  schedule: "20 6 * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: redis-backup
+        spec:
+          containers:
+            - name: backup
+              image: redis:7-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "Starting backup at $(date)"
+                  redis-cli -h db-as64-220051-v38-0.db-as64-220051-v38 SAVE
+                  echo "Backup completed"
+          restartPolicy: OnFailure

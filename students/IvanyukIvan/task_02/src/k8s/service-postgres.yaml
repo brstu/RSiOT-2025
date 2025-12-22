@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-svc
+  namespace: app08
+  labels:
+    app: postgres
+    org.bstu.student.fullname: "Ivanyuk_Ivan_Aleksandrovich"
+    org.bstu.student.id: "220041"
+    org.bstu.group: "AS-64"
+    org.bstu.variant: "08"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "JonF1re"
+    org.bstu.student.slug: "as-64-220041-v08"
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: ClusterIP

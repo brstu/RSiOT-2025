@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mon-as64-220042-v9
+  namespace: {{.Values.namespace}}
+  labels:
+    app: mon-as64-220042-v9
+    org.bstu.student.fullname: "Игнаткевич Кирилл Сергеевич"
+    org.bstu.student.id: {{.Values.metadata.studentId | quote}}
+    org.bstu.group: {{.Values.metadata.group | quote}}
+    org.bstu.variant: {{.Values.metadata.variant | quote}}
+    org.bstu.course: "RSiOT"
+spec:
+  replicas: {{.Values.replicaCount}}
+  selector:
+    matchLabels:
+      app: mon-as64-220042-v9
+  template:
+    metadata:
+      labels:
+        app: mon-as64-220042-v9
+    spec:
+      containers:
+        - name: app
+          image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+          imagePullPolicy: {{.Values.image.pullPolicy}}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: STU_ID
+              value: {{.Values.metadata.studentId | quote}}
+            - name: STU_GROUP
+              value: {{.Values.metadata.group | quote}}
+            - name: STU_VARIANT
+              value: {{.Values.metadata.variant | quote}}

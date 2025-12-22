@@ -1,0 +1,26 @@
+env:
+- name: PORT
+  valueFrom:
+    configMapKeyRef:
+      name: app03-config
+      key: PORT
+- name: STU_ID
+  valueFrom:
+    configMapKeyRef:
+      name: app03-config
+      key: STU_ID
+- name: STU_GROUP
+  valueFrom:
+    configMapKeyRef:
+      name: app03-config
+      key: STU_GROUP
+- name: STU_VARIANT
+  valueFrom:
+    configMapKeyRef:
+      name: app03-config
+      key: STU_VARIANT
+- name: STU_FULLNAME
+  valueFrom:
+    configMapKeyRef:
+      name: app03-config
+      key: STU_FULLNAME

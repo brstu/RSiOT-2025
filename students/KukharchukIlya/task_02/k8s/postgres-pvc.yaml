@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: app13
+  labels:
+    org.bstu.student.fullname: "Кухарчук Илья Николаевич"
+    org.bstu.student.id: "220017"
+    org.bstu.group: "АС-63"
+    org.bstu.variant: "13"
+    org.bstu.course: RSIOT
+    org.bstu.owner: "IlyaKukharchuk"
+    org.bstu.student.slug: "as-63-220017-v13"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

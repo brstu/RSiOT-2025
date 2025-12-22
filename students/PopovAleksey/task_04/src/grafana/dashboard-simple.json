@@ -1,0 +1,43 @@
+{
+  "dashboard": {
+    "title": "Monitoring App v38",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Total Requests",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "app38_http_requests_total",
+            "legendFormat": "Total Requests"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(app38_http_requests_errors[5m])",
+            "legendFormat": "Errors per second"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        }
+      }
+    ],
+    "schemaVersion": 16,
+    "version": 0
+  }
+}

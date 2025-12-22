@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web03
+  namespace: app03
+spec:
+  selector:
+    app: web03
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8083
+  type: ClusterIP

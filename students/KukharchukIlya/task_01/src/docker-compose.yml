@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: go-server:stu-220017-v13
+    container_name: app-as-63-220017-v13
+    ports:
+      - "8074:8074"
+    environment:
+      - PORT=8074
+      - STU_ID=220017
+      - STU_GROUP=АС-63
+      - STU_VARIANT=13
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=app_220017_v13
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - net-as-63-220017-v13
+    labels:
+      org.bstu.owner: IlyaKukharchuk
+      org.bstu.student.slug: as-63-220017-v13
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8074/ready",
+        ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres-as-63-220017-v13
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=app_220017_v13
+    volumes:
+      - data_v13:/var/lib/postgresql/data
+    networks:
+      - net-as-63-220017-v13
+    labels:
+      org.bstu.owner: IlyaKukharchuk
+      org.bstu.student.slug: as-63-220017-v13
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  data_v13:
+    name: data-as-63-220017-v13
+
+networks:
+  net-as-63-220017-v13:
+    name: net-as-63-220017-v13

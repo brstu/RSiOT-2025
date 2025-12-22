@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-as64-220051-v38
+  namespace: state-as64-220051-v38
+  labels:
+    org.bstu.student.fullname: "РџРѕРїРѕРІ РђР»РµРєСЃРµР№ РЎРµСЂРіРµРµРІРёС‡"
+    org.bstu.student.id: "220051"
+    org.bstu.group: "РђРЎ-64"
+    org.bstu.variant: "38"
+    org.bstu.course: "RSiOT"
+    org.bstu.owner: "LexusxdsD"
+    org.bstu.student.slug: "as64-220051-v38"
+spec:
+  clusterIP: None
+  selector:
+    app: redis
+  ports:
+    - port: 6379
+      targetPort: 6379

@@ -1,0 +1,50 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: web03-slo
+  namespace: {{ .Values.namespace }}
+  labels:
+    release: {{ .Values.monitoring.releaseLabel }}
+    {{- include "web03.labels" . | nindent 4 }}
+spec:
+  groups:
+    - name: web03-slo-alerts
+      interval: 30s
+      rules:
+        - alert: High5xxErrorRate
+          expr: |
+            sum(rate(app03_http_requests_total{status=~"5.."}[10m]))
+            /
+            sum(rate(app03_http_requests_total[10m]))
+            > 0.01
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High 5xx error rate detected"
+            description: "5xx error rate over 10m is {{`{{ $value | humanizePercentage }}`}} (threshold 1%)"
+
+        - alert: HighP95Latency
+          expr: |
+            histogram_quantile(0.95, rate(app03_http_request_duration_seconds_bucket[5m]))
+            > 0.2
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "P95 latency exceeded SLO"
+            description: "P95 latency is {{`{{ $value }}`}}s (threshold 0.2s)"
+
+        - alert: LowAvailability
+          expr: |
+            (
+              sum(rate(app03_http_requests_total{status!~"5.."}[5m]))
+              /
+              sum(rate(app03_http_requests_total[5m]))
+            ) < 0.999
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Availability below SLO"
+            description: "Availability is {{`{{ $value | humanizePercentage }}`}} (SLO 99.9%)"

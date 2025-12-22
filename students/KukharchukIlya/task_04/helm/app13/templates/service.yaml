@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: { { .Values.app.name } }
+  namespace: { { .Values.namespace } }
+  labels:
+    app: { { .Values.app.name } }
+    org.bstu.student.fullname: { { .Values.student.fullname | quote } }
+    org.bstu.student.id: { { .Values.student.id | quote } }
+    org.bstu.group: { { .Values.student.group | quote } }
+    org.bstu.variant: { { .Values.student.variant | quote } }
+    org.bstu.course: RSIOT
+    org.bstu.owner: { { .Values.student.owner | quote } }
+    org.bstu.student.slug: { { .Values.student.slug | quote } }
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: { { .Values.app.port } }
+      protocol: TCP
+  selector:
+    app: { { .Values.app.name } }
