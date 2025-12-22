@@ -1,4 +1,5 @@
-{{ if .Values.grafana.dashboards.enabled }}
+---
+{{ -if .Values.grafana.dashboards.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -85,4 +86,4 @@ data:
         }
       ]
     }
-{{ end }}
+{{ -end }}
