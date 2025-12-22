@@ -10,12 +10,14 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o app
 
-# Явно указываем версию (рекомендуемый стабильный тег на декабрь 2025)
-FROM gcr.io/distroless/base-debian12:latest
+# Используем фиксированный тег :nonroot вместо :latest
+# Это решает DL3007 и DL3006, а также автоматически устанавливает non-root user
+FROM gcr.io/distroless/base-debian12:nonroot
 
 WORKDIR /app
 
-# Required UID for variant #39
+# UID 65532 уже установлен по умолчанию в :nonroot,
+# но оставляем для совместимости с требованиями задания (variant #39)
 USER 65532:65532
 
 COPY --from=build /app/app /app/app
