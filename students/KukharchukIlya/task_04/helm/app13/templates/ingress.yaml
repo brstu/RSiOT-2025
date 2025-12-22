@@ -1,0 +1,34 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.app.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.app.name }}
+    org.bstu.student.fullname: {{ .Values.student.fullname | quote }}
+    org.bstu.student.id: {{ .Values.student.id | quote }}
+    org.bstu.group: {{ .Values.student.group | quote }}
+    org.bstu.variant: {{ .Values.student.variant | quote }}
+    org.bstu.course: RSIOT
+    org.bstu.owner: {{ .Values.student.owner | quote }}
+    org.bstu.student.slug: {{ .Values.student.slug | quote }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.app.name }}
+                port:
+                  number: 80
+{{- end }}
+

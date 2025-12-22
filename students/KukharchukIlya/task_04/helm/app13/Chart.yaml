@@ -1,0 +1,13 @@
+apiVersion: v2
+name: app13
+description: Helm chart for application with monitoring (variant 13)
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - monitoring
+  - prometheus
+  - metrics
+maintainers:
+  - name: IlyaKukharchuk
+    email: as006314@g.bstu.by

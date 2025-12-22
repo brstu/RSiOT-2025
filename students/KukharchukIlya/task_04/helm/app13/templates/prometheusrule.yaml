@@ -1,0 +1,69 @@
+{{- if .Values.monitoring.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Values.app.name }}-alerts
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.app.name }}
+    release: {{ .Values.monitoring.release }}
+    org.bstu.student.fullname: {{ .Values.student.fullname | quote }}
+    org.bstu.student.id: {{ .Values.student.id | quote }}
+    org.bstu.group: {{ .Values.student.group | quote }}
+    org.bstu.variant: {{ .Values.student.variant | quote }}
+    org.bstu.course: RSIOT
+    org.bstu.owner: {{ .Values.student.owner | quote }}
+    org.bstu.student.slug: {{ .Values.student.slug | quote }}
+spec:
+  groups:
+    - name: {{ .Values.app.name }}.rules
+      interval: 30s
+      rules:
+        # Алерт: Доступность ниже SLO (99.0%)
+        - alert: {{ .Values.metrics.prefix }}availability_slo
+          expr: |
+            (
+              avg_over_time(up{job="{{ .Values.app.name }}", namespace="{{ .Values.namespace }}"}[5m]) * 100
+            ) < {{ .Values.slo.availability }}
+          for: 5m
+          labels:
+            severity: warning
+            app: {{ .Values.app.name }}
+          annotations:
+            summary: "Доступность сервиса ниже SLO ({{ .Values.slo.availability }}%)"
+            description: "Доступность сервиса {{ .Values.app.name }} составляет {{ `{{ $value }}` }}%, что ниже требуемого SLO {{ .Values.slo.availability }}%"
+
+        # Алерт: Задержка p95 выше SLO (300ms)
+        - alert: {{ .Values.metrics.prefix }}latency_p95_slo
+          expr: |
+            (
+              histogram_quantile(0.95,
+                rate({{ .Values.metrics.prefix }}http_request_duration_seconds_bucket{job="{{ .Values.app.name }}", namespace="{{ .Values.namespace }}"}[5m])
+              ) * 1000
+            ) > {{ .Values.slo.latency_p95_ms }}
+          for: 5m
+          labels:
+            severity: warning
+            app: {{ .Values.app.name }}
+          annotations:
+            summary: "Задержка p95 превышает SLO ({{ .Values.slo.latency_p95_ms }}ms)"
+            description: "Задержка p95 для сервиса {{ .Values.app.name }} составляет {{ `{{ $value }}` }}ms, что превышает требуемый SLO {{ .Values.slo.latency_p95_ms }}ms"
+
+        # Алерт: Частота ошибок 5xx выше 2% за 10 минут
+        - alert: {{ .Values.metrics.prefix }}error_rate_5xx
+          expr: |
+            (
+              sum(rate({{ .Values.metrics.prefix }}http_requests_total{job="{{ .Values.app.name }}", namespace="{{ .Values.namespace }}", status=~"5.."}[{{ .Values.slo.error_rate_window_minutes }}m]))
+              /
+              sum(rate({{ .Values.metrics.prefix }}http_requests_total{job="{{ .Values.app.name }}", namespace="{{ .Values.namespace }}"}[{{ .Values.slo.error_rate_window_minutes }}m]))
+              * 100
+            ) > {{ .Values.slo.error_rate_5xx_percent }}
+          for: 5m
+          labels:
+            severity: critical
+            app: {{ .Values.app.name }}
+          annotations:
+            summary: "Частота ошибок 5xx превышает {{ .Values.slo.error_rate_5xx_percent }}% за {{ .Values.slo.error_rate_window_minutes }} минут"
+            description: "Частота ошибок 5xx для сервиса {{ .Values.app.name }} составляет {{ `{{ $value }}` }}%, что превышает порог {{ .Values.slo.error_rate_5xx_percent }}% за {{ .Values.slo.error_rate_window_minutes }} минут"
+{{- end }}
+
