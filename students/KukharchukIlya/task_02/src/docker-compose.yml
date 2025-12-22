@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: postgres-as-63-220017-v13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: appdb
+    volumes:
+      - data_v13:/var/lib/postgresql/data
+    restart: unless-stopped
+    labels:
+      org.bstu.owner: "IlyaKukharchuk"
+      org.bstu.student.slug: "as-63-220017-v13"
+
+  app:
+    build: .
+    container_name: app-as-63-220017-v13
+    ports:
+      - "8061:8061"
+    environment:
+      - PORT=8061
+      - STU_ID=220017
+      - STU_GROUP=АС-63
+      - STU_VARIANT=13
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=appdb
+    depends_on:
+      - db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8061/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    labels:
+      org.bstu.owner: "IlyaKukharchuk"
+      org.bstu.student.slug: "as-63-220017-v13"
+
+volumes:
+  data_v13:
