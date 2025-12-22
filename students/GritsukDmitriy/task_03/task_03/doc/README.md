@@ -60,22 +60,26 @@
 Описание компонентов:
 
 ### 1. PostgreSQL StatefulSet
+
 - Использует PostgreSQL 15 Alpine
 - Настроены liveness и readiness probes
 - Данные хранятся в /var/lib/postgresql/data
 - Автоматическое создание PVC через volumeClaimTemplates
 
 ### 2. Headless Service
+
 - clusterIP: None для прямого доступа к pod'ам
 - DNS имя: postgres-0.postgres.state24.svc.cluster.local
 
-### 3. CronJob для бэкапов
-- Запускается по расписанию "30 * * * *"
+### 3. CronJob для бэкапо
+
+- Запускается по расписанию `"30 * * * *"`
 - Использует pg_dump для создания SQL-дампа
 - Хранит последние 10 бэкапов
 - Автоматически удаляет старые бэкапы
 
 ### 4. StorageClass
+
 - Имя: fast
 - Provisioner: docker.io/hostpath (для локального тестирования)
 - Поддерживает расширение томов
@@ -84,29 +88,21 @@
 
 ### 2 Пошаговое выполнение
 
-# Создать все ресурсы
+#### Создать все ресурсы
 
 ```bash
+# Создать все ресурсы
 kubectl apply -f deploy-all.yaml
-```
 
 # Проверить состояние
-
-```bash
 kubectl get all -n state24
 kubectl get pvc -n state24
 kubectl get cronjob -n state24
-```
 
-## Проверить логи PostgreSQL
-
-```bash
+# Проверить логи PostgreSQL
 kubectl logs -n state24 statefulset/postgres --tail=20
-```
 
 # Запустить бэкап вручную
-
-```bash
 kubectl create job --from=cronjob/postgres-backup manual-backup -n state24
 ```
 
