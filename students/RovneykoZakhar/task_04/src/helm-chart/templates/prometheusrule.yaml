@@ -5,14 +5,13 @@ metadata:
   namespace: {{ .Values.prometheusRule.namespace }}
 spec:
   groups:
-    - name: {{ .Values.name }}.slo
+    - name: {{ .Values.name }}
       rules:
         - alert: App42HighErrorRate15m
           expr: (
             sum(rate({{ .Values.metrics.prefix }}http_requests_total{status=~"^5..$"}[15m]))
             /
             sum(rate({{ .Values.metrics.prefix }}http_requests_total[15m]))
-          ) > {{ .Values.prometheusRule.slo.errorRateThreshold }}
           for: 5m
           labels:
             severity: warning
