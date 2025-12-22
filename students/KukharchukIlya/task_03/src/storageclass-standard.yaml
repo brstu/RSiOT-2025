@@ -1,0 +1,17 @@
+# storageclass-standard.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard
+  labels:
+    org.bstu.student.fullname: "Кухарчук Илья Николаевич"
+    org.bstu.student.id: "220017"
+    org.bstu.group: "АС-63"
+    org.bstu.variant: "13"
+    org.bstu.course: RSIOT
+    org.bstu.owner: "IlyaKukharchuk"
+    org.bstu.student.slug: "as-63-220017-v13"
+provisioner: docker.io/hostpath
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
