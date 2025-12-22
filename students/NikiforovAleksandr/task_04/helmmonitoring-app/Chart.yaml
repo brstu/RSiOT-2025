@@ -1,0 +1,10 @@
+apiVersion: v2
+name: monitoring-app
+description: Helm chart for Memes Gallery application with monitoring
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+maintainers:
+  - name: Никифоров Александр Иванович
+    email: woqhy@mail.ru
