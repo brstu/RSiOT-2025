@@ -1,13 +1,13 @@
-{{- if .Values.grafana.dashboards.enabled }}
+{{ if .Values.grafana.dashboards.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: app31-grafana-dashboards
   namespace: {{ .Values.grafana.dashboards.namespace }}
   labels:
-    {{- range $k, $v := .Values.grafana.dashboards.labels }}
+    {{range $k, $v := .Values.grafana.dashboards.labels }}
     {{ $k }}: "{{ $v }}"
-    {{- end }}
+    {{ end }}
 data:
   app31-availability.json: |
     {
@@ -85,4 +85,4 @@ data:
         }
       ]
     }
-{{- end }}
+{{ end }}

@@ -1,9 +1,11 @@
 # Лабораторная работа 04
 
 ## 1) Описание
+
 В рамках ЛР04 развернута система мониторинга Kubernetes-приложения с использованием kube-prometheus-stack (Prometheus, Grafana, Alertmanager). Приложение — простейший HTTP-сервис на Go (root handler + `/metrics`), инструментировано клиентской библиотекой Prometheus и экспонирует endpoint `/metrics`. Метрики автоматически собираются через ServiceMonitor, для которых в Helm-чарте включены `serviceMonitor` и `prometheusRule`. В Grafana ожидаются дашборды по availability/latency/errors. Настроены алерты в `PrometheusRule` и проверено их срабатывание локальными нагрузочными запросами.
 
 ## 2) Метаданные
+
 - **ФИО:** Евкович Андрей Викторович
 - **Группа:** АС-64
 - **StudentID:** 220039
@@ -11,6 +13,7 @@
 - **Вариант:** 31
 
 ## 3) Метрики приложения
+
 Endpoint: `GET /metrics` (Prometheus exposition via promhttp)
 
 Экспортируемые метрики (с префиксом `app31_`):
@@ -25,7 +28,9 @@ Health/endpoints & тестовые маршруты:
 - **?fail=1** — принудительно возвращает HTTP 500 (удобно для генерации 5xx)
 
 ## 4) Установка и проверка
-1. Поднять окружение (minikube / k8s cluster):
+
+Поднять окружение (minikube / k8s cluster):
+
 ```bash
 minikube start
 
@@ -34,19 +39,25 @@ helm repo update
 
 helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
 ```
-2. Установить приложение (локально из каталога `chart`):
+
+Установить приложение (локально из каталога `chart`):
+
 ```bash
 helm install app31 ./chart -n app31 --create-namespace
 kubectl get pods -n app31
 ```
-3. Проверить, что `ServiceMonitor` и `PrometheusRule` созданы в `monitoring` namespace и что Prometheus видит метрики:
+
+Проверить, что `ServiceMonitor` и `PrometheusRule` созданы в `monitoring` namespace и что Prometheus видит метрики:
+
 ```bash
 kubectl get servicemonitors -n monitoring
 kubectl get prometheusrules -n monitoring
 # В Prometheus: проверка expression и targets
 ```
-4. Откройте Grafana (через minikube или port-forward), создайте/импортируйте дашборды по availability/latency и проверьте визуализацию и историю срабатываний алертов.
+
+Откройте Grafana (через minikube или port-forward), создайте/импортируйте дашборды по availability/latency и проверьте визуализацию и историю срабатываний алертов.
 
 ## 5) Примечания
+
 - Префикс метрик, пороги алертов и окно агрегации заданы в `chart/values.yaml` и `chart/templates/prometheusrule.yaml`.
 - Для воспроизведения критерия `5xx > 2%` удобно отправлять отдельные запросы с `?fail=1` либо смешивать нормальные и фейловые запросы в скриптах нагрузки.
