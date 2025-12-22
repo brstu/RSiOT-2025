@@ -1,29 +1,30 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{include "monitoring-app.fullname" .}}
-  namespace: {{.Values.namespace}}
+  name: memes-gallery
+  namespace: app-memes-gallery
   labels:
-{{- include "monitoring-app.labels" . | nindent 4}}
+    app: memes-gallery
     org.bstu.student.fullname: "Никифоров Александр Иванович"
-    org.bstu.student.id: "{{.Values.metadata.studentId}}"
-    org.bstu.group: "{{.Values.metadata.group}}"
-    org.bstu.variant: "{{.Values.metadata.variant}}"
+    org.bstu.student.id: "220020"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "16"
     org.bstu.course: "RSIOT"
 spec:
-  replicas: {{.Values.replicaCount}}
+  replicas: 2
   selector:
     matchLabels:
-{{- include "monitoring-app.selectorLabels" . | nindent 6}}
+      app: memes-gallery
   template:
     metadata:
       labels:
-{{- include "monitoring-app.selectorLabels" . | nindent 8}}
+        app: memes-gallery
     spec:
       containers:
-        - name: {{.Chart.Name}}
-          image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
-          imagePullPolicy: {{.Values.image.pullPolicy}}
+        - name: memes-gallery
+          image: "your-dockerhub-username/memes-gallery:v1.0.0"
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 5000
@@ -47,4 +48,9 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
           resources:
-{{- toYaml .Values.resources | nindent 12}}
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"

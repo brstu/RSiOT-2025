@@ -1,11 +1,11 @@
-{{- if .Values.alerts.enabled -}}
+---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: {{include "monitoring-app.fullname" .}}-prometheusrule
-  namespace: {{.Values.namespace}}
+  name: memes-gallery-prometheusrule
+  namespace: app-memes-gallery
   labels:
-{{- include "monitoring-app.labels" . | nindent 4}}
+    app: memes-gallery
     release: prometheus-stack
 spec:
   groups:
@@ -38,7 +38,7 @@ spec:
             description: "P95 задержка превышает 1 секунду"
         - alert: MemesGalleryLowAvailability
           expr: |
-            up{job="{{include "monitoring-app.fullname" .}}"} == 0
+            up{job="memes-gallery"} == 0
           for: 1m
           labels:
             severity: critical
@@ -46,4 +46,3 @@ spec:
           annotations:
             summary: "Галерея мемов недоступна"
             description: "Сервис не отвечает более 1 минуты"
-{{- end -}}
