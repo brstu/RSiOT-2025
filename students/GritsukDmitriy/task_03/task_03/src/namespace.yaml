@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: state24
+  labels:
+    org.bstu.course: RSIOT
+    org.bstu.variant: "24"
+    org.bstu.student.fullname: "Грицук Дмитрий Юрьевич"
+    org.bstu.student.id: "220006"
+    org.bstu.group: "АС-63"
+    org.bstu.owner: "GritsukDmitriy"
+    org.bstu.student.slug: "ac-63-220006-v24"
