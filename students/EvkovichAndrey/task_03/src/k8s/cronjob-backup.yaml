@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: app31
+  labels:
+    app: web31
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220039"
+    org.bstu.group: "AS-64"
+    org.bstu.variant: "31"
+    org.bstu.owner: "Andrei21005"
+    org.bstu.student.slug: "AS63-220039-v31"
+  annotations:
+    org.bstu.group: "АС-64"
+spec:
+  schedule: "45 */3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: postgres:15-alpine
+              envFrom:
+                - configMapRef:
+                    name: postgres-config
+                - secretRef:
+                    name: postgres-secret
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  pg_dump -U $POSTGRES_USER -d $POSTGRES_DB > /backup/backup.sql
+              volumeMounts:
+                - name: backup-vol
+                  mountPath: /backup
+          restartPolicy: OnFailure
+          volumes:
+            - name: backup-vol
+              persistentVolumeClaim:
+                claimName: backup-pvc

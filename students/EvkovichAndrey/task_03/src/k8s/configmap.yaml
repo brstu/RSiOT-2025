@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: app31
+  labels:
+    app: web31
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220039"
+    org.bstu.group: "AS-64"
+    org.bstu.variant: "31"
+    org.bstu.owner: "Andrei21005"
+    org.bstu.student.slug: "AS63-220039-v31"
+  annotations:
+    org.bstu.group: "АС-64"
+data:
+  POSTGRES_DB: "appdb"
+  POSTGRES_USER: "appuser"
