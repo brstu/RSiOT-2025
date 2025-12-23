@@ -1,0 +1,35 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: '{{include "app07.fullname" .}}-rules'
+  namespace: {{.Values.prometheusRule.namespace}}
+  labels:
+    app: {{include "app07.name" .}}
+spec:
+  groups:
+    - name: app07.rules
+      rules:
+        - alert: App07High5xxRate
+          expr: |
+            (sum(rate({{ .Values.metricsPrefix }}
+            http_requests_total{code=~"5.."}[10m]))
+            /
+            sum(rate({{ .Values.metricsPrefix }}
+            http_requests_total[10m]))) > 0.03
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "High 5xx rate for app07"
+            description: "Ratio of 5xx responses > 3% for 10 minutes"
+        - alert: App07HighP95Latency
+          expr: |
+            histogram_quantile(0.95, sum(rate({{ .Values.metricsPrefix }}
+            http_request_duration_seconds_bucket[10m])) by (le)) > 0.4
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "P95 latency exceeded (app07)"
+            description: "p95(latency) > 400ms over 10m"

@@ -1,0 +1,41 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{include "app07.fullname" .}}
+  labels:
+    app: {{include "app07.name" .}}
+    org.bstu.student.slug: "as-63-220011-v07"
+    org.bstu.student.id: "220011"
+    org.bstu.group: "as-63"
+    org.bstu.variant: "7"
+    org.bstu.course: "RSIOT"
+  annotations:
+    org.bstu.student.fullname: "Козлович Антон Александрович"
+spec:
+  replicas: {{.Values.replicaCount}}
+  selector:
+    matchLabels:
+      app: {{include "app07.name" .}}
+  template:
+    metadata:
+      labels:
+        app: {{include "app07.name" .}}
+        org.bstu.student.slug: "as-63-220011-v07"
+        org.bstu.student.id: "220011"
+        org.bstu.group: "as-63"
+        org.bstu.variant: "7"
+        org.bstu.course: "RSIOT"
+      annotations:
+        org.bstu.student.fullname: "Козлович Антон Александрович"
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          args:
+            - "--metrics-prefix={{ .Values.metricsPrefix }}"
+            - "--port={{ .Values.service.port }}"
+          ports:
+            - name: http-metrics
+              containerPort: {{.Values.service.port}}
