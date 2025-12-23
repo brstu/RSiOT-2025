@@ -18,4 +18,3 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: {{ .Values.port }}
-          resources: {{- toYaml .Values.resources | nindent 12 }}
