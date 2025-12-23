@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: state-as64-220044-v35
+  labels:
+    org.bstu.student.fullname: "РљРѕС‚РєРѕРІРµС† РљРёСЂРёР»Р» Р’РёРєС‚РѕСЂРѕРІРёС‡"
+    org.bstu.student.id: "220044"
+    org.bstu.group: "РђРЎ-64"
+    org.bstu.variant: "35"
+    org.bstu.course: "RSiOT"
+    org.bstu.owner: "Kirill-Kotkovets"
+    org.bstu.student.slug: "as64-220044-v35"

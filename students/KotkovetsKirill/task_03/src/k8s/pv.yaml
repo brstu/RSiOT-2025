@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv-as64-220044-v35
+  labels:
+    org.bstu.student.id: "220044"
+    org.bstu.variant: "35"
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /mnt/data/postgres
+  storageClassName: storage-as64-220044-v35
