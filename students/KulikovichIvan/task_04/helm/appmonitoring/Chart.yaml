@@ -1,0 +1,6 @@
+---
+apiVersion: v2
+name: appmonitoring
+description: App11 Monitoring Helm Chart
+version: 1.0.0
+appVersion: "1.0"

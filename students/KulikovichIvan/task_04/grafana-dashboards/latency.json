@@ -1,0 +1,44 @@
+{
+  "dashboard": {
+    "title": "App11 - Latency Dashboard",
+    "tags": ["app11", "latency", "p95"],
+    "panels": [
+      {
+        "id": 1,
+        "title": "P95 Latency (SLO: 200ms)",
+        "type": "timeseries",
+        "targets": [{
+          "expr": "histogram_quantile(0.95, rate(app11_http_request_duration_seconds_bucket[5m])) * 1000",
+          "legendFormat": "P95 Latency"
+        }],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"},
+                {"value": 200, "color": "red"}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Latency Distribution",
+        "type": "heatmap",
+        "targets": [{
+          "expr": "rate(app11_http_request_duration_seconds_bucket[5m])",
+          "legendFormat": "{{le}}"
+        }],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+      }
+    ]
+  }
+}

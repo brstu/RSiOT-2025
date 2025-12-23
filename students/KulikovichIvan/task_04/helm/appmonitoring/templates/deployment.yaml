@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Chart.Name}}
+  namespace: {{.Values.namespace}}
+  labels:
+    app: {{.Chart.Name}}
+    org.bstu.student.id: "220015"
+    org.bstu.group: "as-63"
+    org.bstu.variant: "11"
+spec:
+  replicas: {{.Values.replicaCount}}
+  selector:
+    matchLabels:
+      app: {{.Chart.Name}}
+  template:
+    metadata:
+      labels:
+        app: {{.Chart.Name}}
+        release: monitoring
+    spec:
+      containers:
+        - name: {{.Chart.Name}}
+          image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+          env:
+            - name: STU_ID
+              value: "220015"
+            - name: STU_GROUP
+              value: "as-63"
+            - name: STU_VARIANT
+              value: "11"
+          ports:
+            - containerPort: {{.Values.service.port}}
+              name: http
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi

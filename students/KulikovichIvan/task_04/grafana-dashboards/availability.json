@@ -1,0 +1,47 @@
+{
+  "dashboard": {
+    "title": "App11 - Availability Dashboard",
+    "tags": ["app11", "availability", "slo"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Availability % (SLO: 99.5%)",
+        "type": "stat",
+        "targets": [{
+          "expr": "100 - (sum(rate(app11_http_requests_total{status=~\"5..\"}[5m])) / sum(rate(app11_http_requests_total[5m])) * 100)",
+          "legendFormat": "Availability"
+        }],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                {"value": null, "color": "red"},
+                {"value": 99.5, "color": "green"}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "HTTP Requests by Status",
+        "type": "barchart",
+        "targets": [{
+          "expr": "sum by (status) (rate(app11_http_requests_total[5m]))",
+          "legendFormat": "{{status}}"
+        }],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      }
+    ],
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": []
+    }
+  },
+  "overwrite": true
+}

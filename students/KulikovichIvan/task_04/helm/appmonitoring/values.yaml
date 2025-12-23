@@ -1,0 +1,22 @@
+---
+namespace: app-monitoring
+replicaCount: 2
+
+image:
+  repository: app11-app
+  tag: v1.0.0
+
+service:
+  port: 8080
+
+metrics:
+  enabled: true
+  prefix: "app11_"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
