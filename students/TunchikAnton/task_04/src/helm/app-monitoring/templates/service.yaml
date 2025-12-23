@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Chart.Name}}
+  namespace: {{.Release.Namespace | default "default"}}
+  labels:
+    app: {{.Chart.Name}}
+    org.bstu.course: RSIOT
+    org.bstu.variant: "21"
+    org.bstu.student.fullname: Tunchik Anton Dmitrievich
+    org.bstu.student.id: "006326"
+    org.bstu.group: AC-63
+    slug: ac-63--v21
+spec:
+  type: {{.Values.service.type}}
+  ports:
+  - name: http
+    port: {{.Values.service.port}}
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: {{.Values.service.metricsPort}}
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app: {{.Chart.Name}}

@@ -1,0 +1,35 @@
+{
+  "dashboard": {
+    "title": "App21 Alerts Status",
+    "tags": ["app21", "alerts", "slo"],
+    "panels": [
+      {
+        "title": "Active Alerts",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
+        "targets": [{
+          "expr": "ALERTS{alertname=~\"App21.*\",alertstate=\"firing\"}",
+          "legendFormat": "{{alertname}} - {{severity}}"
+        }]
+      },
+      {
+        "title": "Error Rate (5m)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "targets": [{
+          "expr": "app21:error_rate:5m",
+          "legendFormat": "Error Rate"
+        }]
+      },
+      {
+        "title": "P95 Latency (5m)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "targets": [{
+          "expr": "app21:latency_p95:5m",
+          "legendFormat": "P95 Latency"
+        }]
+      }
+    ]
+  }
+}

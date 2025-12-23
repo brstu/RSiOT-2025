@@ -1,0 +1,28 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace | default "default" }}
+  labels:
+    app: {{ .Chart.Name }}
+    release: {{ .Values.prometheus.release }}
+    org.bstu.course: "RSIOT"
+    org.bstu.variant: "21"
+    org.bstu.student.fullname: "Tunchik Anton Dmitrievich"
+    org.bstu.student.id: "006326"
+    org.bstu.group: "AC-63"
+    slug: "ac-63--v21"
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  endpoints:
+  - port: metrics
+    path: {{ .Values.metrics.path }}
+    interval: {{ .Values.metrics.interval }}
+    scrapeTimeout: "30s"
+    honorLabels: true
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace | default "default" }}
