@@ -1,0 +1,19 @@
+---
+replicaCount: 1
+image:
+  repository: nginx
+  tag: stable
+  pullPolicy: IfNotPresent
+nameOverride: "app34"
+namespace: default
+service:
+  port: 8080
+metrics:
+  enabled: true
+  path: /metrics
+  port: 8080
+  prefix: "app34_" # important for variant 34
+resources: { }
+nodeSelector: { }
+tolerations: [ ]
+affinity: { }
