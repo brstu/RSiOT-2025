@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  app:
+    image: lr01-go:v39
+    container_name: lr01-app-v39
+    environment:
+      PORT: "8003"
+    ports:
+      - "8003:8003"
+    depends_on:
+      - redis
+    volumes:
+      - data_v39:/data
+    labels:
+      com.example.lab: "lr01"
+      com.example.variant: "39"
+
+  redis:
+    image: redis:7-alpine
+    container_name: lr01-redis-v39
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - data_v39:/data
+
+volumes:
+  data_v39: {}

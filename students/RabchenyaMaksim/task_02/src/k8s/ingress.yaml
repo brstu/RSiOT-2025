@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web39
+  namespace: app39
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: web39.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web39
+                port:
+                  number: 80
