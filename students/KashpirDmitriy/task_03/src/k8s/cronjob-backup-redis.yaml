@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup
+  namespace: state01
+spec:
+  schedule: "25 1 * * *" # Variant 34 schedule (01:25 daily)
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: redis:7.0
+              env:
+                - name: REDIS_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: redis-secret
+                      key: password
+              command: ["/bin/sh","-c"]
+              args:
+                - |
+                  set -e
+                  TIMESTAMP=$(date -u +%Y%m%dT%H%M%SZ)
+                  OUT="/backup/dump-${TIMESTAMP}.rdb"
+                  echo "Triggering redis --rdb to $OUT"
+                  # Connect to primary pod directly
+                  redis-cli -h redis-0.redis -a "$REDIS_PASSWORD" --rdb "$OUT"
+                  if [ $? -eq 0 ]; then echo "Backup saved: $OUT"; ls -lh /backup; else echo "Backup failed"; exit 1; fi
+              volumeMounts:
+                - mountPath: /backup
+                  name: backup-vol
+          volumes:
+            - name: backup-vol
+              persistentVolumeClaim:
+                claimName: redis-backup-pvc
