@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web03
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: web03
+    variant: "03"
+    org.bstu.course: RSIOT
+    org.bstu.student.id: "{{ .Values.env.STU_ID }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: web03
+  template:
+    metadata:
+      labels:
+        app: web03
+        variant: "03"
+        monitoring: "true"
+    spec:
+      containers:
+      - name: web03
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.app.port }}
+          name: http
+        - containerPort: {{ .Values.app.metricsPort }}
+          name: metrics
+        env:
+        - name: PORT
+          value: "{{ .Values.app.port }}"
+        - name: STU_ID
+          value: "{{ .Values.env.STU_ID }}"
+        - name: STU_GROUP
+          value: "{{ .Values.env.STU_GROUP }}"
+        - name: STU_VARIANT
+          value: "{{ .Values.env.STU_VARIANT }}"
+        - name: STU_FULLNAME
+          value: "{{ .Values.env.STU_FULLNAME }}"
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5

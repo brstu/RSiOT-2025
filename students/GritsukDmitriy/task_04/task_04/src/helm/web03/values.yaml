@@ -1,0 +1,43 @@
+# Общие настройки
+namespace: app-monitoring
+replicaCount: 2
+
+# Изображение
+image:
+  repository: web03
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# Приложение
+app:
+  port: 8083
+  metricsPort: 9090
+  prefix: app03_  # Ваш вариант
+  
+# SLO настройки
+slo:
+  availability: 99.9
+  p95Latency: 0.200  # 200ms
+  errorRate: 1       # 1%
+  
+# Ресурсы
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "200m"
+
+# Мониторинг
+monitoring:
+  enabled: true
+  serviceMonitor: true
+  prometheusRule: true
+
+# Переменные окружения студента
+env:
+  STU_ID: "220006"
+  STU_GROUP: "АС-63"
+  STU_VARIANT: "03"
+  STU_FULLNAME: "Грицук Дмитрий Юрьевич"
