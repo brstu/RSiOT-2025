@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redis-restore
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: restore
+          image: alpine
+          command:
+            - sh
+            - -c
+            - |
+              echo "Restoring latest backup..."
+              LATEST=$(ls -t /backup | head -n 1)
+              cp /backup/$LATEST /data/dump.rdb
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+            - name: backup
+              mountPath: /backup
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-0-redis-data
+        - name: backup
+          persistentVolumeClaim:
+            claimName: redis-backup-pvc
