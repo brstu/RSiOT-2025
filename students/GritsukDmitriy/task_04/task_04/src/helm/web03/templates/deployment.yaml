@@ -41,7 +41,12 @@ spec:
         - name: STU_FULLNAME
           value: "{{ .Values.env.STU_FULLNAME }}"
         resources:
-{{- toYaml .Values.resources | nindent 10 }}
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
         livenessProbe:
           httpGet:
             path: /health
