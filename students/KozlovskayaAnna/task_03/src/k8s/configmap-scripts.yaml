@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-as63-220012-v8-scripts
+  namespace: state-as63-220012-v8
+  labels:
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/instance: db-as63-220012-v8
+    app.kubernetes.io/part-of: redis-stateful
+    org.bstu.student.fullname: "РљРѕР·Р»РѕРІСЃРєР°СЏ РђРЅРЅР° Р“РµРЅРЅР°РґСЊРµРІРЅР°"
+    org.bstu.student.id: "220012"
+    org.bstu.group: "РђРЎ-63"
+    org.bstu.variant: "8"
+    org.bstu.course: RSIOT
+    org.bstu.owner: annkrq
+    org.bstu.student.slug: as63-220012-v8
+data:
+  backup.sh: |
+    #!/bin/sh
+    set -euo pipefail
+    export REDISCLI_AUTH="${REDIS_PASSWORD}"
+    HOST="${REDIS_HOST:-db-as63-220012-v8-0.db-as63-220012-v8.${POD_NAMESPACE}.svc.cluster.local}"
+    echo "[INFO] $(date -Iseconds) Backup started" \
+      "STU_ID=${STU_ID} STU_GROUP=${STU_GROUP} STU_VARIANT=${STU_VARIANT}" \
+      "HOST=${HOST}"
+    FILE="/backup/redis-$(date +%Y%m%d%H%M%S).rdb"
+    redis-cli -h "${HOST}" --rdb "${FILE}"
+    ls -lh /backup
+    echo "[INFO] $(date -Iseconds) Backup finished -> ${FILE}"
+  restore.sh: |
+    #!/bin/sh
+    set -euo pipefail
+    LATEST=$(ls -1 /backup/redis-*.rdb 2>/dev/null | tail -n 1 || true)
+    if [ -z "${LATEST}" ]; then
+      echo "[ERROR] No backup files found in /backup" >&2
+      exit 1
+    fi
+    echo "[INFO] $(date -Iseconds) Restore started" \
+      "STU_ID=${STU_ID} STU_GROUP=${STU_GROUP} STU_VARIANT=${STU_VARIANT}" \
+      "SRC=${LATEST}"
+    cp "${LATEST}" /data/dump.rdb
+    chown 999:999 /data/dump.rdb || true
+    echo "[INFO] $(date -Iseconds) Restore copied ${LATEST} into /data/dump.rdb"
