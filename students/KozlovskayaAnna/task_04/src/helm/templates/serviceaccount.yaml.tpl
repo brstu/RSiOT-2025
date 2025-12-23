@@ -1,0 +1,13 @@
+{{ if .Values.serviceAccount.create }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "monitoring-app.serviceAccountName" . }}
+  namespace: {{ include "monitoring-app.namespace" . }}
+  labels:
+    {{ include "monitoring-app.labels" . | nindent 4 }}
+{{ with .Values.serviceAccount.annotations }}
+  annotations:
+    {{ toYaml . | nindent 4 }}
+{{ end }}
+{{ end }}

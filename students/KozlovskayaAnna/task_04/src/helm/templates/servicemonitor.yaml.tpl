@@ -1,0 +1,38 @@
+{{ if .Values.metrics.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "monitoring-app.fullname" . }}
+  namespace: {{ .Values.metrics.serviceMonitor.namespace }}
+  labels:
+    {{ include "monitoring-app.labels" . | nindent 4 }}
+    release: kube-prometheus-stack
+  annotations:
+    org.bstu.student.fullname: {{ .Values.student.fullname | quote }}
+    org.bstu.student.id: {{ .Values.student.id | quote }}
+    org.bstu.group: {{ .Values.student.group | quote }}
+    org.bstu.variant: {{ .Values.student.variant | quote }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "monitoring-app.selectorLabels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames:
+      - {{ include "monitoring-app.namespace" . }}
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: {{ .Values.metrics.serviceMonitor.interval }}
+    scrapeTimeout: {{ .Values.metrics.serviceMonitor.scrapeTimeout }}
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_name]
+      targetLabel: pod
+    - sourceLabels: [__meta_kubernetes_namespace]
+      targetLabel: namespace
+    - sourceLabels: [__meta_kubernetes_service_name]
+      targetLabel: service
+    - targetLabel: student_id
+      replacement: {{ .Values.student.id | quote }}
+    - targetLabel: variant
+      replacement: {{ .Values.student.variant | quote }}
+{{- end }}

@@ -1,0 +1,22 @@
+apiVersion: v2
+name: monitoring-app
+description: Monitoring application with Prometheus metrics for Variant 8
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - monitoring
+  - prometheus
+  - metrics
+maintainers:
+  - name: Kozlovskaya Anna Gennadevna
+    email: AS006309@g.bstu.by
+annotations:
+  org.bstu.student.fullname: "Kozlovskaya Anna Gennadevna"
+  org.bstu.student.id: "220012"
+  org.bstu.group: "AS-63"
+  org.bstu.variant: "8"
+  org.bstu.course: "RSIOT"
+  org.bstu.owner: "annkrq"
+  org.bstu.slug: "as63-220012-v8"
+  org.bstu.repository: "https://github.com/annkrq/RSiOT-2025"
