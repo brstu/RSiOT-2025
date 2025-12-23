@@ -1,0 +1,9 @@
+namespace: rental
+replicas: 1
+image:
+  repository: myrepo/rental-app
+  tag: latest
+port: 8080
+metricsPrefix: app42_
+resources: {}
+ingressClass: nginx
