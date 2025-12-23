@@ -1,0 +1,51 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{include "monitoring-app.fullname" .}}
+  namespace: {{.Values.namespace}}
+  labels:
+    app: monitoring-app
+    release: monitoring
+    org.bstu.student.id: {{.Values.student.id | quote}}
+    org.bstu.student.group: {{.Values.student.group | quote}}
+    org.bstu.variant: {{.Values.student.variant | quote}}
+spec:
+  groups:
+    - name: monitoring-app-alerts
+      interval: 30s
+      rules:
+        - alert: LowAvailability
+          expr: |
+            (sum(rate({{ .Values.metrics.prefix }}http_requests_total{status!~"5.."}[10m]))
+            / sum(rate({{ .Values.metrics.prefix }}http_requests_total[10m]))) * 100 < {{ .Values.metrics.slo.availability }}
+          for: 10m
+          labels:
+            severity: critical
+            variant: {{ .Values.student.variant | quote }}
+          annotations:
+            summary: "Доступность ниже SLO {{ .Values.metrics.slo.availability }}%"
+            description: "Текущая доступность ниже {{ .Values.metrics.slo.availability }}%"
+        - alert: HighErrorRate5xx
+          expr: |
+            (sum(rate({{ .Values.metrics.prefix }}http_requests_total{status=~"5.."}[10m]))
+            / sum(rate({{ .Values.metrics.prefix }}http_requests_total[10m]))) * 100 > {{ .Values.metrics.slo.errorRate5xx }}
+          for: 10m
+          labels:
+            severity: warning
+            variant: {{ .Values.student.variant | quote }}
+          annotations:
+            summary: "Процент 5xx ошибок превышает {{ .Values.metrics.slo.errorRate5xx }}%"
+            description: "5xx ошибок превышает порог {{ .Values.metrics.slo.errorRate5xx }}%"
+        - alert: HighLatencyP95
+          expr: |
+            histogram_quantile(0.95,
+            sum(rate({{ .Values.metrics.prefix }}http_request_duration_seconds_bucket[10m]))
+            by (le)) > {{ .Values.metrics.slo.latencyP95 }}
+          for: 10m
+          labels:
+            severity: warning
+            variant: {{ .Values.student.variant | quote }}
+          annotations:
+            summary: "p95 latency превышает {{ mul .Values.metrics.slo.latencyP95 1000 }}ms"
+            description: "p95 latency превышает 400ms"
