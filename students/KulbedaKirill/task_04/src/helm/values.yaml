@@ -1,0 +1,23 @@
+---
+# Р—РЅР°С‡РµРЅРёСЏ РґР»СЏ С‡Р°СЂС‚Р°
+
+replicaCount: 1
+
+image:
+  repository: app12-monitoring
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+namespace: app-as63-220016-v12
+
+# РњРµС‚Р°РґР°РЅРЅС‹Рµ СЃС‚СѓРґРµРЅС‚Р°
+metadata:
+  studentId: "220016"
+  group: "РђРЎ-63"
+  variant: "12"
+  slug: "as63-220016-v12"
+  owner: "fr0ogi"

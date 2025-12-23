@@ -1,0 +1,41 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mon-{{.Values.metadata.slug}}
+  namespace: {{.Values.namespace}}
+  labels:
+    app: mon-{{.Values.metadata.slug}}
+    org.bstu.student.fullname: "РљСѓР»СЊР±РµРґР° РљРёСЂРёР»Р» РђР»РµРєСЃР°РЅРґСЂРѕРІРёС‡"
+    org.bstu.student.id: "{{.Values.metadata.studentId}}"
+    org.bstu.group: "{{.Values.metadata.group}}"
+    org.bstu.variant: "{{.Values.metadata.variant}}"
+    org.bstu.course: "RSiOT"
+    org.bstu.owner: "{{.Values.metadata.owner}}"
+    org.bstu.student.slug: "{{.Values.metadata.slug}}"
+spec:
+  replicas: {{.Values.replicaCount}}
+  selector:
+    matchLabels:
+      app: mon-{{.Values.metadata.slug}}
+  template:
+    metadata:
+      labels:
+        app: mon-{{.Values.metadata.slug}}
+    spec:
+      containers:
+        - name: app
+          image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+          imagePullPolicy: {{.Values.image.pullPolicy}}
+          ports:
+            - containerPort: {{.Values.service.port}}
+              name: http
+          env:
+            - name: STU_ID
+              value: "{{.Values.metadata.studentId}}"
+            - name: STU_GROUP
+              value: "{{.Values.metadata.group}}"
+            - name: STU_VARIANT
+              value: "{{.Values.metadata.variant}}"
+            - name: PORT
+              value: "{{.Values.service.port}}"
