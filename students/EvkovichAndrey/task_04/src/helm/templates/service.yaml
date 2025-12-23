@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app31
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: app31
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: app31
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
