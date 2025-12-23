@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mon-as63-220007-v04
+  namespace: app-as63-220007-v04
+  labels:
+    app: mon-as63-220007-v04
+spec:
+  selector:
+    app: mon-as63-220007-v04
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+  type: ClusterIP

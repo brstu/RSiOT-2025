@@ -1,0 +1,16 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mon-as63-220007-v04
+  namespace: app-as63-220007-v04
+  labels:
+    app: mon-as63-220007-v04
+spec:
+  selector:
+    matchLabels:
+      app: mon-as63-220007-v04
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
