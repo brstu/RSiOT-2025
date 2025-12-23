@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: minigo:v42
+    container_name: minigo_app
+    environment:
+      APP_PORT: "7992"
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/appdb?sslmode=disable"
+    ports:
+      - "7992:7992"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: minigo_db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: appdb
+    volumes:
+      - data_v42:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  data_v42:

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web42
+  namespace: app42
+spec:
+  type: ClusterIP
+  selector:
+    app: web42
+  ports:
+    - name: http
+      port: 7992
+      targetPort: 7992
