@@ -1,0 +1,29 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: restore-as64-220035-v29
+  namespace: state-as64-220035-v29
+  labels:
+    org.bstu.student.fullname: "Бурак Илья Эдуардович"
+    org.bstu.student.id: "220035"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "29"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "burakillya"
+    org.bstu.student.slug: "as64-220035-v29"
+  annotations:
+    description: "Restore task for PostgreSQL recovery"
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: restore
+          image: busybox:1.36
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "[restore] START $(date)";
+                  echo "Restore task executed";
