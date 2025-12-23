@@ -1,0 +1,71 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-postgres-as63-220024-v19
+  namespace: state-as63-220024-v19
+  labels:
+    app: postgres-backup
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220024"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "19"
+    org.bstu.owner: "Ritkas33395553"
+    org.bstu.student.slug: "as-63-220024-v19"
+  annotations:
+    org.bstu.student.fullname: "Соколова Маргарита Александровна"
+spec:
+  schedule: "0 18 * * *"  # Каждый день в 18:00 (вариант 19)
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    metadata:
+      labels:
+        app: postgres-backup
+        org.bstu.student.id: "220024"
+        org.bstu.variant: "19"
+    spec:
+      template:
+        metadata:
+          labels:
+            app: postgres-backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: postgres:15-alpine
+              command:
+                - /bin/bash
+                - /scripts/backup.sh
+              env:
+                - name: STU_ID
+                  value: "220024"
+                - name: STU_GROUP
+                  value: "АС-63"
+                - name: STU_VARIANT
+                  value: "19"
+                - name: POSTGRES_HOST
+                  value: "db-postgres-headless"
+              envFrom:
+                - secretRef:
+                    name: db-postgres-secret
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backups
+                - name: backup-scripts
+                  mountPath: /scripts
+              resources:
+                requests:
+                  cpu: "100m"
+                  memory: "128Mi"
+                limits:
+                  cpu: "200m"
+                  memory: "256Mi"
+          volumes:
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: backup-postgres-pvc
+            - name: backup-scripts
+              configMap:
+                name: backup-scripts
+                defaultMode: 0755

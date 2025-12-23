@@ -1,0 +1,15 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard-storage
+  labels:
+    org.bstu.course: "RSIOT"
+    org.bstu.student.id: "220024"
+    org.bstu.variant: "19"
+provisioner: k8s.io/minikube-hostpath
+parameters:
+  type: standard
+volumeBindingMode: Immediate
+reclaimPolicy: Retain
+allowVolumeExpansion: true
