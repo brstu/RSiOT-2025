@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-postgres
+  namespace: state-lab03
+  labels:
+    org.bstu.student.fullname: "Poplavsky Vladislav Vladimirovich"
+    org.bstu.student.id: "as006321"
+    org.bstu.group: "FICT-123"
+    org.bstu.variant: "17"
+    org.bstu.course: "RSIOT"
+    app: postgres
+    slug: "ac-63--v17"
+spec:
+  serviceName: "postgres-headless"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        org.bstu.variant: "17"
+        version: "15-alpine"
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-password
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-db
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-user
+        - name: STU_ID
+          value: "12345678"
+        - name: STU_GROUP
+          value: "FICT-123"
+        - name: STU_VARIANT
+          value: "17"
+        ports:
+        - containerPort: 5432
+          name: postgresql
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - postgres
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - postgres
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+          subPath: postgres
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        org.bstu.course: "RSIOT"
+        purpose: "postgres-data"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "premium"
+      resources:
+        requests:
+          storage: 1Gi

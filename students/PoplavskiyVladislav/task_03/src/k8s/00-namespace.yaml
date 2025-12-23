@@ -1,0 +1,9 @@
+﻿apiVersion: v1
+kind: Namespace
+metadata:
+  name: state-lab03
+  labels:
+    org.bstu.course: "RSIOT"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "17"
+    slug: "feis-41-12345-v17"

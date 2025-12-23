@@ -1,0 +1,13 @@
+﻿apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: premium
+  labels:
+    org.bstu.course: "RSIOT"
+    org.bstu.variant: "17"
+provisioner: k8s.io/minikube-hostpath
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+parameters:
+  type: ssd
+  fsType: ext4

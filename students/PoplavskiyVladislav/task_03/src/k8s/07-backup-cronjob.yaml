@@ -1,0 +1,90 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-postgres
+  namespace: state-lab03
+  labels:
+    org.bstu.course: "RSIOT"
+    org.bstu.variant: "17"
+    app: backup
+    purpose: "scheduled-backup"
+spec:
+  schedule: "0 12 * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    metadata:
+      labels:
+        org.bstu.variant: "17"
+        job-type: "backup"
+    spec:
+      template:
+        metadata:
+          labels:
+            app: backup
+            org.bstu.variant: "17"
+        spec:
+          containers:
+          - name: backup
+            image: postgres:15-alpine
+            imagePullPolicy: IfNotPresent
+            env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres-password
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres-user
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres-db
+            - name: STU_ID
+              value: "12345678"
+            - name: STU_GROUP
+              value: "FICT-123"
+            - name: STU_VARIANT
+              value: "17"
+            command: ["/bin/bash", "-c"]
+            args:
+              - |
+                # Копируем скрипт из ConfigMap
+                cp /scripts/backup.sh /tmp/backup.sh
+                chmod +x /tmp/backup.sh
+                
+                # Выполняем backup
+                echo "Запуск backup скрипта..."
+                /tmp/backup.sh
+                
+                # Дополнительная проверка
+                echo "Проверка созданных файлов:"
+                ls -lh /backup/
+                
+                echo "Backup CronJob выполнен успешно!"
+            volumeMounts:
+            - name: backup-volume
+              mountPath: /backup
+            - name: scripts-volume
+              mountPath: /scripts
+              readOnly: true
+            resources:
+              requests:
+                memory: "128Mi"
+                cpu: "100m"
+              limits:
+                memory: "256Mi"
+                cpu: "200m"
+          restartPolicy: OnFailure
+          volumes:
+          - name: backup-volume
+            persistentVolumeClaim:
+              claimName: backup-pvc
+          - name: scripts-volume
+            configMap:
+              name: backup-scripts
+              defaultMode: 0744
