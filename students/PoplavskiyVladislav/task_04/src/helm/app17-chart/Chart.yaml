@@ -1,0 +1,10 @@
+apiVersion: v2
+name: app17-chart
+description: Helm chart for app17 monitoring lab
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+annotations:
+  org.bstu.course: RSIOT
+  org.bstu.variant: "17"
