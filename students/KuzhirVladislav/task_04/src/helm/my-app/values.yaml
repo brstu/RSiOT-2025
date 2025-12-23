@@ -1,0 +1,19 @@
+namespace: app-monitoring
+replicaCount: 2
+image:
+  repository: myapp
+  tag: latest
+metrics:
+  prefix: app01_
+  enabled: true
+slo:
+  availability: 99.0
+  p95Latency: 300ms
+  errorRate: 2%
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
