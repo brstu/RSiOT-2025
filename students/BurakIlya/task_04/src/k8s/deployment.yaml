@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mon-as64-220035-v29
+  namespace: app-as64-220035-v29
+  labels:
+    app: mon-as64-220035-v29
+    org.bstu.student.fullname: BurakIlyaEduardovich
+    org.bstu.student.id: "220035"
+    org.bstu.group: AS-64
+    org.bstu.variant: "29"
+    org.bstu.course: RSiOT
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mon-as64-220035-v29
+  template:
+    metadata:
+      labels:
+        app: mon-as64-220035-v29
+    spec:
+      containers:
+        - name: app
+          image: burakillya/task04-app:v1
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: STU_ID
+              value: "220035"
+            - name: STU_GROUP
+              value: "РђРЎ-64"
+            - name: STU_VARIANT
+              value: "29"
