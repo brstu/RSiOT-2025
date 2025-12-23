@@ -1,0 +1,14 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast
+  labels:
+    org.bstu.course: RSIOT
+    org.bstu.variant: "21"
+    org.bstu.student.fullname: Tunchik Anton Dmitrievich
+    org.bstu.student.id: "006326"
+    org.bstu.group: AC-63
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Retain
+allowVolumeExpansion: true

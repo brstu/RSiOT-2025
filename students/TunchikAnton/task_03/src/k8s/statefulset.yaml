@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: postgres-stateful
+  labels:
+    app: postgres
+    org.bstu.course: RSIOT
+    org.bstu.variant: "21"
+    org.bstu.student.fullname: Tunchik Anton Dmitrievich
+    org.bstu.student.id: "006326"
+    org.bstu.group: AC-63
+    org.bstu.owner: "tunchik.ad@edu.bstu.by"
+    org.bstu.student.slug: "ac-63-v21"
+    slug: ac-63--v21
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        org.bstu.course: RSIOT
+        org.bstu.variant: "21"
+        org.bstu.student.fullname: Tunchik Anton Dmitrievich
+        org.bstu.student.id: "006326"
+        org.bstu.group: AC-63
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-password
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-user
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-db
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          tcpSocket:
+            port: 5432
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - postgres
+          initialDelaySeconds: 5
+          periodSeconds: 5
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "fast"
+      resources:
+        requests:
+          storage: 2Gi

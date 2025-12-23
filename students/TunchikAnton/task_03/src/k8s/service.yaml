@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: postgres-stateful
+  labels:
+    app: postgres
+    org.bstu.course: RSIOT
+    org.bstu.variant: "21"
+    org.bstu.student.fullname: Tunchik Anton Dmitrievich
+    org.bstu.student.id: "006326"
+    org.bstu.group: AC-63
+spec:
+  clusterIP: None
+  ports:
+  - port: 5432
+    name: postgres
+  selector:
+    app: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-read
+  namespace: postgres-stateful
+  labels:
+    app: postgres
+    org.bstu.course: RSIOT
+    org.bstu.variant: "21"
+    org.bstu.student.fullname: Tunchik Anton Dmitrievich
+    org.bstu.student.id: "006326"
+    org.bstu.group: AC-63
+spec:
+  ports:
+  - port: 5432
+    name: postgres
+  selector:
+    app: postgres

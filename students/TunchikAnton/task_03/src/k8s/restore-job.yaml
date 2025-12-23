@@ -1,0 +1,85 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgres-restore
+  namespace: postgres-stateful
+  labels:
+    org.bstu.course: RSIOT
+    org.bstu.variant: "21"
+    org.bstu.student.fullname: Tunchik Anton Dmitrievich
+    org.bstu.student.id: "006326"
+    org.bstu.group: AC-63
+spec:
+  template:
+    metadata:
+      labels:
+        app: postgres-restore
+        org.bstu.variant: "21"
+        org.bstu.student.fullname: Tunchik Anton Dmitrievich
+        org.bstu.student.id: "006326"
+        org.bstu.group: AC-63
+    spec:
+      containers:
+      - name: restore
+        image: postgres:15-alpine
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-password
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-user
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-db
+        - name: PGHOST
+          value: "postgres-0.postgres.postgres-stateful.svc.cluster.local"
+        - name: BACKUP_FILE
+          value: "backup_latest"
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Starting restore at $(date)"
+          
+          if [ "$BACKUP_FILE" = "backup_latest" ]; then
+            BACKUP_FILE=$(ls -t /backup/backup_*.sql 2>/dev/null | head -1)
+            if [ -z "$BACKUP_FILE" ]; then
+              echo "No backup files found in /backup/" >&2
+              exit 1
+            fi
+          else
+            BACKUP_FILE="/backup/${BACKUP_FILE}"
+          fi
+          
+          echo "Restoring from: $BACKUP_FILE"
+          
+          if [ ! -f "$BACKUP_FILE" ]; then
+            echo "Backup file not found: $BACKUP_FILE" >&2
+            exit 1
+          fi
+          
+          PGPASSWORD=$POSTGRES_PASSWORD psql -h $PGHOST -U $POSTGRES_USER -d $POSTGRES_DB -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+          PGPASSWORD=$POSTGRES_PASSWORD psql -h $PGHOST -U $POSTGRES_USER -d $POSTGRES_DB < "$BACKUP_FILE"
+          
+          if [ $? -eq 0 ]; then
+            echo "Restore completed successfully at $(date)"
+            echo "Restored from: $BACKUP_FILE"
+          else
+            echo "Restore failed!" >&2
+            exit 1
+          fi
+        volumeMounts:
+        - name: backup-volume
+          mountPath: /backup
+      restartPolicy: OnFailure
+      volumes:
+      - name: backup-volume
+        persistentVolumeClaim:
+          claimName: postgres-backup-pvc
