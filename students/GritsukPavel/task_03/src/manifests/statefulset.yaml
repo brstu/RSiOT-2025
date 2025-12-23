@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-as63-220007-v04
+  namespace: state-as63-220007-v04
+  labels:
+    org.bstu.student.fullname: "Р“СЂРёС†СѓРє РџР°РІРµР» Р­РґСѓР°СЂРґРѕРІРёС‡"
+    org.bstu.student.id: "220007"
+    org.bstu.group: "РђРЎ-63"
+    org.bstu.variant: "4"
+    org.bstu.course: "RSiOT"
+spec:
+  serviceName: db-as63-220007-v04
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+      variant: "4"
+  template:
+    metadata:
+      labels:
+        app: redis
+        variant: "4"
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+              name: redis
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-as63-220007-v04-secret
+                  key: redis-password
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
