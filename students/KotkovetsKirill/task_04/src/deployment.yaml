@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mon-as64-220044-v35
+  namespace: app-as64-220044-v35
+  labels:
+    app: mon-as64-220044-v35
+    org.bstu.student.fullname: "РљРѕС‚РєРѕРІРµС†-РљРёСЂРёР»Р»-Р’РёРєС‚РѕСЂРѕРІРёС‡"
+    org.bstu.student.id: "220044"
+    org.bstu.group: "РђРЎ-64"
+    org.bstu.variant: "35"
+    org.bstu.course: "RSiOT"
+    org.bstu.owner: "Kirill-Kotkovets"
+    org.bstu.student.slug: "as64-220044-v35"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mon-as64-220044-v35
+  template:
+    metadata:
+      labels:
+        app: mon-as64-220044-v35
+    spec:
+      containers:
+        - name: app35-container
+          image: kirill-kotkovets/app35:latest
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: STU_ID
+              value: "220044"
+            - name: STU_GROUP
+              value: "РђРЎ-64"
+            - name: STU_VARIANT
+              value: "35"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
