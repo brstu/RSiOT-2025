@@ -1,0 +1,45 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: restore-as63-220027-v22
+  namespace: state-as63-220027-v22
+  labels:
+    org.bstu.student.fullname: "Filipchuk Dmitriy Vasilevich"
+    org.bstu.student.id: "220027"
+    org.bstu.group: "РђРЎ-63"
+    org.bstu.variant: "22"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "kuddel11"
+    org.bstu.student.slug: "as63-220027-v22"
+spec:
+  template:
+    metadata:
+      labels:
+        org.bstu.student.slug: "as63-220027-v22"
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: restore
+          image: busybox:1.36
+          args:
+            - sh
+            - -c
+            - |
+              if [ -f /backup/dump.rdb ]; then
+                cp /backup/dump.rdb /data/dump.rdb || true;
+              fi;
+              ls -l /backup || true;
+              ls -l /data || true
+          volumeMounts:
+            - name: backup
+              mountPath: /backup
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: backup
+          persistentVolumeClaim:
+            claimName: backup-as63-220027-v22
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-db-as63-220027-v22-0
