@@ -1,0 +1,93 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: app10
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: app10
+    prometheus: kube-prometheus
+spec:
+  groups:
+    - name: app10.rules
+      interval: 30s
+      rules:
+        - alert: App10HighErrorRate
+          expr: |
+            (sum(rate(app10_http_errors_total{status=~"5.."}[5m])) by (job)) /
+            (sum(rate(app10_http_requests_total[5m])) by (job)) > 0.015
+          for: 5m
+          labels:
+            severity: warning
+            service: app10
+          annotations:
+            summary: "High 5xx error rate detected"
+            description: "app10 has 5xx error rate > 1.5% for the last 5 minutes (current: {{ $value | humanizePercentage }})"
+
+        - alert: App10HighLatency
+          expr: histogram_quantile(0.95, sum(rate(app10_http_request_duration_seconds_bucket[5m])) by (le, job)) > 0.25
+          for: 5m
+          labels:
+            severity: warning
+            service: app10
+          annotations:
+            summary: "High latency detected (p95 > 250ms)"
+            description: "app10 p95 latency is {{ $value | humanizeDuration }}"
+
+        - alert: App10LowAvailability
+          expr: |
+            (sum(rate(app10_http_requests_total{status="200"}[5m])) by (job)) /
+            (sum(rate(app10_http_requests_total[5m])) by (job)) < 0.99
+          for: 5m
+          labels:
+            severity: critical
+            service: app10
+          annotations:
+            summary: "Low availability detected (< 99%)"
+            description: "app10 availability is {{ $value | humanizePercentage }}"
+
+        - alert: App10PodNotReady
+          expr: kube_pod_status_ready{namespace="{{ .Values.namespace }}", pod=~"app10.*", condition="false"} == 1
+          for: 2m
+          labels:
+            severity: warning
+            service: app10
+          annotations:
+            summary: "Pod not ready"
+            description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is not ready"
+
+        - alert: App10HighMemoryUsage
+          expr: |
+            container_memory_usage_bytes{namespace="{{ .Values.namespace }}", pod=~"app10.*"} /
+            container_spec_memory_limit_bytes{namespace="{{ .Values.namespace }}", pod=~"app10.*"} > 0.8
+          for: 5m
+          labels:
+            severity: warning
+            service: app10
+          annotations:
+            summary: "High memory usage (> 80%)"
+            description: "Pod {{ $labels.pod }} memory usage is {{ $value | humanizePercentage }}"
+
+        - alert: App10HighCPUUsage
+          expr: |
+            rate(container_cpu_usage_seconds_total{namespace="{{ .Values.namespace }}", pod=~"app10.*"}[5m]) > 0.8 * 
+            (container_spec_cpu_quota{namespace="{{ .Values.namespace }}", pod=~"app10.*"} / 100000)
+          for: 5m
+          labels:
+            severity: warning
+            service: app10
+          annotations:
+            summary: "High CPU usage (> 80%)"
+            description: "Pod {{ $labels.pod }} CPU usage is high"
+
+        - record: app10:http_availability:5m
+          expr: |
+            sum(rate(app10_http_requests_total{status=~"2..|3.."}[5m])) by (job) /
+            sum(rate(app10_http_requests_total[5m])) by (job)
+
+        - record: app10:http_error_rate:5m
+          expr: |
+            sum(rate(app10_http_errors_total{status=~"5.."}[5m])) by (job) /
+            sum(rate(app10_http_requests_total[5m])) by (job)
+
+        - record: app10:http_p95_latency:5m
+          expr: histogram_quantile(0.95, sum(rate(app10_http_request_duration_seconds_bucket[5m])) by (le, job))
