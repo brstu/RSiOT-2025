@@ -1,0 +1,45 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-as63-220016-v12
+  namespace: state-as63-220016-v12
+  labels:
+    org.bstu.student.fullname: "РљСѓР»СЊР±РµРґР° РљРёСЂРёР»Р» РђР»РµРєСЃР°РЅРґСЂРѕРІРёС‡"
+    org.bstu.student.id: "220016"
+    org.bstu.group: "РђРЎ-63"
+    org.bstu.variant: "12"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "fr0ogi"
+    org.bstu.student.slug: "as63-220016-v12"
+spec:
+  schedule: "*/20 * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: backup-as63-220016-v12
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: redis:7
+              command:
+                - sh
+                - -c
+                - |
+                  echo "Starting backup at $(date)";
+                  redis-cli -h db-as63-220016-v12-0.db-as63-220016-v12 \
+                    -p 6379 --rdb \
+                    /backup/redis-dump-$(date +%Y%m%d%H%M).rdb;
+                  ls -lah /backup;
+              volumeMounts:
+                - name: backup-volume
+                  mountPath: /backup
+          volumes:
+            - name: backup-volume
+              persistentVolumeClaim:
+                claimName: backup-as63-220016-v12
