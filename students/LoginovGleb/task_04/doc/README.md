@@ -92,7 +92,6 @@ task_04/
 │       ├── 07_alert_firing.png
 │       ├── 08_servicemonitor.png
 │       ├── 09_prometheus_targets.png
-│       ├── 10_argocd_app.png (опционально)
 │       ├── dashboard_availability.json
 │       ├── dashboard_latency.json
 │       └── dashboard_errors.json
@@ -109,12 +108,12 @@ task_04/
     │       ├── .helmignore
     │       └── templates/
     │           ├── _helpers.tpl     # Вспомогательные шаблоны
-    │           ├── namespace.yaml   # Namespace с метаданными
-    │           ├── deployment.yaml  # Deployment с probes
-    │           ├── service.yaml     # Service для приложения
-    │           ├── servicemonitor.yaml   # ServiceMonitor для Prometheus
-    │           ├── prometheusrule.yaml   # Алерты по SLO
-    │           └── ingress.yaml     # Ingress (опционально)
+    │           ├── namespace.tpl   # Namespace с метаданными
+    │           ├── deployment.tpl  # Deployment с probes
+    │           ├── service.tpl     # Service для приложения
+    │           ├── servicemonitor.tpl   # ServiceMonitor для Prometheus
+    │           ├── prometheusrule.tpl   # Алерты по SLO
+    │           └── ingress.tpl     # Ingress (опционально)
     ├── monitoring/                  # Конфигурация monitoring stack
     │   ├── kube-prometheus-stack-values.yaml
     │   └── install-monitoring.sh    # Скрипт установки
@@ -319,11 +318,11 @@ curl http://localhost:8000/metrics | grep app14_
 
 #### 3.2. Kubernetes манифесты
 
-**namespace.yaml:**
+**namespace.tpl:**
 
 - Namespace с метаданными студента в labels
 
-**deployment.yaml:**
+**deployment.tpl:**
 
 - Deployment с параметризацией из values
 - Environment variables: STU_ID, STU_GROUP, STU_VARIANT
@@ -332,13 +331,13 @@ curl http://localhost:8000/metrics | grep app14_
 - Resource requests и limits
 - Annotations для Prometheus
 
-**service.yaml:**
+**service.tpl:**
 
 - ClusterIP Service
 - Port 8000 для приложения
 - Annotations для ServiceMonitor
 
-**servicemonitor.yaml:**
+**servicemonitor.tpl:**
 
 - ServiceMonitor для автоматического обнаружения
 - Имя: `mon-AS-63-220018-v14-app14`
@@ -346,12 +345,12 @@ curl http://localhost:8000/metrics | grep app14_
 - Scrape interval: 30s
 - Label `release: kube-prometheus-stack` для обнаружения Prometheus Operator
 
-**prometheusrule.yaml:**
+**prometheusrule.tpl:**
 
 - PrometheusRule с алертами по SLO варианта 14
 - 4 алерта: HighErrorRate5xx, HighLatencyP95, SLOViolationAvailability, AppDown
 
-**ingress.yaml:**
+**ingress.tpl:**
 
 - Опциональный Ingress для внешнего доступа
 
@@ -594,7 +593,7 @@ make port-forward-grafana
 
 #### 5.1. PrometheusRule с алертами
 
-PrometheusRule создан в `src/helm/app14-monitoring/templates/prometheusrule.yaml` с 4 алертами:
+PrometheusRule создан в `src/helm/app14-monitoring/templates/prometheusrule.tpl` с 4 алертами:
 
 **1. HighErrorRate5xx** (Critical)
 
@@ -710,12 +709,12 @@ done
 ✅ values.yaml - Параметризация всех настроек
 ✅ .helmignore - Исключение ненужных файлов
 ✅ templates/_helpers.tpl - Вспомогательные функции
-✅ templates/namespace.yaml
-✅ templates/deployment.yaml
-✅ templates/service.yaml
-✅ templates/servicemonitor.yaml
-✅ templates/prometheusrule.yaml
-✅ templates/ingress.yaml
+✅ templates/namespace.tpl
+✅ templates/deployment.tpl
+✅ templates/service.tpl
+✅ templates/servicemonitor.tpl
+✅ templates/prometheusrule.tpl
+✅ templates/ingress.tpl
 
 #### 6.2. Параметризация в values.yaml
 
@@ -859,8 +858,7 @@ kubectl get pods -n app-AS-63-220018-v14
 
 #### 7.6. Скриншоты (опционально)
 
-- ✅ `10_argocd_app.png` - Application в Argo CD UI
-- Дополнительно: sync status, resource tree
+- Дополнительно: sync status, resource tree в Argo CD UI
 
 ---
 
