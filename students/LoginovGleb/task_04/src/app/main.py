@@ -10,8 +10,6 @@ import random
 import logging
 from flask import Flask, jsonify, request
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
-from prometheus_client import make_wsgi_app
 
 # Configure logging
 logging.basicConfig(
@@ -29,10 +27,10 @@ STU_GROUP = os.getenv('STU_GROUP', 'AS-63')
 STU_VARIANT = os.getenv('STU_VARIANT', '14')
 
 # Log startup information
-logger.info(f"Starting app14-monitoring application")
-logger.info(f"Student ID: {STU_ID}")
-logger.info(f"Student Group: {STU_GROUP}")
-logger.info(f"Variant: {STU_VARIANT}")
+logger.info("Starting app14-monitoring application")
+logger.info("Student ID: %s", STU_ID)
+logger.info("Student Group: %s", STU_GROUP)
+logger.info("Variant: %s", STU_VARIANT)
 
 # Define Prometheus metrics with app14_ prefix (as per variant 14 requirements)
 
@@ -71,34 +69,34 @@ def track_request(func):
     def wrapper(*args, **kwargs):
         method = request.method
         endpoint = request.endpoint or 'unknown'
-        
+
         # Track in-progress requests
         app14_http_requests_in_progress.labels(method=method, endpoint=endpoint).inc()
-        
+
         # Measure request duration
         start_time = time.time()
         try:
             response = func(*args, **kwargs)
             duration = time.time() - start_time
-            
+
             # Get status code
             if isinstance(response, tuple):
                 status_code = response[1]
             else:
                 status_code = 200
-            
+
             # Update metrics
             app14_http_request_duration_seconds.labels(
                 method=method,
                 endpoint=endpoint
             ).observe(duration)
-            
+
             app14_http_requests_total.labels(
                 method=method,
                 endpoint=endpoint,
                 status=status_code
             ).inc()
-            
+
             # Track 5xx errors separately
             if 500 <= status_code < 600:
                 app14_http_errors_5xx_total.labels(
@@ -106,14 +104,14 @@ def track_request(func):
                     endpoint=endpoint,
                     status=status_code
                 ).inc()
-                logger.warning(f"5xx error: {method} {endpoint} -> {status_code}")
-            
-            logger.info(f"{method} {endpoint} -> {status_code} ({duration:.3f}s)")
-            
+                logger.warning("5xx error: %s %s -> %s", method, endpoint, status_code)
+
+            logger.info("%s %s -> %s (%.3fs)", method, endpoint, status_code, duration)
+
             return response
         finally:
             app14_http_requests_in_progress.labels(method=method, endpoint=endpoint).dec()
-    
+
     wrapper.__name__ = func.__name__
     return wrapper
 

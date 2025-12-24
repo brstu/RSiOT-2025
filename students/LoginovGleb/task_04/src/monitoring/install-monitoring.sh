@@ -34,7 +34,7 @@ kubectl label namespace ${MONITORING_NAMESPACE} \
 echo "Installing kube-prometheus-stack..."
 helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
   --namespace ${MONITORING_NAMESPACE} \
-  --values ${VALUES_FILE} \
+  --values "${VALUES_FILE}" \
   --wait \
   --timeout 10m
 
