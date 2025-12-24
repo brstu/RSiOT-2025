@@ -1,0 +1,35 @@
+{
+  "id": null,
+  "uid": "app32-errors",
+  "title": "App32 – Errors (5xx)",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "5xx error rate",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "PROMETHEUS_DS_UID" },
+      "targets": [
+        {
+          "expr": "sum(rate(app32_http_request_total{status=~\"5..\"}[5m])) / sum(rate(app32_http_request_total[5m]))",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 0.025 }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
