@@ -1,3 +1,4 @@
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -28,35 +29,37 @@ spec:
       restartPolicy: OnFailure
       serviceAccountName: redis-restore-sa
       containers:
-      - name: redis-restore
-        image: bitnami/kubectl:latest
-        command: ["/bin/sh", "/scripts/restore.sh"]
-        env:
-        - name: REDIS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: redis-secret-as63-220018-v14
-              key: redis-password
-        - name: NAMESPACE
-          value: "state-as63-220018-v14"
-        - name: POD_NAME
-          value: "db-as63-220018-v14-0"
-        - name: STU_ID
-          value: "220018"
-        - name: STU_GROUP
-          value: "AS-63"
-        - name: STU_VARIANT
-          value: "14"
-        volumeMounts:
-        - name: backup-storage
-          mountPath: /backup
-        - name: restore-scripts
-          mountPath: /scripts
+        - name: redis-restore
+          image: bitnami/kubectl:latest
+          command:
+            - /bin/sh
+            - /scripts/restore.sh
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret-as63-220018-v14
+                  key: redis-password
+            - name: NAMESPACE
+              value: "state-as63-220018-v14"
+            - name: POD_NAME
+              value: "db-as63-220018-v14-0"
+            - name: STU_ID
+              value: "220018"
+            - name: STU_GROUP
+              value: "AS-63"
+            - name: STU_VARIANT
+              value: "14"
+          volumeMounts:
+            - name: backup-storage
+              mountPath: /backup
+            - name: restore-scripts
+              mountPath: /scripts
       volumes:
-      - name: backup-storage
-        persistentVolumeClaim:
-          claimName: backup-storage-as63-220018-v14
-      - name: restore-scripts
-        configMap:
-          name: restore-scripts-as63-220018-v14
-          defaultMode: 0755
+        - name: backup-storage
+          persistentVolumeClaim:
+            claimName: backup-storage-as63-220018-v14
+        - name: restore-scripts
+          configMap:
+            name: restore-scripts-as63-220018-v14
+            defaultMode: 0755
