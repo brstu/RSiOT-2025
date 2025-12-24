@@ -1280,5 +1280,5 @@ kubectl run -it --rm pvc-viewer --image=busybox --restart=Never -n state-as63-22
 **Дата сдачи:** 20.12.2024  
 **Выполнил:** Логинов Глеб Олегович, АС-63, 220018  
 **Вариант:** 14 (Redis, 1Gi, standard, */30* ** *)  
-**GitHub:** <https://github.com/gleb7499/RSiOT-2025-Loginov>  
+**GitHub:** <https://github.com/gleb7499/RSiOT-2025>  
 **Email:** <as006315@g.bstu.by>
