@@ -1,0 +1,21 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: web05-monitor
+  namespace: app05
+  labels:
+    app: web05
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: web05
+  endpoints:
+  - port: http
+    interval: 30s
+    scrapeTimeout: 10s
+    path: /metrics
+  namespaceSelector:
+    matchNames:
+    - app05
