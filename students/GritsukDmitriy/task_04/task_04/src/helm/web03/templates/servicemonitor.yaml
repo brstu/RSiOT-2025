@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: web03-monitor
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: web03
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: web03
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s

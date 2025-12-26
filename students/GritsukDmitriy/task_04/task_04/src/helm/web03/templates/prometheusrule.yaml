@@ -1,0 +1,54 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: web03-alerts
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: web03
+    release: monitoring
+spec:
+  groups:
+  - name: web03-slo
+    interval: 30s
+    rules:
+    - alert: HighErrorRate
+      expr: |
+        sum(rate(app03_http_requests_total{status=~"5.."}[10m]))
+        / sum(rate(app03_http_requests_total[10m])) > 0.01
+      for: 5m
+      labels:
+        severity: warning
+        variant: "03"
+        student_id: "{{ .Values.env.STU_ID }}"
+      annotations:
+        summary: "High 5xx error rate detected (>1%)"
+        description: "Error rate is {{ $value | humanizePercentage }} for student {{ .Values.env.STU_ID }}"
+    
+    - alert: HighLatency
+      expr: |
+        histogram_quantile(0.95,
+          rate(app03_http_request_duration_seconds_bucket[5m])
+        ) > 0.200
+      for: 5m
+      labels:
+        severity: warning
+        variant: "03"
+        student_id: "{{ .Values.env.STU_ID }}"
+      annotations:
+        summary: "P95 latency exceeded 200ms SLO"
+        description: "P95 latency is {{ $value }}s for student {{ .Values.env.STU_ID }}"
+    
+    - alert: LowAvailability
+      expr: |
+        100 - (
+          sum(rate(app03_http_requests_total{status!~"5.."}[10m]))
+          / sum(rate(app03_http_requests_total[10m])) * 100
+        ) > 0.1
+      for: 10m
+      labels:
+        severity: critical
+        variant: "03"
+        student_id: "{{ .Values.env.STU_ID }}"
+      annotations:
+        summary: "Availability below 99.9% SLO"
+        description: "Availability is {{ $value }}% for student {{ .Values.env.STU_ID }}"
