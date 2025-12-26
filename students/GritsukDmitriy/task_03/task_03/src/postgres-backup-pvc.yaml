@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-backup-pvc
+  namespace: state24
+  labels:
+    app: postgres-backup
+    org.bstu.student.slug: "ac-63-220006-v24"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: fast
