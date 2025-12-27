@@ -1,0 +1,89 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-init-as63-220018-v14
+  namespace: state-as63-220018-v14
+  labels:
+    org.bstu.student.fullname: "Loginov-Gleb-Olegovich"
+    org.bstu.student.id: "220018"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "14"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "gleb7499"
+    org.bstu.student.slug: "AS-63-220018-v14"
+    app: minio-init
+spec:
+  template:
+    metadata:
+      labels:
+        org.bstu.student.fullname: "Loginov-Gleb-Olegovich"
+        org.bstu.student.id: "220018"
+        org.bstu.group: "AS-63"
+        org.bstu.variant: "14"
+        org.bstu.course: "RSIOT"
+        org.bstu.owner: "gleb7499"
+        org.bstu.student.slug: "AS-63-220018-v14"
+        app: minio-init
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: mc
+        image: minio/mc:RELEASE.2024-12-13T01-47-32Z
+        command:
+        - /bin/sh
+        - -c
+        - |
+          #!/bin/sh
+          set -e
+          
+          echo "=== MinIO Bucket Initialization ==="
+          echo "Student: Loginov Gleb Olegovich (220018)"
+          echo "Group: AS-63, Variant: 14"
+          
+          # Подождать готовности MinIO
+          echo "Waiting for MinIO to be ready..."
+          until mc alias set myminio http://minio-service-as63-220018-v14.state-as63-220018-v14.svc.cluster.local:9000 minioadmin minioadmin123; do
+            echo "MinIO not ready, retrying..."
+            sleep 5
+          done
+          
+          echo "MinIO is ready!"
+          
+          # Создать bucket для backup
+          if mc ls myminio/redis-backups 2>/dev/null; then
+            echo "Bucket 'redis-backups' already exists"
+          else
+            echo "Creating bucket 'redis-backups'..."
+            mc mb myminio/redis-backups
+            echo "Bucket created successfully"
+          fi
+          
+          # Установить lifecycle policy для автоматической ротации (опционально)
+          echo "Setting lifecycle policy (keep last 30 days)..."
+          cat > /tmp/lifecycle.json <<EOF
+          {
+            "Rules": [
+              {
+                "ID": "ExpireOldBackups",
+                "Status": "Enabled",
+                "Expiration": {
+                  "Days": 30
+                }
+              }
+            ]
+          }
+          EOF
+          
+          mc ilm import myminio/redis-backups < /tmp/lifecycle.json || echo "Lifecycle policy not set (requires newer MinIO)"
+          
+          echo "Listing buckets:"
+          mc ls myminio
+          
+          echo "=== MinIO initialization completed ==="
+        env:
+        - name: STU_ID
+          value: "220018"
+        - name: STU_GROUP
+          value: "AS-63"
+        - name: STU_VARIANT
+          value: "14"

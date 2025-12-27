@@ -1,0 +1,23 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: storage-as63-220018-v14
+  labels:
+    org.bstu.student.fullname: "Loginov-Gleb-Olegovich"
+    org.bstu.student.id: "220018"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "14"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "gleb7499"
+    org.bstu.student.slug: "AS-63-220018-v14"
+provisioner: k8s.io/minikube-hostpath  # Для Minikube
+# Для других платформ используйте:
+# rancher.io/local-path - для Kind
+# kubernetes.io/gce-pd - для GKE
+# kubernetes.io/aws-ebs - для EKS
+# kubernetes.io/azure-disk - для AKS
+parameters:
+  type: standard
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Retain
+allowVolumeExpansion: true

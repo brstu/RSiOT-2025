@@ -1,0 +1,71 @@
+student:
+  fullname: "Loginov Gleb Olegovich"
+  id: "220018"
+  group: "AS-63"
+  variant: "14"
+  slug: "AS-63-220018-v14"
+  email: "as006315@g.bstu.by"
+  github: "gleb7499"
+
+redis:
+  image:
+    repository: redis
+    tag: 7.2-alpine
+  password: "StrongRedisPass123!"
+  replicas: 1
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "250m"
+
+storage:
+  className: "storage-as63-220018-v14"
+  dataSize: "1Gi"
+  backupSize: "2Gi"
+  # Provisioner для конкретной платформы Kubernetes:
+  # - k8s.io/minikube-hostpath для Minikube
+  # - rancher.io/local-path для Kind
+  # - kubernetes.io/gce-pd для GKE
+  # - kubernetes.io/aws-ebs для EKS
+  provisioner: "k8s.io/minikube-hostpath"  # Измените в соответствии с вашей платформой
+
+backup:
+  schedule: "*/30 * * * *"
+  retention: 10
+  image:
+    repository: redis
+    tag: 7.2-alpine
+  s3:
+    enabled: true
+    image:
+      repository: minio/mc
+      tag: RELEASE.2024-12-13T01-47-32Z
+
+restore:
+  image:
+    repository: bitnami/kubectl
+    tag: latest
+
+# MinIO S3-compatible хранилище (БОНУС +2 балла)
+minio:
+  enabled: true
+  image:
+    repository: minio/minio
+    tag: RELEASE.2024-12-18T13-15-44Z
+  rootUser: "minioadmin"
+  rootPassword: "minioadmin123"
+  bucket: "redis-backups"
+  storage:
+    size: "5Gi"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "250m"
+
+namespace: "state-as63-220018-v14"
