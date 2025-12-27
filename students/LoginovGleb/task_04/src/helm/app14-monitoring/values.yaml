@@ -1,0 +1,108 @@
+# Default values for app14-monitoring
+# This is a YAML-formatted file.
+# Student: Логинов Глеб Олегович (AS-63-220018-v14)
+
+# Namespace for the application
+namespace: app-AS-63-220018-v14
+
+# Application configuration
+app:
+  name: app14-monitoring
+  replicaCount: 2
+  
+  image:
+    repository: app14-monitoring
+    tag: latest
+    pullPolicy: IfNotPresent
+  
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+    name: http
+  
+  # Resource limits and requests
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  
+  # Environment variables
+  env:
+    STU_ID: "220018"
+    STU_GROUP: "AS-63"
+    STU_VARIANT: "14"
+  
+  # Probes configuration
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 8000
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
+  
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 8000
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3
+  
+  # Metrics configuration
+  metrics:
+    enabled: true
+    prefix: app14_
+    port: 8000
+    path: /metrics
+
+# Monitoring configuration
+monitoring:
+  # ServiceMonitor for Prometheus Operator
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    scrapeTimeout: 10s
+    labels:
+      release: kube-prometheus-stack
+  
+  # PrometheusRule for alerts
+  prometheusRule:
+    enabled: true
+    labels:
+      release: kube-prometheus-stack
+    
+    # SLO parameters for variant 14
+    slo:
+      availability: 99.5  # 99.5% availability
+      p95_latency_ms: 250  # P95 < 250ms
+      error_rate_5xx_percent: 1.5  # 5xx < 1.5%
+      error_window: 10m  # Check error rate over 10 minutes
+
+# Ingress configuration (optional)
+ingress:
+  enabled: false
+  className: nginx
+  host: app14.local
+  annotations: {}
+  tls:
+    enabled: false
+    secretName: app14-tls
+
+# Student metadata labels (applied to all resources)
+metadata:
+  labels:
+    org.bstu.student.fullname: "Логинов Глеб Олегович"
+    org.bstu.student.id: "220018"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "14"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "gleb7499"
+    org.bstu.student.slug: "AS-63-220018-v14"
