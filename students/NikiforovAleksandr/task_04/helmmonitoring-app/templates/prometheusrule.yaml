@@ -1,0 +1,48 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: memes-gallery-prometheusrule
+  namespace: app-memes-gallery
+  labels:
+    app: memes-gallery
+    release: prometheus-stack
+spec:
+  groups:
+    - name: memes-gallery-slo
+      rules:
+        - alert: MemesGalleryHighErrorRate
+          expr: |
+            rate(memes_gallery_http_requests_total{status=~"5.."}[5m])
+            /
+            rate(memes_gallery_http_requests_total[5m])
+            > 0.001
+          for: 2m
+          labels:
+            severity: critical
+            service: memes-gallery
+          annotations:
+            summary: "Высокий уровень ошибок в галерее мемов"
+            description: "Уровень ошибок 5xx превышает 0.1%"
+        - alert: MemesGalleryHighLatency
+          expr: |
+            histogram_quantile(0.95,
+              rate(memes_gallery_http_request_duration_seconds_bucket[5m])
+            ) > 1
+          for: 3m
+          labels:
+            severity: warning
+            service: memes-gallery
+          annotations:
+            summary: "Высокая задержка в галерее мемов"
+            description: "P95 задержка превышает 1 секунду"
+        - alert: MemesGalleryLowAvailability
+          expr: |
+            up{job="memes-gallery"} == 0
+          for: 1m
+          labels:
+            severity: critical
+            service: memes-gallery
+          annotations:
+            summary: "Галерея мемов недоступна"
+            description: "Сервис не отвечает более 1 минуты"

@@ -1,0 +1,37 @@
+---
+namespace: app-memes-gallery
+
+metadata:
+  studentId: "220020"
+  group: "AS-63"
+  variant: "16"
+
+replicaCount: 2
+
+image:
+  repository: your-dockerhub-username/memes-gallery
+  tag: v1.0.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5000
+
+metrics:
+  enabled: true
+  interval: 15s
+  scrapeTimeout: 10s
+
+alerts:
+  enabled: true
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "200m"
+
+ingress:
+  enabled: false
