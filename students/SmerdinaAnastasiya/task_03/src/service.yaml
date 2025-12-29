@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-as64-220053-v41-headless
+  namespace: state-as64-220053-v41
+  labels:
+    org.bstu.student.id: "220053"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "41"
+spec:
+  clusterIP: None
+  selector:
+    app: postgres-db
+  ports:
+    - port: 5432
+      targetPort: 5432
