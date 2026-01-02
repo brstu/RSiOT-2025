@@ -1,0 +1,39 @@
+{
+  "id": null,
+  "uid": "app32-availability",
+  "title": "App32 – Availability (SLO 99.5%)",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Availability (30d)",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "PROMETHEUS_DS_UID" },
+      "targets": [
+        {
+          "expr": "1 - (sum(rate(app32_http_request_total{status=~\"2..|3..\"}[30d])) / sum(rate(app32_http_request_total[30d])))",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 0.005 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "auto"
+      }
+    }
+  ]
+}
