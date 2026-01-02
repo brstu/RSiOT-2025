@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redis-restore
+  namespace: state01
+  labels:
+    org.bstu.app: redis
+    org.bstu.student: Ivanyuk_Ivan_Aleksandrovich
+    org.bstu.group: AS-64
+    org.bstu.variant: v_32
+spec:
+  template:
+    spec:
+      containers:
+        - name: restore
+          image: busybox
+          command: ["/bin/sh", "-c", "cp /backup/backup-latest.rdb /data/dump.rdb"] 
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+            - name: backup
+              mountPath: /backup
+      restartPolicy: Never
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: data-redis-0
+        - name: backup
+          persistentVolumeClaim:
+            claimName: backup-storage
