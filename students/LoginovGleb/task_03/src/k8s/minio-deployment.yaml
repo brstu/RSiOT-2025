@@ -1,0 +1,89 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio-as63-220018-v14
+  namespace: state-as63-220018-v14
+  labels:
+    org.bstu.student.fullname: "Loginov-Gleb-Olegovich"
+    org.bstu.student.id: "220018"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "14"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "gleb7499"
+    org.bstu.student.slug: "AS-63-220018-v14"
+    app: minio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+      org.bstu.student.slug: "AS-63-220018-v14"
+  template:
+    metadata:
+      labels:
+        app: minio
+        org.bstu.student.fullname: "Loginov-Gleb-Olegovich"
+        org.bstu.student.id: "220018"
+        org.bstu.group: "AS-63"
+        org.bstu.variant: "14"
+        org.bstu.course: "RSIOT"
+        org.bstu.owner: "gleb7499"
+        org.bstu.student.slug: "AS-63-220018-v14"
+    spec:
+      containers:
+        - name: minio
+          image: minio/minio:RELEASE.2024-12-18T13-15-44Z
+          args:
+            - server
+            - /data
+            - --console-address
+            - :9001
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret-as63-220018-v14
+                  key: root-user
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret-as63-220018-v14
+                  key: root-password
+            - name: STU_ID
+              value: "220018"
+            - name: STU_GROUP
+              value: "AS-63"
+            - name: STU_VARIANT
+              value: "14"
+          ports:
+            - containerPort: 9000
+              name: api
+            - containerPort: 9001
+              name: console
+          volumeMounts:
+            - name: storage
+              mountPath: /data
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              port: 9000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: 9000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: minio-storage-as63-220018-v14
