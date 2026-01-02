@@ -1,0 +1,27 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-as64-220053-v41
+  namespace: state-as64-220053-v41
+  labels:
+    org.bstu.student.id: "220053"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "41"
+spec:
+  schedule: "5 6 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: postgres:15
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "Backup started at $(date)"
+                  pg_dump -U postgres -d testdb > /tmp/backup.sql
+                  echo "Backup completed"
+          restartPolicy: OnFailure

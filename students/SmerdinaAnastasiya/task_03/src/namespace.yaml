@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: state-as64-220053-v41
+  labels:
+    org.bstu.student.fullname: "Смердина Анастасия Валентиновна"
+    org.bstu.student.id: "220053"
+    org.bstu.group: "АС-64"
+    org.bstu.variant: "41"
+    org.bstu.course: "RSiOT"
+    org.bstu.owner: "KotyaLapka"
+    org.bstu.student.slug: "as64-220053-v41"
