@@ -1,0 +1,30 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: rental-app-rules
+  namespace: monitoring
+spec:
+  groups:
+    - name: rental-app-slo
+      rules:
+        - alert: AvailabilityLow
+          expr: (1 - (sum(rate(app42_http_requests_total{status=~"5.."}[5m])) / sum(rate(app42_http_requests_total[5m])))) < 0.999
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            description: "Доступность ниже 99.9% за последние 5м."
+        - alert: HighLatency
+          expr: histogram_quantile(0.95, sum(rate(app42_request_duration_seconds_bucket[5m])) by (le)) > 0.25
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            description: "p95 задержка выше 250ms."
+        - alert: HighErrorRate
+          expr: (sum(rate(app42_http_requests_total{status=~"5.."}[15m])) / sum(rate(app42_http_requests_total[15m]))) > 0.015
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            description: "Доля 5xx ошибок >1.5% за 15м."
