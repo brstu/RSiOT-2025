@@ -1,0 +1,18 @@
+---
+replicaCount: 1
+
+image:
+  repository: mon-as64-220053-v41
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+namespace: app-as64-220053-v41
+
+metadata:
+  studentId: "220053"
+  group: "АС-64"
+  variant: "41"

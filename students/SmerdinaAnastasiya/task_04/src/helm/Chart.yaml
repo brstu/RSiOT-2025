@@ -1,0 +1,7 @@
+---
+apiVersion: v2
+name: chart-as64-220053-v41
+description: Minimal Helm chart for monitoring lab
+type: application
+version: 0.1.0
+appVersion: "1.0"
