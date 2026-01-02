@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app14-monitoring-gitops
+  namespace: argocd
+  labels:
+    org.bstu.student.fullname: "Логинов Глеб Олегович"
+    org.bstu.student.id: "220018"
+    org.bstu.group: "AS-63"
+    org.bstu.variant: "14"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "gleb7499"
+    org.bstu.student.slug: "AS-63-220018-v14"
+spec:
+  project: default
+  
+  # Source repository
+  source:
+    repoURL: https://github.com/gleb7499/RSiOT-2025-Loginov
+    targetRevision: HEAD
+    path: task_04/src/helm/app14-monitoring
+    
+    # Helm configuration
+    helm:
+      valueFiles:
+        - values.yaml
+      parameters:
+        - name: app.replicaCount
+          value: "2"
+  
+  # Destination cluster
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app-AS-63-220018-v14
+  
+  # Sync policy
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  
+  # Ignore differences in certain fields
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
