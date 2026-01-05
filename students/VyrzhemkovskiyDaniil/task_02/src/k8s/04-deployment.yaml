@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web02-deployment
+  namespace: app02
+  labels:
+    org.bstu.course: RSIOT
+    org.bstu.student.fullname: "Вирземковский Даниил Иванович"
+    org.bstu.student.id: "006305"
+    org.bstu.group: "AC-63"
+    org.bstu.variant: "2"
+    org.bstu.student.slug: ac-63--v02
+    app: web02
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web02
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: web02
+        org.bstu.course: RSIOT
+        org.bstu.variant: "2"
+    spec:
+      containers:
+      - name: web02
+        image: web02:latest  # В продакшене использовать теги версий
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8082
+          name: http
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: web02-config
+              key: PORT
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: web02-config
+              key: APP_NAME
+        - name: APP_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: web02-config
+              key: APP_VERSION
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: web02-config
+              key: ENVIRONMENT
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: web02-secret
+              key: API_KEY
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "192Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8082
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8082
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 1
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 5"]
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config
+          readOnly: true
+      volumes:
+      - name: config-volume
+        configMap:
+          name: web02-config
+      restartPolicy: Always

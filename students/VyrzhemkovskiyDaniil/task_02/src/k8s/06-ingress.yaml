@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web02-ingress
+  namespace: app02
+  labels:
+    org.bstu.course: RSIOT
+    org.bstu.student.slug: ac-63--v02
+    app: web02
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: web02.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web02-service
+            port:
+              number: 80
