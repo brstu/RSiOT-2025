@@ -7,13 +7,13 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends build-essential \
+ && apt-get install -y --no-install-recommends build-essential=12.9 \
  && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 
-RUN pip install --upgrade pip \
- && pip install --prefix=/install -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 FROM python:3.12-slim
 
@@ -25,7 +25,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PATH=/install/bin:$PATH
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends curl \
+ && apt-get install -y --no-install-recommends curl=7.88.1-10+deb12u10 \
  && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 10001 appuser \
