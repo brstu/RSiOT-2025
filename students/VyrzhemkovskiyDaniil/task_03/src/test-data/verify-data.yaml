@@ -1,0 +1,92 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: verify-test-data
+  labels:
+    app: redis
+    student: vyrzhemkovskiy-daniil
+    group: ac-63
+    variant: 2
+spec:
+  template:
+    spec:
+      containers:
+      - name: verify
+        image: redis:7-alpine
+        command: ["sh", "-c"]
+        args:
+        - |
+          echo "========================================"
+          echo "VERIFYING REDIS DATA"
+          echo "Student: Выржемковский Даниил Иванович"
+          echo "Group: AC-63"
+          echo "Variant: 2"
+          echo "========================================"
+          echo ""
+          
+          sleep 5
+          
+          echo "1. Testing connection to Redis..."
+          redis-cli -h redis-service -a superSecretPassword123 PING
+          echo ""
+          
+          echo "2. Listing all keys in Redis:"
+          redis-cli -h redis-service -a superSecretPassword123 KEYS "*"
+          echo ""
+          
+          echo "3. Checking string values:"
+          echo "Student full name:"
+          redis-cli -h redis-service -a superSecretPassword123 GET student:fullname
+          echo ""
+          echo "Student group:"
+          redis-cli -h redis-service -a superSecretPassword123 GET student:group
+          echo ""
+          echo "Student ID:"
+          redis-cli -h redis-service -a superSecretPassword123 GET student:id
+          echo ""
+          echo "Variant:"
+          redis-cli -h redis-service -a superSecretPassword123 GET student:variant
+          echo ""
+          
+          echo "4. Checking lists:"
+          echo "Courses list:"
+          redis-cli -h redis-service -a superSecretPassword123 LRANGE courses:list 0 -1
+          echo ""
+          echo "Technologies used:"
+          redis-cli -h redis-service -a superSecretPassword123 LRANGE technologies:used 0 -1
+          echo ""
+          
+          echo "5. Checking hashes:"
+          echo "Student details:"
+          redis-cli -h redis-service -a superSecretPassword123 HGETALL student:details
+          echo ""
+          echo "Assignment info:"
+          redis-cli -h redis-service -a superSecretPassword123 HGETALL assignment:info
+          echo ""
+          
+          echo "6. Checking sets:"
+          echo "Student skills:"
+          redis-cli -h redis-service -a superSecretPassword123 SMEMBERS student:skills
+          echo ""
+          echo "Assignment keywords:"
+          redis-cli -h redis-service -a superSecretPassword123 SMEMBERS assignment:keywords
+          echo ""
+          
+          echo "7. Checking sorted sets:"
+          echo "Student scores (with scores):"
+          redis-cli -h redis-service -a superSecretPassword123 ZRANGE student:scores 0 -1 WITHSCORES
+          echo ""
+          
+          echo "8. Database statistics:"
+          redis-cli -h redis-service -a superSecretPassword123 DBSIZE
+          echo "keys total"
+          echo ""
+          
+          echo "========================================"
+          echo "DATA VERIFICATION COMPLETED"
+          echo "========================================"
+        env:
+        - name: REDIS_PASSWORD
+          value: superSecretPassword123
+      restartPolicy: Never
+  backoffLimit: 3
