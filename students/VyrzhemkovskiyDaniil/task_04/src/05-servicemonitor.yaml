@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: app02-servicemonitor
+  namespace: app02-monitoring
+  labels:
+    release: kube-prometheus-stack
+    student: vyrzhemkovskiy-daniil
+    group: ac-63
+    variant: 2
+spec:
+  selector:
+    matchLabels:
+      app: app02-webapp
+  namespaceSelector:
+    matchNames:
+    - app02-monitoring
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+    scrapeTimeout: 10s
+    honorLabels: true
+    params:
+      prefix: ["app02_"]
+    metricRelabelings:
+    - sourceLabels: [__name__]
+      regex: 'app02_.*'
+      action: keep

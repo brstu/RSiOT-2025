@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app02-metrics-exporter
+  namespace: app02-monitoring
+  labels:
+    app: app02-metrics-exporter
+    student: vyrzhemkovskiy-daniil
+    group: ac-63
+    variant: 2
+spec:
+  selector:
+    app: app02-metrics-exporter
+  ports:
+  - name: metrics
+    port: 8080
+    targetPort: 8080
