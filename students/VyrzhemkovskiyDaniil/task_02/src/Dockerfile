@@ -2,7 +2,7 @@ FROM python:3.11-alpine as builder
 
 WORKDIR /app
 
-RUN apk add --no-cache --virtual .build-deps curl
+RUN apk add --no-cache --virtual .build-deps curl=8.9.1-r0
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir --user -r requirements.txt
