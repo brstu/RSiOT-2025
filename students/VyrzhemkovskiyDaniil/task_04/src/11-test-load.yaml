@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: app02-load-test
+  namespace: app02-monitoring
+  labels:
+    app: app02-load-test
+    student: vyrzhemkovskiy-daniil
+    group: ac-63
+    variant: 2
+spec:
+  template:
+    spec:
+      containers:
+      - name: load-test
+        image: alpine:3.18
+        command: ["sh", "-c"]
+        args:
+        - |
+          echo "Starting load test for app02..."
+          echo "Student: Выржемковский Даниил Иванович"
+          echo "Group: AC-63"
+          echo "Variant: 2"
+          
+          apk add --no-cache curl
+          
+          # Генерация нагрузки
+          for i in {1..1000}; do
+            curl -s -o /dev/null -w "%{http_code}" http://app02-service.app02-monitoring.svc.cluster.local/
+            echo " Request $i completed"
+            sleep 0.1
+            
+            # Каждые 50 запросов обращаемся к API
+            if [ $((i % 50)) -eq 0 ]; then
+              curl -s http://app02-service.app02-monitoring.svc.cluster.local/api/v1/data
+              echo " API call completed"
+            fi
+            
+            # 5% запросов симулируют ошибки
+            if [ $((i % 20)) -eq 0 ]; then
+              curl -s http://app02-service.app02-monitoring.svc.cluster.local/simulate-error
+              echo " Error simulated"
+            fi
+          done
+          
+          echo "Load test completed"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+      restartPolicy: Never
+  backoffLimit: 0

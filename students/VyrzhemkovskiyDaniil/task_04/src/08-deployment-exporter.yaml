@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app02-metrics-exporter
+  namespace: app02-monitoring
+  labels:
+    app: app02-metrics-exporter
+    student: vyrzhemkovskiy-daniil
+    group: ac-63
+    variant: 2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app02-metrics-exporter
+  template:
+    metadata:
+      labels:
+        app: app02-metrics-exporter
+        student: vyrzhemkovskiy-daniil
+        group: ac-63
+        variant: 2
+    spec:
+      serviceAccountName: app02-metrics-exporter-sa
+      containers:
+      - name: exporter
+        image: python:3.9-alpine
+        ports:
+        - containerPort: 8080
+        command: ["python", "/app/exporter.py"]
+        volumeMounts:
+        - name: config
+          mountPath: /app
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+      volumes:
+      - name: config
+        configMap:
+          name: app02-metrics-exporter

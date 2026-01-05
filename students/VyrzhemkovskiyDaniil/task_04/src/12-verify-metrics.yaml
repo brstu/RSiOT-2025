@@ -1,0 +1,61 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: app02-verify-metrics
+  namespace: app02-monitoring
+  labels:
+    app: app02-verify-metrics
+    student: vyrzhemkovskiy-daniil
+    group: ac-63
+    variant: 2
+spec:
+  template:
+    spec:
+      containers:
+      - name: verify
+        image: curlimages/curl:latest
+        command: ["sh", "-c"]
+        args:
+        - |
+          echo "=== Verification of App02 Metrics ==="
+          echo "Student: Выржемковский Даниил Иванович"
+          echo "Group: AC-63"
+          echo "Variant: 2"
+          echo ""
+          sleep 30
+          
+          echo "1. Checking application endpoint..."
+          curl -f http://app02-service.app02-monitoring.svc.cluster.local/
+          echo ""
+          
+          echo "2. Checking metrics endpoint..."
+          curl -s http://app02-service.app02-monitoring.svc.cluster.local:8080/metrics | grep -E "app02_|HELP|TYPE" | head -20
+          echo ""
+          
+          echo "3. Checking Prometheus metrics..."
+          PROMETHEUS_URL="http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090"
+          
+          echo "   - Querying app02_http_requests_total:"
+          curl -s "${PROMETHEUS_URL}/api/v1/query?query=app02_http_requests_total" | jq -r '.data.result[] | "\(.metric.status): \(.value[1])"'
+          echo ""
+          
+          echo "   - Querying availability:"
+          curl -s "${PROMETHEUS_URL}/api/v1/query?query=rate(app02_http_requests_total{status=~\"2..\"}[5m])/rate(app02_http_requests_total[5m])" | jq '.data.result[]'
+          echo ""
+          
+          echo "4. Checking alert rules..."
+          curl -s "${PROMETHEUS_URL}/api/v1/rules" | jq '.data.groups[] | select(.name | contains("app02"))'
+          echo ""
+          
+          echo "=== Verification Complete ==="
+          echo "Metrics with prefix 'app02_' should be visible in Prometheus"
+          echo "Alerts configured for:"
+          echo "  - Availability < 99.5%"
+          echo "  - Latency p95 > 250ms"
+          echo "  - 5xx errors > 1.5% for 10m"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+      restartPolicy: Never
+  backoffLimit: 0

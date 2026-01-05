@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app02-webapp
+  namespace: app02-monitoring
+  labels:
+    app: app02-webapp
+    student: vyrzhemkovskiy-daniil
+    group: ac-63
+    variant: 2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app02-webapp
+  template:
+    metadata:
+      labels:
+        app: app02-webapp
+        student: vyrzhemkovskiy-daniil
+        group: ac-63
+        variant: 2
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: app02-metrics-exporter-sa
+      containers:
+      - name: webapp
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 8080
+          name: metrics
+        env:
+        - name: METRICS_PREFIX
+          value: "app02_"
+        - name: APP_NAME
+          value: "app02-webapp-v2"
+        - name: STUDENT_NAME
+          value: "Выржемковский Даниил Иванович"
+        - name: STUDENT_GROUP
+          value: "AC-63"
+        volumeMounts:
+        - name: config
+          mountPath: /etc/nginx/conf.d
+        - name: metrics-script
+          mountPath: /opt/metrics
+      - name: metrics-exporter
+        image: python:3.9-alpine
+        ports:
+        - containerPort: 8080
+          name: metrics
+        command: ["python", "/opt/metrics/exporter.py"]
+        volumeMounts:
+        - name: metrics-script
+          mountPath: /opt/metrics
+      volumes:
+      - name: config
+        configMap:
+          name: app02-nginx-config
+      - name: metrics-script
+        configMap:
+          name: app02-metrics-exporter
