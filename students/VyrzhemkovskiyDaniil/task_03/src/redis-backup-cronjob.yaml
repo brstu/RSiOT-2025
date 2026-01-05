@@ -1,0 +1,70 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup-cron
+  labels:
+    app: redis
+    student: vyrzhemkovskiy-daniil
+    group: ac-63
+    variant: 2
+spec:
+  schedule: "0 * * * *"  # Каждый час в 0 минут
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: redis:7-alpine
+            command: ["sh", "-c"]
+            args:
+            - |
+              TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+              echo "Starting scheduled backup at $(date)"
+              echo "Student: Выржемковский Даниил Иванович"
+              echo "Group: AC-63"
+              echo "Variant: 2"
+              
+              mkdir -p /backup/${TIMESTAMP}
+              
+              redis-cli -h redis-service -a superSecretPassword123 SAVE
+              
+              redis-cli -h redis-service -a superSecretPassword123 --rdb /tmp/dump.rdb
+              
+              if [ -f /tmp/dump.rdb ]; then
+                cp /tmp/dump.rdb /backup/${TIMESTAMP}/dump.rdb
+                echo "RDB backup created successfully"
+              fi
+              
+              redis-cli -h redis-service -a superSecretPassword123 --scan > /backup/${TIMESTAMP}/keys.txt
+              
+              redis-cli -h redis-service -a superSecretPassword123 KEYS "*" | while read key; do
+                echo "Key: $key" >> /backup/${TIMESTAMP}/data.txt
+                redis-cli -h redis-service -a superSecretPassword123 TYPE "$key" >> /backup/${TIMESTAMP}/data.txt
+                redis-cli -h redis-service -a superSecretPassword123 DUMP "$key" >> /backup/${TIMESTAMP}/data.txt
+                echo "---" >> /backup/${TIMESTAMP}/data.txt
+              done
+              
+              echo "Backup created: ${TIMESTAMP}" > /backup/${TIMESTAMP}/info.txt
+              echo "Time: $(date)" >> /backup/${TIMESTAMP}/info.txt
+              echo "Student: Выржемковский Даниил Иванович" >> /backup/${TIMESTAMP}/info.txt
+              echo "Group: AC-63" >> /backup/${TIMESTAMP}/info.txt
+              echo "Variant: 2" >> /backup/${TIMESTAMP}/info.txt
+              
+              cd /backup
+              find . -maxdepth 1 -type d -name "20*" -mtime +1 | xargs rm -rf
+              
+              echo "Backup ${TIMESTAMP} completed successfully"
+            env:
+            - name: REDIS_PASSWORD
+              value: superSecretPassword123
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /backup
+          volumes:
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: redis-backup-pvc
+          restartPolicy: OnFailure
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
