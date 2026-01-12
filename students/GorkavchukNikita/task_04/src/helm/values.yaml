@@ -1,0 +1,58 @@
+namespace: app31
+replicas: 2
+
+image:
+  repository: your-registry/app31
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  port: 8023
+  type: ClusterIP
+
+ingress:
+  enabled: true
+  className: nginx
+  host: app31.example.com
+  tlsEnabled: false
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+
+env:
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+  NODE_ENV: "production"
+  PORT: "8023"
+
+metrics:
+  prefix: "app31_"
+  path: "/metrics"
+
+prometheus:
+  enabled: true
+  scrapeInterval: 15s
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+  rules:
+    enabled: true
+    namespace: monitoring
+
+slo:
+  availability: 99.0
+  latencyP95Ms: 400
+  errorRate5xxPercentThreshold: 3
+  window: 10m
+
+grafana:
+  dashboards:
+    enabled: true
+    namespace: monitoring
+    labels:
+      grafana_dashboard: "1"
