@@ -10,7 +10,7 @@ spec:
       app: web02
   namespaceSelector:
     matchNames:
-      - {{ .Values.namespace }}
+      - {{.Values.namespace}}
   endpoints:
     - port: http
       path: /metrics

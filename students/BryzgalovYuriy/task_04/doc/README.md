@@ -58,6 +58,7 @@
 - Docker (multi-stage)
 
 ## Структура репозитория
+
 app/
   app.py
   requirements.txt
@@ -71,6 +72,7 @@ helm/web02/
 Dockerfile
 
 ## Подробное описание выполнения
+
 1. Добавление метрик в приложение
 
 Во Flask-приложение интегрирована библиотека prometheus-client.
@@ -97,16 +99,15 @@ app02_service_up — Gauge
 
 STU_ID, STU_GROUP, STU_VARIANT
 
-2. Экспорт метрик
+1. Экспорт метрик
 
 Метрики доступны по адресу:
 
 /metrics
 
-
 Формат — совместим с Prometheus.
 
-3. Docker-образ
+1. Docker-образ
 
 Используется multi-stage Dockerfile:
 
@@ -118,16 +119,15 @@ Stage 2 — минимальный runtime
 
 USER 10001
 
-
 Добавлены labels:
 
-org.bstu.student.fullname  
-org.bstu.student.id  
-org.bstu.group  
-org.bstu.variant  
-org.bstu.course  
+org.bstu.student.fullname
+org.bstu.student.id
+org.bstu.group
+org.bstu.variant
+org.bstu.course
 
-4. Helm Chart
+1. Helm Chart
 
 Создан Helm-чарт web02:
 Chart.yaml — описание
@@ -144,21 +144,21 @@ replicas: 3
 image: flask-app:stu-123456-v4
 port: 8082
 
-5. Развёртывание приложения
+1. Развёртывание приложения
 helm install web02 helm/web02
 
 Проверка:
 kubectl get pods -n app-feis-41-123456-v4
 kubectl get svc -n app-feis-41-123456-v4
 
-6. ServiceMonitor
+1. ServiceMonitor
 
 ServiceMonitor подключает приложение к Prometheus:
 Namespace: monitoring
 Path: /metrics
 Сбор метрик с сервиса web02
 
-7. Alerting (PrometheusRule)
+1. Alerting (PrometheusRule)
 
 Реализованы два алерта:
 1. High5xxErrorRate
