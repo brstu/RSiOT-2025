@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-redis
+  namespace: state-AS-64-220032-v02
+spec:
+  clusterIP: None
+  selector:
+    app: redis
+  ports:
+    - port: 6379
