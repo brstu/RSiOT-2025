@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-web02
+  namespace: app02
+  labels:
+    app: web02
+    org.bstu.student.fullname: "Bryzgalov_Yuriy_Nikolaevich"
+    org.bstu.student.id: "220032"
+    org.bstu.group: "AS-64"
+    org.bstu.variant: "02"
+    org.bstu.course: "RSIOT"
+    org.bstu.owner: "Gena-Cidarmyan"
+    org.bstu.student.slug: "as-64-220032-v02"
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: web02
+  template:
+    metadata:
+      labels:
+        app: web02
+    spec:
+      containers:
+        - name: web02
+          image: flask-app:as-64-220032-v02
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: app-web02-config
+            - secretRef:
+                name: app-web02-secret
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "192Mi"
+            limits:
+              cpu: "200m"
+              memory: "192Mi"
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8082
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8082
+            initialDelaySeconds: 10
+            periodSeconds: 10
