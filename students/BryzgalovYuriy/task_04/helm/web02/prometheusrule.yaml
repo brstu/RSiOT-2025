@@ -1,0 +1,26 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: alert-web02
+  namespace: monitoring
+spec:
+  groups:
+    - name: web02-alerts
+      rules:
+        - alert: High5xxErrorRate
+          expr: |
+            sum(rate(app02_http_requests_total{status=~"5.."}[10m])) 
+            /
+            sum(rate(app02_http_requests_total[10m])) > 0.015
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "5xx errors > 1.5%"
+
+        - alert: HighLatencyP95
+          expr: |
+            histogram_quantile(0.95, rate(app02_http_request_latency_seconds_bucket[5m])) > 0.25
+          for: 5m
+          labels:
+            severity: warning

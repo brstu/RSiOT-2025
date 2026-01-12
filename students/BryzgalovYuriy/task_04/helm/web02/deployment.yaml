@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chart-web02
+  namespace: {{ .Values.namespace }}
+  labels:
+    org.bstu.owner: "Gena-Cidarmyan"
+    org.bstu.student.slug: "AS-64-220032-v02"
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: web02
+  template:
+    metadata:
+      labels:
+        app: web02
+    spec:
+      containers:
+        - name: web02
+          image: {{ .Values.image }}
+          ports:
+            - containerPort: {{ .Values.port }}
+          env:
+            - name: STU_ID
+              value: "220032"
+            - name: STU_GROUP
+              value: "AS-64"
+            - name: STU_VARIANT
+              value: "02"
