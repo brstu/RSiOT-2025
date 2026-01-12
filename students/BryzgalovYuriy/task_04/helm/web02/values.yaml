@@ -1,3 +1,4 @@
+---
 namespace: app-AS-64-220032-v02
 replicas: 3
 port: 8082
