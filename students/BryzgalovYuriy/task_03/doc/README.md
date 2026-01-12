@@ -113,9 +113,13 @@ redis-server --requirepass $(REDIS_PASSWORD)
 6. Резервное копирование (CronJob)
 
 CronJob запускается каждый час:
+
 ```yaml
+
 schedule: "0 * * * *"
+
 ```
+
 Он выполняет:
 
 redis-cli -a redispass SAVE
