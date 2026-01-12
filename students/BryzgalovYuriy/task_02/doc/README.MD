@@ -82,7 +82,7 @@ STU_VARIANT
 
 Добавлена обработка сигнала SIGTERM для корректного завершения работы (graceful shutdown).
 
-2. Dockerfile
+1. Dockerfile
 
 Контейнерный образ собран с использованием multi-stage build.
 Особенности:
@@ -95,7 +95,7 @@ STU_VARIANT
 
 Открыт порт 8082
 
-3. ConfigMap и Secret
+1. ConfigMap и Secret
 
 Созданы ресурсы:
 
@@ -105,7 +105,7 @@ Secret — для хранения конфиденциальных данных
 
 Переменные окружения автоматически подставляются в контейнер.
 
-4. Kubernetes Deployment
+1. Kubernetes Deployment
 
 Deployment настроен со следующими параметрами:
 
