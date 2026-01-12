@@ -41,6 +41,7 @@
 ---
 
 ## Структура файлов
+
 backup-cronjob.yaml      – CronJob для резервного копирования Redis
 backup-pvc.yaml         – PVC для хранения резервных копий
 headless-service.yaml   – Headless Service для Redis
@@ -49,7 +50,9 @@ restore-job.yaml        – Job для восстановления данных
 secret.yaml             – Secret с паролем Redis
 statefulset.yaml        – StatefulSet Redis
 storageclass.yaml       – StorageClass
+
 ## Описание реализации
+
 1. Namespace
 
 Создан отдельный namespace:
@@ -61,7 +64,7 @@ metadata:
 
 Он используется для логической изоляции ресурсов лабораторной работы.
 
-2. Secret
+1. Secret
 
 Для хранения пароля Redis используется Secret:
 
@@ -69,7 +72,7 @@ REDIS_PASSWORD: "redispass"
 
 Пароль передаётся в контейнер через переменную окружения.
 
-3. Хранилище данных (PVC + StorageClass)
+1. Хранилище данных (PVC + StorageClass)
 
 Создан StorageClass:
 
@@ -120,7 +123,7 @@ cp /data/dump.rdb /backup/dump-<час>.rdb
 
 Резервные копии сохраняются в PVC backup-pvc.
 
-7. Восстановление данных (Job)
+1. Восстановление данных (Job)
 
 Job restore-redis копирует backup обратно:
 
@@ -129,6 +132,7 @@ cp /backup/dump-*.rdb /data/dump.rdb
 После запуска Job Redis получает восстановленные данные.
 
 ## Команды для запуска
+
 kubectl apply -f storageclass.yaml
 kubectl apply -f namespace.yaml
 kubectl apply -f secret.yaml
@@ -141,6 +145,7 @@ kubectl apply -f restore-job.yaml
 Проверка пода:
 
 kubectl get pods -n state-feis-41-123456-v3
+
 ## Контрольный список
 
 [✅] Namespace
