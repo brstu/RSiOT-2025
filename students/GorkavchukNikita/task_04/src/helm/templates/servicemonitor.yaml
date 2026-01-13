@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: app31
+  namespace: {{ .Values.prometheus.serviceMonitor.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: app31
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.namespace }}
+  endpoints:
+    - port: http
+      interval: {{ .Values.prometheus.scrapeInterval }}
+      path: {{ .Values.metrics.path }}
