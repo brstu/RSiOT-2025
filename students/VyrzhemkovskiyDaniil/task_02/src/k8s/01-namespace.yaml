@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app02
+  labels:
+    org.bstu.course: RSIOT
+    org.bstu.student.slug: ac-63--v02
+    slug: ac-63--v02
