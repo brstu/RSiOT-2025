@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lab01-flask-220005:v2 
+    container_name: lab01-flask-220005
+    environment:
+      APP_PORT: 8082
+      POSTGRES_DB: app_220005_v2
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: app_password
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    ports:
+      - "8082:8082"
+    depends_on:
+      db:
+        condition: service_healthy
+    labels:
+      org.bstu.owner: "romb123"
+      org.bstu.student.slug: "АС-63-220005-v2"
+
+  db:
+    image: postgres:16-alpine
+    container_name: lab01-postgres-220005
+    environment:
+      POSTGRES_DB: app_220005_v2
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: app_password
+    volumes:
+      - data_v2:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app_user -d app_220005_v2"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    ports:
+      - "5434:5432"
+    labels:
+      org.bstu.owner: "your_github_username"
+      org.bstu.student.slug: "АС-63-220005-v2"
+
+volumes:
+  data_v2:
