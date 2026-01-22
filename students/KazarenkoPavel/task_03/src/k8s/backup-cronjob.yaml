@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: state05
+  labels:
+    app: postgres-backup
+    org.bstu.student.fullname: "Kazarenko Pavel Vladimirovich"
+    org.bstu.student.id: "220008"
+    org.bstu.group: "as-63"
+    org.bstu.variant: "05"
+    org.bstu.course: "RSIOT"
+spec:
+  schedule: "*/10 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: postgres:16-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              PGPASSWORD=$(cat /etc/postgres-secret/password) pg_dump \
+                -h postgres.state05.svc.cluster.local \
+                -U $(cat /etc/postgres-secret/user) \
+                -d $(cat /etc/postgres-secret/db) \
+                > /backup/backup-$(date +%Y%m%d-%H%M%S).sql
+              echo "Backup completed at $(date)"
+            volumeMounts:
+            - name: postgres-secret
+              mountPath: /etc/postgres-secret
+              readOnly: true
+            - name: backup-volume
+              mountPath: /backup
+          volumes:
+          - name: postgres-secret
+            secret:
+              secretName: postgres-secret
+          - name: backup-volume
+            persistentVolumeClaim:
+              claimName: postgres-backup-pvc
+          restartPolicy: OnFailure
