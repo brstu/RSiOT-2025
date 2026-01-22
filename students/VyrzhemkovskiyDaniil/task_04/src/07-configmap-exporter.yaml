@@ -1,0 +1,166 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app02-metrics-exporter
+  namespace: app02-monitoring
+  labels:
+    student: vyrzhemkovskiy-daniil
+    group: ac-63
+    variant: 2
+data:
+  exporter.py: |
+    #!/usr/bin/env python3
+    from prometheus_client import start_http_server, Counter, Histogram, Gauge, generate_latest
+    import random
+    import time
+    from flask import Flask, Response
+    
+    app = Flask(__name__)
+    
+    # Метрики с префиксом app02_
+    REQUEST_COUNT = Counter(
+        'app02_http_requests_total',
+        'Total HTTP requests',
+        ['method', 'endpoint', 'status']
+    )
+    
+    REQUEST_DURATION = Histogram(
+        'app02_http_request_duration_seconds',
+        'HTTP request duration in seconds',
+        ['method', 'endpoint'],
+        buckets=[0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5]
+    )
+    
+    ACTIVE_REQUESTS = Gauge(
+        'app02_http_requests_active',
+        'Active HTTP requests'
+    )
+    
+    ERROR_RATE = Gauge(
+        'app02_http_error_rate',
+        'Current error rate (5xx responses)'
+    )
+    
+    UPTIME = Gauge(
+        'app02_application_uptime_seconds',
+        'Application uptime in seconds'
+    )
+    
+    APP_INFO = Gauge(
+        'app02_application_info',
+        'Application information',
+        ['name', 'student', 'group', 'variant']
+    )
+    
+    @app.route('/metrics')
+    def metrics():
+        return Response(generate_latest(), mimetype='text/plain')
+    
+    @app.route('/')
+    def index():
+        with REQUEST_DURATION.labels(method='GET', endpoint='/').time():
+            ACTIVE_REQUESTS.inc()
+            try:
+                # Имитация работы приложения
+                time.sleep(random.uniform(0.05, 0.2))
+                
+                # 98% успешных ответов, 2% ошибок
+                if random.random() < 0.98:
+                    status = '200'
+                    REQUEST_COUNT.labels(method='GET', endpoint='/', status='2xx').inc()
+                else:
+                    status = '500' if random.random() < 0.7 else '503'
+                    REQUEST_COUNT.labels(method='GET', endpoint='/', status='5xx').inc()
+                
+                return f"""
+                <html>
+                <body>
+                    <h1>Приложение мониторинга - Вариант 2</h1>
+                    <p>Студент: Выржемковский Даниил Иванович</p>
+                    <p>Группа: AC-63</p>
+                    <p>Вариант: 2</p>
+                    <p>Префикс метрик: app02_</p>
+                    <p>SLO: 99.5% доступность, p95 < 250ms</p>
+                    <p><a href="/metrics">Метрики Prometheus</a></p>
+                    <p><a href="/health">Health check</a></p>
+                    <p><a href="/simulate-error">Симуляция ошибки</a></p>
+                </body>
+                </html>
+                """, int(status)
+            finally:
+                ACTIVE_REQUESTS.dec()
+    
+    @app.route('/health')
+    def health():
+        REQUEST_COUNT.labels(method='GET', endpoint='/health', status='200').inc()
+        return 'OK', 200
+    
+    @app.route('/simulate-error')
+    def simulate_error():
+        REQUEST_COUNT.labels(method='GET', endpoint='/simulate-error', status='500').inc()
+        return 'Internal Server Error', 500
+    
+    @app.route('/api/v1/data')
+    def api_data():
+        with REQUEST_DURATION.labels(method='GET', endpoint='/api/v1/data').time():
+            ACTIVE_REQUESTS.inc()
+            try:
+                time.sleep(random.uniform(0.1, 0.3))
+                REQUEST_COUNT.labels(method='GET', endpoint='/api/v1/data', status='200').inc()
+                return {'data': 'sample', 'student': 'Выржемковский Д.И.', 'variant': 2}
+            finally:
+                ACTIVE_REQUESTS.dec()
+    
+    if __name__ == '__main__':
+        # Инициализация информационных метрик
+        APP_INFO.labels(
+            name='app02-webapp-v2',
+            student='Выржемковский Даниил Иванович',
+            group='AC-63',
+            variant='2'
+        ).set(1)
+        
+        start_time = time.time()
+        
+        # Фоновая задача для обновления метрик
+        import threading
+        def update_metrics():
+            while True:
+                UPTIME.set(time.time() - start_time)
+                
+                # Обновление error rate
+                total_requests = REQUEST_COUNT._value.get()
+                error_requests = 0
+                for key, value in REQUEST_COUNT._metrics.items():
+                    if '5xx' in str(key):
+                        error_requests += value._value.get()
+                
+                if total_requests > 0:
+                    ERROR_RATE.set(error_requests / total_requests)
+                
+                time.sleep(5)
+        
+        thread = threading.Thread(target=update_metrics, daemon=True)
+        thread.start()
+        
+        app.run(host='0.0.0.0', port=8080)
+    
+  nginx.conf: |
+    server {
+        listen 80;
+        server_name localhost;
+        
+        location / {
+            proxy_pass http://127.0.0.1:8080;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+        
+        location /metrics {
+            proxy_pass http://127.0.0.1:8080;
+        }
+        
+        location /health {
+            proxy_pass http://127.0.0.1:8080;
+        }
+    }

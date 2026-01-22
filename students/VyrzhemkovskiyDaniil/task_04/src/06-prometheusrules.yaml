@@ -1,0 +1,77 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: app02-prometheus-rules
+  namespace: app02-monitoring
+  labels:
+    release: kube-prometheus-stack
+    student: vyrzhemkovskiy-daniil
+    group: ac-63
+    variant: 2
+spec:
+  groups:
+  - name: app02-slo-rules
+    interval: 30s
+    rules:
+    
+    - alert: App02AvailabilityBelowSLO
+      expr: |
+        (
+          1 - (
+            rate(app02_http_requests_total{status=~"2.."}[5m])
+            /
+            rate(app02_http_requests_total[5m])
+          )
+        ) > 0.005
+      for: 5m
+      labels:
+        severity: warning
+        student: vyrzhemkovskiy-daniil
+        group: ac-63
+        variant: 2
+      annotations:
+        summary: "Доступность приложения ниже 99.5%"
+        description: "Доступность приложения app02 составляет {{ $value | humanizePercentage }} за последние 5 минут"
+        
+    - alert: App02HighLatency
+      expr: |
+        histogram_quantile(0.95, rate(app02_http_request_duration_seconds_bucket[5m])) > 0.25
+      for: 3m
+      labels:
+        severity: warning
+        student: vyrzhemkovskiy-daniil
+        group: ac-63
+        variant: 2
+      annotations:
+        summary: "Высокая задержка приложения (p95 > 250ms)"
+        description: "95-й процентиль задержки составляет {{ $value | humanizeDuration }}"
+        
+    - alert: App02HighErrorRate
+      expr: |
+        (
+          rate(app02_http_requests_total{status=~"5.."}[10m])
+          /
+          rate(app02_http_requests_total[10m])
+        ) > 0.015
+      for: 5m
+      labels:
+        severity: critical
+        student: vyrzhemkovskiy-daniil
+        group: ac-63
+        variant: 2
+      annotations:
+        summary: "Высокий процент ошибок 5xx (>1.5%)"
+        description: "Процент ошибок 5xx составляет {{ $value | humanizePercentage }} за последние 10 минут"
+        
+    - alert: App02MetricsMissing
+      expr: |
+        absent(app02_http_requests_total[5m])
+      for: 5m
+      labels:
+        severity: critical
+        student: vyrzhemkovskiy-daniil
+        group: ac-63
+        variant: 2
+      annotations:
+        summary: "Метрики приложения app02 отсутствуют"
+        description: "Не получено метрик от приложения более 5 минут"
