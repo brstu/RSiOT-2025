@@ -1,0 +1,34 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-redis
+  namespace: state-AS-64-220032-v02
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: redis:7-alpine
+              command:
+                - sh
+                - -c
+                - |
+                  redis-cli -a redispass SAVE
+                  cp /data/dump.rdb /backup/dump-$(date +%H).rdb
+              volumeMounts:
+                - name: redis-data
+                  mountPath: /data
+                - name: backup-storage
+                  mountPath: /backup
+          restartPolicy: OnFailure
+          volumes:
+            - name: redis-data
+              persistentVolumeClaim:
+                claimName: data-db-redis-0
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: backup-pvc

@@ -1,0 +1,30 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: restore-redis
+  namespace: state-AS-64-220032-v02
+spec:
+  template:
+    spec:
+      containers:
+        - name: restore
+          image: redis:7-alpine
+          command:
+            - sh
+            - -c
+            - |
+              cp /backup/dump-*.rdb /data/dump.rdb
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+            - name: backup-storage
+              mountPath: /backup
+      restartPolicy: OnFailure
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: data-db-redis-0
+        - name: backup-storage
+          persistentVolumeClaim:
+            claimName: backup-pvc
