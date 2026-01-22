@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-test-data
+  labels:
+    app: redis
+    student: vyrzhemkovskiy-daniil
+    group: ac-63
+    variant: 2
+spec:
+  template:
+    spec:
+      containers:
+      - name: test-data
+        image: redis:7-alpine
+        command: ["sh", "-c"]
+        args:
+        - |
+          echo "Creating test data in Redis..."
+          echo "Student: Выржемковский Даниил Иванович"
+          echo "Group: AC-63"
+          echo "Variant: 2"
+          
+          sleep 10
+          
+          redis-cli -h redis-service -a superSecretPassword123 << 'EOF'
+          SET student:fullname "Выржемковский Даниил Иванович"
+          SET student:group "AC-63"
+          SET student:id "006305"
+          SET student:variant "2"
+          SET student:email "danikv0305@gmail.com"
+          SET student:github "romb123"
+          SET assignment:name "Stateful приложения в Kubernetes"
+          SET assignment:task "Redis StatefulSet с бэкапами"
+          SET assignment:status "in_progress"
+          
+          LPUSH courses:list "Kubernetes" "Docker" "Redis" "StatefulSet"
+          LPUSH technologies:used "PVC" "Headless Service" "CronJob" "ConfigMap"
+          
+          HSET student:details name "Даниил" surname "Выржемковский" middle_name "Иванович"
+          HSET student:contact email "danikv0305@gmail.com" github "romb123"
+          HSET assignment:info number "3" difficulty "medium" due_date "2024-01-15"
+          
+          SADD student:skills "Kubernetes" "Docker" "YAML" "Bash" "Git"
+          SADD assignment:keywords "StatefulSet" "PVC" "Headless Service" "Backup" "Restore"
+          
+          ZADD student:scores 95 "Kubernetes" 90 "Docker" 85 "Networking" 88 "Storage"
+          ZADD assignment:priority 1 "StatefulSet" 2 "PVC" 3 "Backup" 4 "Testing"
+          EOF
+          
+          echo "Test data created successfully!"
+          echo "Verifying data creation..."
+          
+          redis-cli -h redis-service -a superSecretPassword123 KEYS "*"
+        env:
+        - name: REDIS_PASSWORD
+          value: superSecretPassword123
+      restartPolicy: Never
+  backoffLimit: 3

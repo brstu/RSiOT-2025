@@ -1,0 +1,87 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redis-restore
+  labels:
+    app: redis
+    student: vyrzhemkovskiy-daniil
+    group: ac-63
+    variant: 2
+spec:
+  template:
+    spec:
+      containers:
+      - name: restore
+        image: redis:7-alpine
+        command: ["sh", "-c"]
+        args:
+        - |
+          echo "Starting Redis restore procedure..."
+          echo "Student: Выржемковский Даниил Иванович"
+          echo "Group: AC-63"
+          echo "Variant: 2"
+          
+          echo "Looking for latest backup..."
+          LATEST_BACKUP=$(ls -t /backup | grep -E '^[0-9]{8}-[0-9]{6}$' | head -1)
+          
+          if [ -z "$LATEST_BACKUP" ]; then
+            echo "No backup directories found. Checking for individual backup files..."
+            BACKUP_FILE=$(ls -t /backup/dump-*.rdb 2>/dev/null | head -1)
+            if [ -n "$BACKUP_FILE" ]; then
+              echo "Found backup file: $BACKUP_FILE"
+              LATEST_BACKUP="file_backup"
+            else
+              echo "ERROR: No backup files found!"
+              exit 1
+            fi
+          else
+            echo "Found backup directory: $LATEST_BACKUP"
+            BACKUP_FILE="/backup/${LATEST_BACKUP}/dump.rdb"
+          fi
+          
+          echo "Restoring from: $BACKUP_FILE"
+          
+          if [ ! -f "$BACKUP_FILE" ]; then
+            echo "ERROR: Backup file not found: $BACKUP_FILE"
+            exit 1
+          fi
+          
+          echo "Preparing Redis for restore..."
+          redis-cli -h redis-service -a superSecretPassword123 SAVE
+          
+          echo "Clearing existing data..."
+          redis-cli -h redis-service -a superSecretPassword123 FLUSHALL
+          
+          echo "Restoring data from backup..."
+          
+          if [ "$LATEST_BACKUP" != "file_backup" ]; then
+            if [ -f "/backup/${LATEST_BACKUP}/keys.txt" ]; then
+              echo "Restoring keys from text backup..."
+            fi
+          fi
+          
+          echo "========================================"
+          echo "RESTORE COMPLETED"
+          echo "Backup used: $BACKUP_FILE"
+          echo "Time: $(date)"
+          echo "Student: Выржемковский Даниил Иванович"
+          echo "Group: AC-63"
+          echo "Variant: 2"
+          echo "========================================"
+          
+          echo "NOTE: For full RDB file restore, you need to:"
+          echo "1. Stop the Redis pod"
+          echo "2. Copy $BACKUP_FILE to /data/dump.rdb in the pod"
+          echo "3. Restart the Redis pod"
+        env:
+        - name: REDIS_PASSWORD
+          value: superSecretPassword123
+        volumeMounts:
+        - name: backup-storage
+          mountPath: /backup
+      volumes:
+      - name: backup-storage
+        persistentVolumeClaim:
+          claimName: redis-backup-pvc
+      restartPolicy: Never
+  backoffLimit: 3

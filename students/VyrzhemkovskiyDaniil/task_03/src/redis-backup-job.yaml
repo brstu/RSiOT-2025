@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redis-backup-manual
+  labels:
+    app: redis
+    student: vyrzhemkovskiy-daniil
+    group: ac-63
+    variant: 2
+spec:
+  template:
+    spec:
+      containers:
+      - name: backup
+        image: redis:7-alpine
+        command: ["sh", "-c"]
+        args:
+        - |
+          echo "Starting Redis backup..."
+          echo "Backup time: $(date)"
+          echo "Student: Выржемковский Даниил Иванович"
+          echo "Group: AC-63"
+          echo "Variant: 2"
+          
+          redis-cli -h redis-service -a superSecretPassword123 SAVE
+          redis-cli -h redis-service -a superSecretPassword123 --rdb /tmp/dump.rdb
+          
+          if [ -f /tmp/dump.rdb ]; then
+            cp /tmp/dump.rdb /backup/dump-$(date +%Y%m%d-%H%M%S).rdb
+            echo "Backup completed successfully!"
+            ls -la /backup/
+          else
+            echo "Backup failed: dump.rdb not created"
+            exit 1
+          fi
+          
+          redis-cli -h redis-service -a superSecretPassword123 --scan > /backup/keys-$(date +%Y%m%d-%H%M%S).txt
+          
+          echo "=== BACKUP INFO ===" > /backup/backup-info.txt
+          echo "Time: $(date)" >> /backup/backup-info.txt
+          echo "Student: Выржемковский Даниил Иванович" >> /backup/backup-info.txt
+          echo "Group: AC-63" >> /backup/backup-info.txt
+          echo "Variant: 2" >> /backup/backup-info.txt
+          echo "Database: Redis" >> /backup/backup-info.txt
+          echo "================" >> /backup/backup-info.txt
+        env:
+        - name: REDIS_PASSWORD
+          value: superSecretPassword123
+        volumeMounts:
+        - name: backup-storage
+          mountPath: /backup
+      volumes:
+      - name: backup-storage
+        persistentVolumeClaim:
+          claimName: redis-backup-pvc
+      restartPolicy: Never
+  backoffLimit: 3
