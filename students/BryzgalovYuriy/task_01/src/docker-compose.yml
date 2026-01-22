@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  app:
+    image: flask-app:stu-123456-v2
+    container_name: app-feis-41-123456-v2
+    build: .
+    ports:
+      - "8082:8082"
+    environment:
+      STU_ID: "123456"
+      STU_GROUP: "FEIS-41"
+      STU_VARIANT: "2"
+
+      DB_HOST: postgres
+      POSTGRES_DB: app_123456_v2
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - net-feis-41-123456-v2
+    labels:
+      org.bstu.owner: "github_username"
+      org.bstu.student.slug: "feis-41-123456-v2"
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: pg-feis-41-123456-v2
+    environment:
+      POSTGRES_DB: app_123456_v2
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - data_v2:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - net-feis-41-123456-v2
+
+volumes:
+  data_v2:
+    name: data-feis-41-123456-v2
+
+networks:
+  net-feis-41-123456-v2:
+    driver: bridge
